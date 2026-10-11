@@ -73,8 +73,13 @@ test('liens internes et ressources : 200', async () => {
 test('lien de téléchargement de l\'échantillon joignable', { skip: process.env.SKIP_RELEASE === '1' }, async () => {
   const sample = [...links].find((h) => h.includes('/releases/download/'));
   assert.ok(sample, 'lien de l\'échantillon présent');
-  const r = await fetch(sample, { method: 'HEAD', redirect: 'follow' });
-  assert.equal(r.status, 200, sample);
+  // Vérification par l'API publique (sans télécharger le fichier, pour ne pas fausser le KPI download_count).
+  const m = sample.match(/github\.com\/([^/]+\/[^/]+)\/releases\/download\/([^/]+)\/(.+)$/);
+  assert.ok(m, sample);
+  const r = await fetch(`https://api.github.com/repos/${m[1]}/releases/tags/${m[2]}`, { headers: { accept: 'application/vnd.github+json' } });
+  assert.equal(r.status, 200);
+  const rel = await r.json();
+  assert.ok(rel.assets.some((a) => a.name === m[3] && a.state === 'uploaded' && a.size > 100000), `asset ${m[3]} présent`);
 });
 
 test('liens externes (sources officielles, GitHub) : pas de 404', async () => {
