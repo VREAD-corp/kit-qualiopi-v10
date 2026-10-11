@@ -1,0 +1,356 @@
+// Génère le site statique dans docs/ (servi par GitHub Pages depuis la branche main, dossier /docs).
+// Aucune dépendance : node scripts/build.mjs
+import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { join, resolve } from 'node:path';
+
+const ROOT = resolve(import.meta.dirname, '..');
+const OUT = join(ROOT, 'docs');
+const DATA = JSON.parse(readFileSync(join(ROOT, 'src/data/changements.json'), 'utf8'));
+const SITE = 'https://vread-corp.github.io/kit-qualiopi-v10/';
+const REPO = 'https://github.com/VREAD-corp/kit-qualiopi-v10';
+const SAMPLE_TAG = `echantillon-v${DATA.version}`;
+const SAMPLE_FILE = `kit-qualiopi-v10-echantillon-${DATA.version}.zip`;
+const SAMPLE_URL = `${REPO}/releases/download/${SAMPLE_TAG}/${SAMPLE_FILE}`;
+const LASTMOD = '2026-10-11';
+const BRAND = 'Kit Qualiopi V10';
+
+const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+const changed = DATA.indicators.filter((i) => i.change === 'modifie' || i.change === 'nouveau');
+const modifiedNums = DATA.indicators.filter((i) => i.change === 'modifie').map((i) => i.n);
+
+function layout({ path, title, description, body, jsonld = [], noindex = false }) {
+  const url = SITE + path;
+  return `<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>${esc(title)}</title>
+<meta name="description" content="${esc(description)}">
+${noindex ? '<meta name="robots" content="noindex">' : `<link rel="canonical" href="${url}">`}
+<meta property="og:type" content="website">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:site_name" content="${BRAND}">
+<meta property="og:title" content="${esc(title)}">
+<meta property="og:description" content="${esc(description)}">
+<meta property="og:url" content="${url}">
+<meta property="og:image" content="${SITE}og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#1d4ed8">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="styles.css">
+${jsonld.map((j) => `<script type="application/ld+json">${JSON.stringify(j)}</script>`).join('\n')}
+</head>
+<body>
+<a class="skip" href="#contenu">Aller au contenu</a>
+<header class="top">
+  <div class="wrap top-in">
+    <a class="logo" href="./">${BRAND}<span>référentiel 2026 · 33 indicateurs</span></a>
+    <nav aria-label="Navigation principale">
+      <a href="./#contenu-kit">Le kit</a>
+      <a href="changements-v9-v10.html">Ce qui change</a>
+      <a href="./#faq">FAQ</a>
+    </nav>
+  </div>
+</header>
+<main id="contenu">
+${body}
+</main>
+<footer class="foot">
+  <div class="wrap">
+    <p class="foot-brand"><strong>${BRAND}</strong> — un produit de READ FRANCE SAS</p>
+    <p class="small">Produit indépendant : ni édité, ni validé par l'État, France compétences ou un organisme certificateur. Qualiopi est une marque de l'État. Information, pas un conseil juridique ; aucune garantie de certification.</p>
+    <nav aria-label="Liens légaux" class="foot-nav">
+      <a href="mentions-legales.html">Mentions légales</a>
+      <a href="confidentialite.html">Confidentialité</a>
+      <a href="cgv.html">CGV (projet)</a>
+      <a href="${REPO}/issues">Contact</a>
+    </nav>
+  </div>
+</footer>
+</body>
+</html>
+`;
+}
+
+const downloadBtn = (label = 'Télécharger l\'échantillon gratuit') =>
+  `<a class="btn btn-primary" href="${SAMPLE_URL}" download>${label}<span class="btn-sub">ZIP · DOCX, ODT, PDF · sans inscription</span></a>`;
+
+const sourcesList = () => `<ul class="sources">${DATA.sources.map((s) => `<li><a href="${esc(s.url)}" rel="noopener">${esc(s.label)}</a></li>`).join('')}</ul>`;
+
+// ---------------------------------------------------------------- Accueil
+const faq = [
+  ['Qu\'est-ce que « Qualiopi V10 » ?', 'C\'est le nom couramment donné au référentiel national qualité modifié par le décret n° 2026-728 du 1er août 2026, publié au Journal officiel du 4 août 2026. Le texte officiel ne parle pas de « V10 » : l\'expression fait suite à la version 9 du guide de lecture (8 janvier 2024).'],
+  ['Quand le nouveau référentiel s\'applique-t-il ?', 'Le décret entre en vigueur le 1er novembre 2026. Jusqu\'au 31 octobre 2026, le référentiel de 2019 (32 indicateurs) reste applicable. Vérifiez avec votre organisme certificateur quel référentiel et quel guide de lecture seront utilisés pour votre prochain audit.'],
+  ['Combien d\'indicateurs et qu\'est-ce qui change ?', `Les 7 critères sont inchangés. Le référentiel passe de 32 à 33 indicateurs : l\'indicateur 33 est créé et, selon notre lecture du texte, ${modifiedNums.length} indicateurs sont modifiés sur le fond (${modifiedNums.join(', ')}).`],
+  ['L\'indicateur 33 me concerne-t-il ?', 'L\'indicateur 33 (évaluation des contenus et des enseignements par les apprenants) est rattaché aux CFA par les analyses publiées. Vérifiez la colonne d\'application dans l\'annexe officielle sur Légifrance ; le kit fournit un modèle dédié.'],
+  ['Le guide de lecture officiel est-il publié ?', 'Pas à la date du 11 octobre 2026, pas plus que les arrêtés qui fixeront les seuils des indicateurs 19 et 20. Le kit le signale dans chaque document et sera mis à jour après leur parution.'],
+  ['Mon certificat en cours reste-t-il valable ?', 'Le décret ne prévoit pas de disposition transitoire spécifique. Les modalités pour les audits de surveillance et de renouvellement réalisés après le 1er novembre 2026 sont à confirmer avec votre organisme certificateur.'],
+  ['Le kit garantit-il la certification ?', 'Non. Seul un organisme certificateur décide, après audit. Le kit vous aide à organiser vos preuves ; il ne remplace ni le texte officiel, ni le guide de lecture, ni un conseil juridique ou un accompagnement.'],
+  ['Dans quels formats sont les modèles ?', 'DOCX (Word) et ODT (LibreOffice), modifiables. Les synthèses sont aussi fournies en PDF.'],
+  ['Puis-je acheter le kit complet maintenant ?', 'Pas encore : l\'ouverture des ventes est en préparation. L\'échantillon gratuit est disponible dès maintenant. Pour être prévenu, suivez les publications du dépôt GitHub (bouton Watch, puis Custom, puis Releases).'],
+];
+
+const indexBody = `
+<section class="hero">
+  <div class="wrap">
+    <p class="eyebrow">Entrée en vigueur le <strong>1er novembre 2026</strong> · <span id="jours">décret n° 2026-728</span></p>
+    <h1>Kit Qualiopi V10 : préparez le nouveau référentiel qualité 2026 à 33 indicateurs</h1>
+    <p class="lead">Le décret n° 2026-728 modifie ${modifiedNums.length} indicateurs et en crée un 33e. Ce kit vous dit, indicateur par indicateur, quelles preuves préparer, et vous donne ${DATA.templates.length} modèles éditables (Word et LibreOffice) pour les produire.</p>
+    <div class="cta">
+      ${downloadBtn()}
+      <a class="btn btn-ghost" href="changements-v9-v10.html">Voir ce qui change (V9 → V10)</a>
+    </div>
+    <p class="note">L'échantillon contient le tableau complet des changements et 3 modèles : procédure violences et ruptures (ind. 12), clause qualité de sous-traitance (ind. 27), amélioration continue et analyse des risques (ind. 32).</p>
+  </div>
+</section>
+
+<section class="wrap section" aria-labelledby="changes-h">
+  <h2 id="changes-h">Ce qui change au 1er novembre 2026</h2>
+  <p>Les 7 critères restent les mêmes. Voici les indicateurs dont le contenu évolue, résumés avec nos mots (le texte officiel fait foi).</p>
+  <ul class="cards">
+    ${changed.map((i) => `<li class="card"><p class="card-n"><span class="badge ${i.change}">${esc(i.changeLabel)}</span> Indicateur ${i.n}</p><h3>${esc(i.titre)}</h3><p class="small muted">${esc(i.scope)}</p></li>`).join('\n    ')}
+  </ul>
+  <p><a href="changements-v9-v10.html">Tableau détaillé : avant, après et ce qu'il faut faire →</a></p>
+</section>
+
+<section class="band" id="contenu-kit" aria-labelledby="kit-h">
+  <div class="wrap section">
+    <h2 id="kit-h">Ce que contient le kit complet</h2>
+    <div class="grid2">
+      <div>
+        <h3>4 synthèses (DOCX, ODT, PDF)</h3>
+        <ul class="checks">
+          ${DATA.docs.filter((d) => d.id !== 'D00').map((d) => `<li>${esc(d.title)}${d.sample ? ' <span class="tag">dans l\'échantillon</span>' : ''}</li>`).join('\n          ')}
+        </ul>
+        <p class="small muted">La check-list des 33 indicateurs donne pour chacun : à qui il s'applique, ce qui change, des exemples de preuves, les pièges fréquents, le modèle à utiliser et une grille « mon état / emplacement / responsable / échéance ».</p>
+      </div>
+      <div>
+        <h3>${DATA.templates.length} modèles éditables (Word et LibreOffice)</h3>
+        <ul class="tpl">
+          ${DATA.templates.map((t) => `<li><span class="tid">${t.id}</span> ${esc(t.title)} <span class="small muted">— ind. ${t.indicators.join(', ')}</span>${t.sample ? ' <span class="tag">gratuit</span>' : ''}</li>`).join('\n          ')}
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="wrap section" aria-labelledby="who-h">
+  <h2 id="who-h">Pour qui ?</h2>
+  <ul class="cards cards-3">
+    <li class="card"><h3>Organismes de formation</h3><p>Déjà certifiés et audités après le 1er novembre 2026, ou en préparation d'un audit initial. Particulièrement utile aux structures de 1 à 10 personnes sans responsable qualité.</p></li>
+    <li class="card"><h3>CFA</h3><p>Les indicateurs 14, 15 et 20 sont renforcés et l'indicateur 33 est créé : modèles dédiés (livret apprenti, gouvernance, évaluation des enseignements).</p></li>
+    <li class="card"><h3>Bilans de compétences et VAE</h3><p>Les indicateurs communs modifiés (1, 2, 12, 19, 27, 32) vous concernent aussi. La check-list indique ce qui ne s'applique pas à votre activité.</p></li>
+  </ul>
+</section>
+
+<section class="band" aria-labelledby="price-h">
+  <div class="wrap section">
+    <h2 id="price-h">Disponibilité</h2>
+    <div class="grid2">
+      <div class="offer">
+        <p class="offer-label">Disponible maintenant</p>
+        <h3>Échantillon gratuit</h3>
+        <p class="price">0 €</p>
+        <p>Tableau des changements V9 → V10 + 3 modèles (indicateurs 12, 27, 32). Sans inscription, sans e-mail.</p>
+        ${downloadBtn('Télécharger l\'échantillon')}
+      </div>
+      <div class="offer offer-soon">
+        <p class="offer-label">Ouverture des ventes prochainement</p>
+        <h3>Kit complet</h3>
+        <p class="price">79 € TTC</p>
+        <p>4 synthèses + ${DATA.templates.length} modèles, téléchargement immédiat après paiement, mise à jour après la publication du guide de lecture officiel. Achat unique, pas d'abonnement.</p>
+        <p class="soon" role="note">La vente n'est pas encore ouverte : aucun paiement n'est possible pour l'instant. Pour être prévenu, suivez les <a href="${REPO}/releases">publications du dépôt GitHub</a> (Watch → Custom → Releases).</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="wrap section" aria-labelledby="not-h">
+  <h2 id="not-h">Ce que le kit n'est pas</h2>
+  <ul class="checks checks-neutral">
+    <li>Ce n'est pas un conseil juridique, ni un accompagnement, ni un audit.</li>
+    <li>Il ne garantit pas la certification : seul votre organisme certificateur décide, après audit.</li>
+    <li>Il n'est ni édité ni validé par l'État, France compétences ou un certificateur, et ne contient pas le logo Qualiopi.</li>
+    <li>Il ne remplace pas le texte officiel ni le guide de lecture, encore attendu au 11 octobre 2026.</li>
+  </ul>
+</section>
+
+<section class="band" id="faq" aria-labelledby="faq-h">
+  <div class="wrap section">
+    <h2 id="faq-h">Questions fréquentes</h2>
+    ${faq.map(([q, a]) => `<details><summary>${esc(q)}</summary><p>${esc(a)}</p></details>`).join('\n    ')}
+  </div>
+</section>
+
+<section class="wrap section" aria-labelledby="src-h">
+  <h2 id="src-h">Sources officielles</h2>
+  ${sourcesList()}
+  <p class="small muted">Contenu vérifié le 11 octobre 2026.</p>
+</section>
+<script>
+(function () {
+  var el = document.getElementById('jours');
+  if (!el) return;
+  var d = Math.ceil((Date.UTC(2026, 10, 1) - Date.now()) / 86400000);
+  if (d > 1) el.textContent = 'dans ' + d + ' jours';
+  else if (d === 1) el.textContent = 'demain';
+  else el.textContent = 'en vigueur';
+})();
+</script>
+`;
+
+// Pas d'objet Offer tant que la vente n'est pas ouverte (pas de prix « disponible » dans les résultats de recherche).
+const productLd = {
+  '@context': 'https://schema.org',
+  '@type': 'CreativeWork',
+  name: BRAND,
+  description: `Kit documentaire pour le référentiel national qualité applicable au 1er novembre 2026 (décret n° 2026-728, 33 indicateurs) : check-list des preuves, tableau des changements V9 → V10, ${DATA.templates.length} modèles DOCX et ODT.`,
+  inLanguage: 'fr',
+  publisher: { '@type': 'Organization', name: 'READ FRANCE SAS' },
+};
+const faqLd = { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: faq.map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })) };
+
+// ---------------------------------------------------------------- Tableau des changements
+const changesBody = `
+<section class="wrap section">
+  <p class="eyebrow"><a href="./">${BRAND}</a> › Ce qui change</p>
+  <h1>Qualiopi V10 : tableau des changements du référentiel au 1er novembre 2026</h1>
+  <p class="lead">Le décret n° 2026-728 du 1er août 2026 remplace la liste des indicateurs du référentiel national qualité. Les 7 critères sont inchangés ; on passe de 32 à 33 indicateurs. Voici, indicateur par indicateur, ce qui change et ce qu'il faut faire.</p>
+  <div class="callout" role="note"><p><strong>À savoir.</strong> « V9 » et « V10 » sont des appellations courantes, pas des termes officiels. Les libellés ci-dessous sont des reformulations : le texte publié sur <a href="${esc(DATA.sources[0].url)}" rel="noopener">Légifrance</a> fait foi.</p></div>
+  <h2>En bref</h2>
+  <ul>
+    <li><strong>${modifiedNums.length} indicateurs modifiés sur le fond</strong> : ${modifiedNums.join(', ')}.</li>
+    <li><strong>1 indicateur nouveau</strong> : 33, évaluation des contenus et des enseignements par les apprenants.</li>
+    <li>1 ajustement mineur (30) ; les autres indicateurs sont inchangés sur le fond.</li>
+    <li>Encore attendus au 11 octobre 2026 : le nouveau guide de lecture et les arrêtés fixant les seuils des indicateurs 19 et 20.</li>
+  </ul>
+  <p>${downloadBtn('Télécharger ce tableau (DOCX, ODT, PDF) + 3 modèles')}</p>
+
+  <h2>Indicateurs modifiés ou nouveaux</h2>
+  ${changed.map((i) => `
+  <article class="change" id="indicateur-${i.n}">
+    <h3><span class="badge ${i.change}">${esc(i.changeLabel)}</span> Indicateur ${i.n} — ${esc(i.titre)}</h3>
+    <p class="small muted">Concerne : ${esc(i.scope)}</p>
+    <dl>
+      <dt>Avant (référentiel 2019)</dt><dd>${esc(i.v9)}</dd>
+      <dt>À partir du 1er novembre 2026</dt><dd>${esc(i.v10)}</dd>
+      <dt>Ce qu'il faut faire</dt><dd>${esc(i.action)}</dd>
+    </dl>
+  </article>`).join('')}
+
+  <h2>Les 33 indicateurs en un coup d'œil</h2>
+  <div class="table-wrap" tabindex="0" role="region" aria-label="Tableau des 33 indicateurs">
+  <table>
+    <caption class="sr">Statut de chaque indicateur au 1er novembre 2026</caption>
+    <thead><tr><th scope="col">N°</th><th scope="col">Critère</th><th scope="col">Intitulé (reformulé)</th><th scope="col">Concerne</th><th scope="col">Statut</th></tr></thead>
+    <tbody>
+    ${DATA.indicators.map((i) => `<tr><td>${i.n}</td><td>${i.critere}</td><td>${esc(i.titre)}</td><td>${esc(i.scope)}</td><td><span class="badge ${i.change}">${esc(i.changeLabel)}</span></td></tr>`).join('\n    ')}
+    </tbody>
+  </table>
+  </div>
+
+  <h2>Les 7 critères (inchangés)</h2>
+  <ol>${DATA.criteria.map((c) => `<li>${esc(c.title)} — indicateurs ${c.range[0]} à ${c.range[1]}</li>`).join('')}</ol>
+
+  <h2>Points encore en attente</h2>
+  <ul>${DATA.pending.map((p) => `<li>${esc(p)}</li>`).join('')}</ul>
+
+  <h2>Sources officielles</h2>
+  ${sourcesList()}
+  <p class="small muted">Analyse établie le 11 octobre 2026 par READ FRANCE SAS. Information, pas un conseil juridique.</p>
+</section>`;
+
+// ---------------------------------------------------------------- Pages légales
+const mentionsBody = `
+<section class="wrap section prose">
+  <h1>Mentions légales</h1>
+  <h2>Éditeur</h2>
+  <p><strong>READ FRANCE SAS</strong>, société par actions simplifiée<br>
+  Siège social : 11 rue Rouvet, 75019 Paris, France<br>
+  SIREN 988 741 773 — RCS Paris 988 741 773<br>
+  Capital social : <em>à compléter</em><br>
+  Directeur de la publication : Tanguy Warsmann, président<br>
+  Contact : en attendant l'ouverture d'une adresse dédiée, par les <a href="${REPO}/issues">tickets (issues) du dépôt GitHub du site</a>. Ne publiez pas de données personnelles dans un ticket public.</p>
+  <p class="small muted">Données d'identification issues de l'annuaire des entreprises (recherche-entreprises.api.gouv.fr), consultées le 11 octobre 2026.</p>
+  <h2>Hébergeur</h2>
+  <p>GitHub, Inc. (GitHub Pages et GitHub Releases), 88 Colin P. Kelly Jr. Street, San Francisco, CA 94107, États-Unis — <a href="https://github.com">github.com</a>.</p>
+  <h2>Propriété intellectuelle</h2>
+  <p>Les textes, tableaux et modèles de ce site et du kit sont des créations originales de READ FRANCE SAS. Les textes officiels cités (décret, code du travail) sont accessibles sur Légifrance ; les reformulations proposées ne s'y substituent pas.</p>
+  <p>« Qualiopi » est une marque de l'État (ministère chargé de la formation professionnelle). Ce site et ce kit sont indépendants : ils ne sont ni édités, ni validés, ni approuvés par l'État, France compétences, le COFRAC ou un organisme certificateur, et n'utilisent pas le logo Qualiopi.</p>
+  <h2>Avertissement</h2>
+  <p>Les informations publiées ont une vocation pratique et informative. Elles ne constituent pas un conseil juridique et ne garantissent pas l'obtention ou le maintien d'une certification.</p>
+</section>`;
+
+const privacyBody = `
+<section class="wrap section prose">
+  <h1>Politique de confidentialité</h1>
+  <p><strong>En résumé : ce site ne collecte aucune donnée personnelle.</strong> Il n'utilise ni cookie, ni outil de mesure d'audience, ni traceur tiers, ni formulaire. C'est pourquoi aucun bandeau de consentement n'est affiché.</p>
+  <h2>Ce que fait l'éditeur</h2>
+  <p>READ FRANCE SAS ne dépose aucun cookie et ne reçoit aucune donnée vous concernant lorsque vous consultez ce site ou téléchargez l'échantillon. Le seul chiffre que nous consultons est le <strong>nombre total de téléchargements</strong> du fichier, fourni par GitHub de manière agrégée et anonyme.</p>
+  <h2>Ce que fait l'hébergeur</h2>
+  <p>Le site est hébergé par GitHub Pages et le fichier est distribué par GitHub Releases (GitHub, Inc.). Comme tout hébergeur, GitHub traite des données techniques de connexion (dont l'adresse IP) pour fournir le service et en assurer la sécurité, selon sa propre <a href="https://docs.github.com/fr/site-policy/privacy-policies/github-general-privacy-statement">déclaration de confidentialité</a>.</p>
+  <h2>Contact par ticket GitHub</h2>
+  <p>Si vous nous écrivez via un ticket (issue) GitHub, votre message et votre pseudonyme GitHub sont publics. N'y indiquez pas de données personnelles.</p>
+  <h2>Ventes futures</h2>
+  <p>La vente du kit complet n'est pas ouverte. Avant son ouverture, cette politique sera complétée (données de commande, prestataire de paiement, durées de conservation, droits d'accès, de rectification et d'effacement, réclamation auprès de la CNIL).</p>
+  <p class="small muted">Dernière mise à jour : 11 octobre 2026.</p>
+</section>`;
+
+const cgvBody = `
+<section class="wrap section prose">
+  <div class="callout callout-warn" role="note"><p><strong>Projet de conditions générales de vente — non applicable.</strong> Ce texte est en attente de validation par le président de READ FRANCE SAS. La vente du kit complet n'est pas ouverte et aucune commande ne peut être passée.</p></div>
+  <h1>Conditions générales de vente (projet)</h1>
+  <p class="small muted">Version projet « cgv-2026-10-projet » du 11 octobre 2026.</p>
+  <h2>1. Vendeur</h2>
+  <p>READ FRANCE SAS, 11 rue Rouvet, 75019 Paris — SIREN 988 741 773, RCS Paris — contact : voir les <a href="mentions-legales.html">mentions légales</a>.</p>
+  <h2>2. Produit</h2>
+  <p>« ${BRAND} » : contenu numérique téléchargeable (fichier ZIP) comprenant 4 synthèses (DOCX, ODT, PDF) et ${DATA.templates.length} modèles éditables (DOCX, ODT) relatifs au référentiel national qualité applicable au 1er novembre 2026. Les fichiers s'ouvrent avec un traitement de texte courant (Microsoft Word, LibreOffice) ; ils ne comportent aucun dispositif de protection technique (DRM).</p>
+  <p>Le kit est un outil d'information et d'organisation. Il ne constitue ni un conseil juridique, ni une prestation d'accompagnement, et ne garantit pas l'obtention ou le maintien d'une certification.</p>
+  <h2>3. Prix</h2>
+  <p>79 € TTC (soit 65,83 € HT et 13,17 € de TVA à 20 %), payable en une fois. Pas d'abonnement.</p>
+  <h2>4. Commande et paiement</h2>
+  <p>La commande est passée sur une page présentant les informations précontractuelles, puis payée par carte bancaire sur la page de paiement sécurisée de Stripe. Le bouton de validation porte la mention « Commander avec obligation de paiement ». Le contrat est conclu à la confirmation du paiement.</p>
+  <h2>5. Livraison</h2>
+  <p>Après paiement, un lien de téléchargement est affiché et envoyé par courrier électronique. Il est valable 72 heures et peut être renouvelé depuis la page de suivi de la commande. Une confirmation de commande reprenant ces conditions est adressée sur un support durable.</p>
+  <h2>6. Droit de rétractation</h2>
+  <p>Pour les acheteurs consommateurs, et les professionnels qui en bénéficient en application de l'article L. 221-3 du code de la consommation : conformément à l'article L. 221-28, 13° du code de la consommation, le droit de rétractation ne peut être exercé pour la fourniture d'un contenu numérique sans support matériel dont l'exécution a commencé avec l'accord préalable exprès de l'acheteur et son renoncement exprès à ce droit. Avant le paiement, l'acheteur coche une case distincte par laquelle il demande la mise à disposition immédiate du kit et renonce à son droit de rétractation. À défaut, la commande ne peut être passée.</p>
+  <h2>7. Garantie légale de conformité</h2>
+  <p>Les acheteurs consommateurs bénéficient de la garantie légale de conformité des contenus numériques (articles L. 224-25-12 et suivants du code de la consommation). En cas de défaut (fichier illisible ou incomplet), contactez le vendeur : le fichier sera remplacé ou, à défaut, le prix remboursé.</p>
+  <h2>8. Mises à jour</h2>
+  <p>Le kit sera mis à jour après la publication du nouveau guide de lecture officiel et des arrêtés d'application attendus. Les acheteurs pourront télécharger la mise à jour depuis leur page de commande pendant 12 mois après l'achat.</p>
+  <h2>9. Licence d'utilisation</h2>
+  <p>L'acheteur obtient une licence non exclusive d'utilisation interne pour son organisme (tous établissements compris) : il peut modifier les modèles et les utiliser pour ses besoins propres. La revente, la redistribution et la mise à disposition à des tiers sont interdites.</p>
+  <h2>10. Responsabilité</h2>
+  <p>Le vendeur met en œuvre ses meilleurs efforts pour que le contenu soit exact à sa date de version. Il ne saurait être tenu responsable du résultat d'un audit, de l'usage fait des modèles ni d'une évolution réglementaire postérieure. Le texte officiel et le guide de lecture font foi.</p>
+  <h2>11. Données personnelles</h2>
+  <p>Les données de commande (adresse électronique, nom, données de facturation) sont traitées pour exécuter la vente et respecter les obligations comptables. Le détail figurera dans la <a href="confidentialite.html">politique de confidentialité</a> avant l'ouverture des ventes.</p>
+  <h2>12. Médiation et droit applicable</h2>
+  <p>Médiateur de la consommation : <em>à désigner avant l'ouverture des ventes</em>. Droit français. En cas de litige avec un professionnel, compétence des tribunaux de Paris.</p>
+</section>`;
+
+const notFoundBody = `<section class="wrap section"><h1>Page introuvable</h1><p><a href="./">Retour à l'accueil du ${BRAND}</a></p></section>`;
+
+// ---------------------------------------------------------------- Écriture
+mkdirSync(OUT, { recursive: true });
+const pages = [
+  { path: '', file: 'index.html', title: 'Kit Qualiopi V10 — nouveau référentiel 2026, 33 indicateurs : check-list et modèles', description: `Préparez le référentiel Qualiopi applicable au 1er novembre 2026 (décret 2026-728, 33 indicateurs) : tableau des changements V9 → V10, check-list des preuves, ${DATA.templates.length} modèles Word et LibreOffice. Échantillon gratuit.`, body: indexBody, jsonld: [productLd, faqLd], priority: '1.0' },
+  { path: 'changements-v9-v10.html', file: 'changements-v9-v10.html', title: 'Qualiopi V10 : ce qui change au 1er novembre 2026, indicateur par indicateur', description: `Nouveau référentiel Qualiopi 2026 : les ${modifiedNums.length} indicateurs modifiés et le nouvel indicateur 33, avant / après et actions à mener. Sources officielles (décret n° 2026-728).`, body: changesBody, jsonld: [{ '@context': 'https://schema.org', '@type': 'Article', headline: 'Qualiopi V10 : tableau des changements du référentiel au 1er novembre 2026', datePublished: LASTMOD, dateModified: LASTMOD, inLanguage: 'fr', author: { '@type': 'Organization', name: 'READ FRANCE SAS' }, publisher: { '@type': 'Organization', name: 'READ FRANCE SAS' } }], priority: '0.9' },
+  { path: 'mentions-legales.html', file: 'mentions-legales.html', title: 'Mentions légales — Kit Qualiopi V10', description: 'Éditeur, hébergeur et propriété intellectuelle du site Kit Qualiopi V10 (READ FRANCE SAS).', body: mentionsBody, priority: '0.2' },
+  { path: 'confidentialite.html', file: 'confidentialite.html', title: 'Confidentialité — Kit Qualiopi V10', description: 'Aucun cookie, aucun traceur, aucune donnée personnelle collectée par le site Kit Qualiopi V10.', body: privacyBody, priority: '0.2' },
+  { path: 'cgv.html', file: 'cgv.html', title: 'Conditions générales de vente (projet) — Kit Qualiopi V10', description: 'Projet de conditions générales de vente du Kit Qualiopi V10, en attente de validation ; ventes non ouvertes.', body: cgvBody, priority: '0.2' },
+];
+for (const p of pages) writeFileSync(join(OUT, p.file), layout(p));
+writeFileSync(join(OUT, '404.html'), layout({ path: '404.html', title: 'Page introuvable — Kit Qualiopi V10', description: 'Page introuvable.', body: notFoundBody, noindex: true }));
+writeFileSync(join(OUT, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${pages.map((p) => `  <url><loc>${SITE}${p.path}</loc><lastmod>${LASTMOD}</lastmod><priority>${p.priority}</priority></url>`).join('\n')}
+</urlset>
+`);
+writeFileSync(join(OUT, 'robots.txt'), `User-agent: *\nAllow: /\nSitemap: ${SITE}sitemap.xml\n`);
+writeFileSync(join(OUT, '.nojekyll'), '');
+for (const f of ['styles.css', 'favicon.svg']) copyFileSync(join(ROOT, 'src', f), join(OUT, f));
+if (existsSync(join(ROOT, 'src/og.png'))) copyFileSync(join(ROOT, 'src/og.png'), join(OUT, 'og.png'));
+console.log(`site généré dans docs/ (${pages.length + 1} pages) — échantillon : ${SAMPLE_URL}`);

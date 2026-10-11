@@ -1,0 +1,594 @@
+{
+  "version": "1.0.0",
+  "date": "2026-10-11",
+  "sources": [
+    {
+      "id": "decret-2026-728",
+      "label": "Décret n° 2026-728 du 1er août 2026 relatif au référentiel national sur la qualité des actions concourant au développement des compétences (JORF n° 0180 du 4 août 2026, NOR TRSD2619632D) — entrée en vigueur le 1er novembre 2026",
+      "url": "https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000054608509"
+    },
+    {
+      "id": "annexe-2019",
+      "label": "Code du travail, annexe au chapitre VI du titre Ier du livre III de la sixième partie (référentiel issu du décret n° 2019-565 du 6 juin 2019), en vigueur du 1er janvier 2021 au 1er novembre 2026",
+      "url": "https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000038591641"
+    },
+    {
+      "id": "decret-2019-565",
+      "label": "Décret n° 2019-565 du 6 juin 2019 relatif au référentiel national sur la qualité des actions concourant au développement des compétences",
+      "url": "https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000038565259"
+    },
+    {
+      "id": "arrete-audit",
+      "label": "Arrêté du 6 juin 2019 relatif aux modalités d'audit associées au référentiel national (article D. 6316-1-1 du code du travail), modifié",
+      "url": "https://www.legifrance.gouv.fr/loda/id/JORFTEXT000038565293"
+    },
+    {
+      "id": "fc-deliberation",
+      "label": "France compétences, délibération du conseil d'administration n° 2026-07-26 (avis favorable sur le projet de décret, 15 juillet 2026)",
+      "url": "https://www.francecompetences.fr/app/uploads/2026/08/Deliberation_26_Avis_decret_Qualiopi.pdf"
+    }
+  ],
+  "pending": [
+    "Le nouveau guide de lecture officiel du référentiel (qui détaille les attendus et exemples de preuves par indicateur) n'était pas publié au 11 octobre 2026. Le guide de lecture version 9 (8 janvier 2024) reste la référence pour les audits menés jusqu'au 31 octobre 2026.",
+    "Les arrêtés prévus par les indicateurs 19 (nombre d'intervenants par formation au-delà duquel un référent pédagogique est exigé) et 20 (part minimale d'heures assurées par des intervenants permanents) n'étaient pas publiés au 11 octobre 2026.",
+    "Les modalités de transition pour les certificats en cours (audits de surveillance et de renouvellement après le 1er novembre 2026) doivent être confirmées auprès de votre organisme certificateur."
+  ],
+  "criteria": [
+    {
+      "n": 1,
+      "title": "Information du public sur les prestations, les délais d'accès et les résultats obtenus",
+      "range": [
+        1,
+        3
+      ]
+    },
+    {
+      "n": 2,
+      "title": "Identification précise des objectifs et adaptation des prestations aux publics dès leur conception",
+      "range": [
+        4,
+        8
+      ]
+    },
+    {
+      "n": 3,
+      "title": "Adaptation de l'accueil, de l'accompagnement, du suivi et de l'évaluation aux publics",
+      "range": [
+        9,
+        16
+      ]
+    },
+    {
+      "n": 4,
+      "title": "Adéquation des moyens pédagogiques, techniques et d'encadrement",
+      "range": [
+        17,
+        20
+      ]
+    },
+    {
+      "n": 5,
+      "title": "Qualification et développement des connaissances et compétences des personnels",
+      "range": [
+        21,
+        22
+      ]
+    },
+    {
+      "n": 6,
+      "title": "Inscription et investissement du prestataire dans son environnement professionnel",
+      "range": [
+        23,
+        29
+      ]
+    },
+    {
+      "n": 7,
+      "title": "Recueil et prise en compte des appréciations et des réclamations des parties prenantes",
+      "range": [
+        30,
+        33
+      ]
+    }
+  ],
+  "indicators": [
+    {
+      "n": 1,
+      "critere": 1,
+      "titre": "Information publique détaillée, vérifiable et non trompeuse",
+      "scope": "Tous les prestataires",
+      "change": "modifie",
+      "changeLabel": "Modifié",
+      "v9": "Information accessible au public, détaillée et vérifiable : prérequis, objectifs, durée, modalités et délais d'accès, tarifs, contacts, méthodes mobilisées, modalités d'évaluation, accessibilité aux personnes handicapées.",
+      "v10": "Même exigence de base, élargie : le type de reconnaissance obtenue (certification, attestation…), les modalités pédagogiques et les financements possibles doivent aussi être présentés. Le texte ajoute que la communication ne doit pas induire le public en erreur, notamment sur l'accès, le contenu, le financement ou les droits à poursuite d'études.",
+      "action": "Relire chaque fiche programme, le site et les plaquettes : chaque affirmation (taux, financement « 100 % pris en charge », débouchés) doit pouvoir être prouvée par un document daté."
+    },
+    {
+      "n": 2,
+      "critere": 1,
+      "titre": "Indicateurs de résultats avec mode de calcul transparent",
+      "scope": "Tous les prestataires",
+      "change": "modifie",
+      "changeLabel": "Modifié",
+      "v9": "Diffusion d'indicateurs de résultats adaptés à la nature des prestations et des publics.",
+      "v10": "Les indicateurs de résultats restent adaptés aux prestations et aux publics, mais leur mode de calcul doit être exposé de manière transparente, ou s'appuyer sur des dispositifs existants (indicateurs déjà publiés par ailleurs, par exemple pour l'apprentissage).",
+      "action": "Pour chaque taux publié, écrire à côté : période, effectif de référence, numérateur, dénominateur, date de mise à jour."
+    },
+    {
+      "n": 3,
+      "critere": 1,
+      "titre": "Information sur la certification préparée et les suites de parcours",
+      "scope": "Prestations préparant à une certification professionnelle",
+      "change": "modifie",
+      "changeLabel": "Modifié",
+      "v9": "Pour les formations certifiantes : taux d'obtention, possibilité de valider des blocs de compétences, équivalences, passerelles, suites de parcours et débouchés.",
+      "v10": "Mêmes informations, avec une insistance explicite sur les poursuites d'études. L'indicateur ne s'applique qu'aux prestations qui conduisent à une certification professionnelle.",
+      "action": "Ajouter dans chaque fiche certifiante un encadré « Après la formation » : blocs, équivalences, passerelles, poursuites d'études possibles, débouchés, avec le lien vers la fiche France compétences (RNCP ou RS)."
+    },
+    {
+      "n": 4,
+      "critere": 2,
+      "titre": "Analyse du besoin avec l'entreprise et/ou le financeur",
+      "scope": "Tous les prestataires",
+      "change": "identique",
+      "changeLabel": "Inchangé sur le fond"
+    },
+    {
+      "n": 5,
+      "critere": 2,
+      "titre": "Objectifs opérationnels et évaluables",
+      "scope": "Tous les prestataires",
+      "change": "identique",
+      "changeLabel": "Inchangé sur le fond"
+    },
+    {
+      "n": 6,
+      "critere": 2,
+      "titre": "Contenus et modalités adaptés aux objectifs et aux publics",
+      "scope": "Tous les prestataires",
+      "change": "identique",
+      "changeLabel": "Inchangé sur le fond"
+    },
+    {
+      "n": 7,
+      "critere": 2,
+      "titre": "Adéquation à la certification et capacité à la délivrer",
+      "scope": "Prestations préparant à une certification professionnelle",
+      "change": "modifie",
+      "changeLabel": "Modifié",
+      "v9": "Pour les formations certifiantes : adéquation du ou des contenus aux exigences de la certification visée.",
+      "v10": "En plus de l'adéquation des contenus, le prestataire doit être en mesure de démontrer sa capacité à préparer et faire passer la certification, y compris lorsqu'il agit comme organisme habilité par le certificateur.",
+      "action": "Constituer un dossier par certification : référentiel officiel, tableau de correspondance contenus / compétences, convention ou habilitation avec le certificateur."
+    },
+    {
+      "n": 8,
+      "critere": 2,
+      "titre": "Positionnement et évaluation des acquis à l'entrée",
+      "scope": "Tous les prestataires",
+      "change": "identique",
+      "changeLabel": "Inchangé sur le fond"
+    },
+    {
+      "n": 9,
+      "critere": 3,
+      "titre": "Information des bénéficiaires sur le déroulement",
+      "scope": "Tous les prestataires",
+      "change": "identique",
+      "changeLabel": "Inchangé sur le fond"
+    },
+    {
+      "n": 10,
+      "critere": 3,
+      "titre": "Adaptation de la prestation, de l'accompagnement et du suivi",
+      "scope": "Tous les prestataires",
+      "change": "identique",
+      "changeLabel": "Inchangé sur le fond"
+    },
+    {
+      "n": 11,
+      "critere": 3,
+      "titre": "Évaluation de l'atteinte des objectifs",
+      "scope": "Tous les prestataires",
+      "change": "identique",
+      "changeLabel": "Inchangé sur le fond"
+    },
+    {
+      "n": 12,
+      "critere": 3,
+      "titre": "Engagement, prévention des ruptures et des violences, harcèlement et discriminations",
+      "scope": "Tous les prestataires",
+      "change": "modifie",
+      "changeLabel": "Modifié",
+      "v9": "Description et mise en œuvre de mesures pour favoriser l'engagement des bénéficiaires et prévenir les ruptures de parcours.",
+      "v10": "Les mesures d'engagement et de prévention des abandons restent exigées. S'y ajoute l'obligation de s'assurer de la prévention et du traitement de toute situation de violence (y compris sexiste et sexuelle), de harcèlement ou de discrimination pendant la prestation.",
+      "action": "Formaliser une procédure écrite : information des bénéficiaires, canal de signalement, personne référente, délais de traitement, mesures de protection, registre confidentiel. Pour les organismes en distanciel : prévoir aussi les situations en ligne (messagerie, classes virtuelles)."
+    },
+    {
+      "n": 13,
+      "critere": 3,
+      "titre": "Coordination centre de formation / entreprise en alternance",
+      "scope": "Formations en alternance",
+      "change": "identique",
+      "changeLabel": "Inchangé sur le fond"
+    },
+    {
+      "n": 14,
+      "critere": 3,
+      "titre": "Accompagnement socio-professionnel et traitement des ruptures sensibles (CFA)",
+      "scope": "CFA (actions de formation par apprentissage)",
+      "change": "modifie",
+      "changeLabel": "Modifié",
+      "v9": "Accompagnement socio-professionnel, éducatif et relatif à l'exercice de la citoyenneté.",
+      "v10": "Le même accompagnement est exigé. Le CFA doit en plus disposer d'une procédure de traitement sans délai des situations de rupture liées à des difficultés, des violences ou des discriminations, que ces situations surviennent en formation ou dans l'entreprise d'accueil.",
+      "action": "Écrire la procédure « rupture sensible » : qui est alerté, en combien de temps, quelles mesures conservatoires, quel suivi de l'apprenant, quelle information de l'entreprise et des autorités compétentes."
+    },
+    {
+      "n": 15,
+      "critere": 3,
+      "titre": "Information des apprentis : droits, devoirs, sécurité, signalement (CFA)",
+      "scope": "CFA (actions de formation par apprentissage)",
+      "change": "modifie",
+      "changeLabel": "Modifié",
+      "v9": "Information des apprentis sur leurs droits et devoirs en tant qu'apprentis et salariés, et sur les règles de santé et sécurité en milieu professionnel.",
+      "v10": "S'y ajoutent : les règles de santé et sécurité renforcées pour les apprentis mineurs, les dispositifs de signalement et les interlocuteurs à contacter, les coordonnées du médiateur de l'apprentissage, et le signalement des dysfonctionnements à l'inspection du travail.",
+      "action": "Mettre à jour le livret de l'apprenti avec une page « En cas de problème » : qui contacter, médiateur de l'apprentissage (coordonnées de la chambre consulaire compétente), inspection du travail."
+    },
+    {
+      "n": 16,
+      "critere": 3,
+      "titre": "Présentation à la certification conforme aux exigences du certificateur",
+      "scope": "Prestations préparant à une certification professionnelle",
+      "change": "identique",
+      "changeLabel": "Inchangé sur le fond"
+    },
+    {
+      "n": 17,
+      "critere": 4,
+      "titre": "Moyens humains et techniques, environnement adapté",
+      "scope": "Tous les prestataires",
+      "change": "identique",
+      "changeLabel": "Inchangé sur le fond"
+    },
+    {
+      "n": 18,
+      "critere": 4,
+      "titre": "Coordination des intervenants",
+      "scope": "Tous les prestataires",
+      "change": "identique",
+      "changeLabel": "Inchangé sur le fond"
+    },
+    {
+      "n": 19,
+      "critere": 4,
+      "titre": "Ressources pédagogiques, suivi effectif à distance, référent pédagogique",
+      "scope": "Tous les prestataires",
+      "change": "modifie",
+      "changeLabel": "Modifié",
+      "v9": "Mise à disposition de ressources pédagogiques et appropriation de celles-ci par le bénéficiaire.",
+      "v10": "Le prestataire doit vérifier que les ressources sont effectivement appropriées par les bénéficiaires et, pour les modules à distance, contrôler le suivi réel. Au-delà d'un nombre d'intervenants par formation fixé par arrêté (non publié au 11/10/2026), un référent pédagogique doit être désigné pour chaque formation.",
+      "action": "Pour le distanciel : définir ce qui prouve la progression réelle (exercices rendus, quiz, échanges tutoraux), pas seulement le temps de connexion. Recenser les formations à plusieurs intervenants et désigner dès maintenant un référent pédagogique."
+    },
+    {
+      "n": 20,
+      "critere": 4,
+      "titre": "Mobilité, référent handicap, conseil de perfectionnement, gouvernance (CFA)",
+      "scope": "CFA (actions de formation par apprentissage)",
+      "change": "modifie",
+      "changeLabel": "Modifié",
+      "v9": "Personnel dédié à l'appui à la mobilité nationale et internationale, référent handicap et conseil de perfectionnement.",
+      "v10": "Mêmes exigences, plus la participation des parties prenantes à la gouvernance. Si la part d'heures d'enseignement assurées par des intervenants permanents est inférieure à un seuil fixé par arrêté (non publié au 11/10/2026), une supervision pédagogique renforcée doit être mise en place.",
+      "action": "Calculer dès maintenant la part d'heures assurées par des intervenants permanents et documenter la supervision pédagogique existante."
+    },
+    {
+      "n": 21,
+      "critere": 5,
+      "titre": "Compétences des intervenants : définies, mobilisées, évaluées",
+      "scope": "Tous les prestataires",
+      "change": "identique",
+      "changeLabel": "Inchangé sur le fond"
+    },
+    {
+      "n": 22,
+      "critere": 5,
+      "titre": "Développement des compétences des salariés",
+      "scope": "Tous les prestataires",
+      "change": "identique",
+      "changeLabel": "Inchangé sur le fond"
+    },
+    {
+      "n": 23,
+      "critere": 6,
+      "titre": "Veille légale et réglementaire",
+      "scope": "Tous les prestataires",
+      "change": "identique",
+      "changeLabel": "Inchangé sur le fond"
+    },
+    {
+      "n": 24,
+      "critere": 6,
+      "titre": "Veille sur les compétences, métiers et emplois",
+      "scope": "Tous les prestataires",
+      "change": "identique",
+      "changeLabel": "Inchangé sur le fond"
+    },
+    {
+      "n": 25,
+      "critere": 6,
+      "titre": "Veille sur les innovations pédagogiques et technologiques",
+      "scope": "Tous les prestataires",
+      "change": "identique",
+      "changeLabel": "Inchangé sur le fond"
+    },
+    {
+      "n": 26,
+      "critere": 6,
+      "titre": "Accueil et accompagnement des personnes en situation de handicap",
+      "scope": "Tous les prestataires",
+      "change": "identique",
+      "changeLabel": "Inchangé sur le fond"
+    },
+    {
+      "n": 27,
+      "critere": 6,
+      "titre": "Sous-traitance et portage salarial : conformité tracée dans les contrats",
+      "scope": "En cas de sous-traitance ou de portage salarial",
+      "change": "modifie",
+      "changeLabel": "Modifié",
+      "v9": "En cas de sous-traitance ou de portage salarial, le prestataire s'assure du respect de la conformité au référentiel.",
+      "v10": "Le prestataire doit toujours veiller à la conformité au référentiel de ses sous-traitants et portés, et doit désormais en assurer la traçabilité dans les contrats.",
+      "action": "Ajouter à chaque contrat de sous-traitance ou de portage une clause qualité et une annexe listant les obligations et preuves attendues."
+    },
+    {
+      "n": 28,
+      "critere": 6,
+      "titre": "Partenaires socio-économiques pour les périodes en situation de travail",
+      "scope": "Prestations avec périodes de formation en situation de travail",
+      "change": "identique",
+      "changeLabel": "Inchangé sur le fond"
+    },
+    {
+      "n": 29,
+      "critere": 6,
+      "titre": "Insertion professionnelle et poursuite d'études (CFA)",
+      "scope": "CFA (actions de formation par apprentissage)",
+      "change": "identique",
+      "changeLabel": "Inchangé sur le fond"
+    },
+    {
+      "n": 30,
+      "critere": 7,
+      "titre": "Recueil des appréciations des parties prenantes",
+      "scope": "Tous les prestataires",
+      "change": "mineur",
+      "changeLabel": "Ajustement mineur"
+    },
+    {
+      "n": 31,
+      "critere": 7,
+      "titre": "Traitement des difficultés, réclamations et aléas",
+      "scope": "Tous les prestataires",
+      "change": "identique",
+      "changeLabel": "Inchangé sur le fond"
+    },
+    {
+      "n": 32,
+      "critere": 7,
+      "titre": "Démarche d'amélioration continue et analyse des risques qualité",
+      "scope": "Tous les prestataires",
+      "change": "modifie",
+      "changeLabel": "Modifié",
+      "v9": "Mise en œuvre de mesures d'amélioration à partir de l'analyse des appréciations et des réclamations.",
+      "v10": "On passe de « mesures d'amélioration » à une véritable démarche d'amélioration continue fondée sur l'analyse des appréciations et des réclamations, complétée par une analyse des risques portant sur la qualité des formations.",
+      "action": "Tenir un plan d'amélioration (constat → action → responsable → échéance → efficacité) et une cartographie des risques qualité revue au moins une fois par an."
+    },
+    {
+      "n": 33,
+      "critere": 7,
+      "titre": "Évaluation des contenus et des enseignements par les apprenants",
+      "scope": "CFA (actions de formation par apprentissage)",
+      "change": "nouveau",
+      "changeLabel": "NOUVEAU",
+      "v9": "— (indicateur inexistant)",
+      "v10": "Nouvel indicateur : mise en place d'un dispositif d'évaluation des contenus et des enseignements par les apprenants, distinct du recueil général de satisfaction, dont les résultats sont partagés avec les équipes pédagogiques et suivis d'actions d'amélioration dont l'efficacité est mesurée périodiquement. Les analyses publiées le rattachent aux CFA : vérifiez la colonne d'application dans l'annexe officielle.",
+      "action": "Créer un questionnaire d'évaluation des enseignements (par module et par intervenant), distinct du questionnaire de satisfaction, et un circuit de restitution aux équipes."
+    }
+  ],
+  "templates": [
+    {
+      "id": "T01",
+      "title": "Fiche programme de formation",
+      "indicators": [
+        1,
+        3,
+        5,
+        6
+      ],
+      "sample": false
+    },
+    {
+      "id": "T02",
+      "title": "Tableau des indicateurs de résultats et note de calcul",
+      "indicators": [
+        2,
+        3
+      ],
+      "sample": false
+    },
+    {
+      "id": "T03",
+      "title": "Questionnaire d'analyse du besoin",
+      "indicators": [
+        4
+      ],
+      "sample": false
+    },
+    {
+      "id": "T04",
+      "title": "Positionnement et évaluation des acquis à l'entrée",
+      "indicators": [
+        8
+      ],
+      "sample": false
+    },
+    {
+      "id": "T05",
+      "title": "Convocation et livret d'accueil",
+      "indicators": [
+        9,
+        17
+      ],
+      "sample": false
+    },
+    {
+      "id": "T06",
+      "title": "Suivi individuel et évaluation des acquis",
+      "indicators": [
+        10,
+        11
+      ],
+      "sample": false
+    },
+    {
+      "id": "T07",
+      "title": "Procédure de prévention des ruptures et des violences, harcèlement et discriminations",
+      "indicators": [
+        12,
+        14
+      ],
+      "sample": true
+    },
+    {
+      "id": "T08",
+      "title": "Livret de l'apprenti et liaison centre / entreprise (CFA)",
+      "indicators": [
+        13,
+        14,
+        15
+      ],
+      "sample": false
+    },
+    {
+      "id": "T09",
+      "title": "Ressources pédagogiques, suivi du distanciel et référent pédagogique",
+      "indicators": [
+        19
+      ],
+      "sample": false
+    },
+    {
+      "id": "T10",
+      "title": "Rôles, compétences et développement des intervenants",
+      "indicators": [
+        18,
+        21,
+        22
+      ],
+      "sample": false
+    },
+    {
+      "id": "T11",
+      "title": "Registre de veille (légale, métiers, pédagogique)",
+      "indicators": [
+        23,
+        24,
+        25
+      ],
+      "sample": false
+    },
+    {
+      "id": "T12",
+      "title": "Procédure d'accueil des personnes en situation de handicap",
+      "indicators": [
+        26
+      ],
+      "sample": false
+    },
+    {
+      "id": "T13",
+      "title": "Clause et annexe qualité pour la sous-traitance et le portage salarial",
+      "indicators": [
+        27
+      ],
+      "sample": true
+    },
+    {
+      "id": "T14",
+      "title": "Questionnaires d'appréciation des parties prenantes",
+      "indicators": [
+        30
+      ],
+      "sample": false
+    },
+    {
+      "id": "T15",
+      "title": "Procédure et registre des réclamations, difficultés et aléas",
+      "indicators": [
+        31
+      ],
+      "sample": false
+    },
+    {
+      "id": "T16",
+      "title": "Plan d'amélioration continue et analyse des risques qualité",
+      "indicators": [
+        32
+      ],
+      "sample": true
+    },
+    {
+      "id": "T17",
+      "title": "Évaluation des contenus et des enseignements par les apprenants",
+      "indicators": [
+        33
+      ],
+      "sample": false
+    },
+    {
+      "id": "T18",
+      "title": "Dossier certification : correspondance, habilitation, inscription",
+      "indicators": [
+        3,
+        7,
+        16
+      ],
+      "sample": false
+    },
+    {
+      "id": "T19",
+      "title": "Gouvernance, partenaires et insertion (CFA)",
+      "indicators": [
+        20,
+        28,
+        29
+      ],
+      "sample": false
+    }
+  ],
+  "docs": [
+    {
+      "id": "D00",
+      "title": "Lisez-moi : contenu du kit et mode d'emploi",
+      "sample": true
+    },
+    {
+      "id": "D01",
+      "title": "Tableau des changements : référentiel 2019 (« V9 ») → référentiel 2026 (« V10 »)",
+      "sample": true
+    },
+    {
+      "id": "D02",
+      "title": "Check-list des preuves attendues pour les 33 indicateurs",
+      "sample": false
+    },
+    {
+      "id": "D03",
+      "title": "Check-list de préparation de l'audit",
+      "sample": false
+    },
+    {
+      "id": "D04",
+      "title": "Plan d'action en 21 jours pour passer au référentiel 2026",
+      "sample": false
+    }
+  ]
+}
