@@ -176,7 +176,7 @@ const indexBody = `
       </div>` : `<div class="offer offer-soon">
         <p class="offer-label">Ouverture des ventes prochainement</p>
         <h3>Kit complet</h3>
-        <p class="price">79 € TTC</p>
+        <p class="price">${PRICE.std ? '79 € TTC' : '79 € <small>(TVA non applicable, art. 293 B du CGI)</small>'}</p>
         <p>4 synthèses + ${DATA.templates.length} modèles, téléchargement immédiat après paiement, mise à jour après la publication du guide de lecture officiel. Achat unique, pas d'abonnement.</p>
         <p class="soon" role="note">La vente n'est pas encore ouverte : aucun paiement n'est possible pour l'instant. Pour être prévenu, suivez les <a href="${REPO}/releases">publications du dépôt GitHub</a> (Watch → Custom → Releases).</p>
       </div>`}
@@ -287,7 +287,8 @@ const mentionsBody = `
   <p><strong>READ FRANCE SAS</strong>, société par actions simplifiée<br>
   Siège social : 11 rue Rouvet, 75019 Paris, France<br>
   SIREN 988 741 773 — RCS Paris 988 741 773<br>
-  Capital social : <em>à compléter</em><br>
+  Capital social : 1 000 €<br>
+  ${PRICE.std ? 'N° TVA intracommunautaire : FR57988741773' : 'TVA non applicable, art. 293 B du CGI (franchise en base)'}<br>
   Directeur de la publication : Tanguy Warsmann, président<br>
   Contact : en attendant l'ouverture d'une adresse dédiée, par les <a href="${REPO}/issues">tickets (issues) du dépôt GitHub du site</a>. Ne publiez pas de données personnelles dans un ticket public.</p>
   <p class="small muted">Données d'identification issues de l'annuaire des entreprises (recherche-entreprises.api.gouv.fr), consultées le 11 octobre 2026.</p>
@@ -365,7 +366,7 @@ const pages = [
   { path: 'changements-v9-v10.html', file: 'changements-v9-v10.html', title: 'Qualiopi V10 : ce qui change au 1er novembre 2026, indicateur par indicateur', description: `Nouveau référentiel Qualiopi 2026 : les ${modifiedNums.length} indicateurs modifiés et le nouvel indicateur 33, avant / après et actions à mener. Sources officielles (décret n° 2026-728).`, body: changesBody, jsonld: [{ '@context': 'https://schema.org', '@type': 'Article', headline: 'Qualiopi V10 : tableau des changements du référentiel au 1er novembre 2026', datePublished: LASTMOD, dateModified: LASTMOD, inLanguage: 'fr', author: { '@type': 'Organization', name: 'READ FRANCE SAS' }, publisher: { '@type': 'Organization', name: 'READ FRANCE SAS' } }], priority: '0.9' },
   { path: 'mentions-legales.html', file: 'mentions-legales.html', title: 'Mentions légales — Kit Qualiopi V10', description: 'Éditeur, hébergeur et propriété intellectuelle du site Kit Qualiopi V10 (READ FRANCE SAS).', body: mentionsBody, priority: '0.2' },
   { path: 'confidentialite.html', file: 'confidentialite.html', title: 'Confidentialité — Kit Qualiopi V10', description: 'Aucun cookie, aucun traceur, aucune donnée personnelle collectée par le site Kit Qualiopi V10.', body: privacyBody, priority: '0.2' },
-  { path: 'cgv-pro.html', file: 'cgv-pro.html', title: 'Conditions générales de vente aux professionnels — Kit Qualiopi V10', description: 'CGV B2B du Kit Qualiopi V10 (READ FRANCE SAS), version du 12 octobre 2026 : vente aux professionnels, prix HT et TTC, paiement Stripe, livraison par e-mail, licence, facturation.', body: cgvProPage, priority: '0.2', noindex: !OPEN },
+  { path: 'cgv-pro.html', file: 'cgv-pro.html', title: 'Conditions générales de vente aux professionnels — Kit Qualiopi V10', description: 'CGV B2B du Kit Qualiopi V10 (READ FRANCE SAS), version du 12 octobre 2026 : vente aux professionnels, prix, paiement Stripe, livraison par e-mail, licence, facturation.', body: cgvProPage, priority: '0.2', noindex: !OPEN },
   { path: 'cgv.html', file: 'cgv.html', title: 'Conditions générales de vente — Kit Qualiopi V10', description: 'Le Kit Qualiopi V10 est vendu uniquement aux professionnels : voir les conditions générales de vente aux professionnels.', body: cgvBody, priority: '0.1', noindex: true },
   ...(OPEN
     ? [

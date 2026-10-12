@@ -18,7 +18,7 @@ const ROOT = resolve(import.meta.dirname, '..');
 const BUILD = ['scripts/build.mjs'];
 const SITE_PREFIX = ''; // pages are served at the root of OUT
 const PRODUCT = 'kit-qualiopi-v10';
-const PRICE_RE = /79,00\s€ TTC, soit 65,83\s€ HT et 13,17\s€ de TVA/;
+const PRICE_RE = /79,00\s€ net de taxe \(TVA non applicable, art\. 293 B du CGI\)/;
 const SOON_RE = /La vente n'est pas encore ouverte/;
 const DISCLAIMER_RE = /ne garantit pas l'obtention, le maintien ou le renouvellement de la certification Qualiopi/;
 const BUY_MARKERS = [/js\.stripe\.com/, /commander\.html/, /commande\.html/, /checkout-config/, /octave-pay/, /pk_(live|test)_/, /script\.google\.com/];
@@ -92,7 +92,7 @@ test('B2B terms (cgv-pro.html): every required clause, version, review comment, 
   const text = html.replace(/<!--[\s\S]*?-->/g, '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ');
   for (const re of [
     /version du 12 octobre 2026/,
-    /READ FRANCE SAS, société par actions simplifiée/, /11 rue Rouvet, 75019 Paris/, /SIREN 988 741 773/, /RCS Paris/, /FR57988741773/, /Tanguy Warsmann/,
+    /READ FRANCE SAS, société par actions simplifiée \(SAS\) au capital de 1 000\s€/, /11 rue Rouvet, 75019 Paris/, /SIREN 988 741 773/, /RCS Paris/, /TVA non applicable, art\. 293 B du CGI/, /Tanguy Warsmann/,
     /Champ d’application et acceptation/, /professionnel/, /accepte expressément/,
     /fichier numérique/, /livré par courrier électronique/,
     PRICE_RE,
@@ -106,9 +106,17 @@ test('B2B terms (cgv-pro.html): every required clause, version, review comment, 
     /Données personnelles/, /CNIL/, /10 ans/,
     /droit français/, /compétence exclusive des tribunaux de Paris/,
   ]) assert.match(text, re, String(re));
+  if (repoConfig.VAT === 'franchise293B') assert.doesNotMatch(text, /TTC|toutes taxes comprises|FR57988741773|de TVA au taux/, 'franchise 293 B: no VAT wording in the B2B terms');
   assert.match(html, /READ FRANCE SAS/);
   assert.match(html, /<footer/);
   assert.match(html, /href="cgv-pro\.html"/);
+});
+
+test('mentions légales: share capital 1 000 € (no « à compléter »), VAT status matches the VAT mode', () => {
+  const text = read(build({ ...repoConfig, SALES_OPEN: false }), 'mentions-legales.html').replace(/<!--[\s\S]*?-->/g, '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ');
+  assert.match(text, /Capital social : 1 000\s€/);
+  assert.doesNotMatch(text, /à compléter|non affichés/);
+  if (repoConfig.VAT === 'franchise293B') assert.match(text, /TVA non applicable, art\. 293 B du CGI/);
 });
 
 let server, browser, openDir, base;

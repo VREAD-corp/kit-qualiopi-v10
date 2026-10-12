@@ -15,6 +15,8 @@ export const TERMS_DATE = '12 octobre 2026';
 export const SELLER = {
   name: 'READ FRANCE SAS',
   form: 'société par actions simplifiée (SAS)',
+  // Share capital: societe.com / RNE (SASU created on 07/05/2025), set on 2026-10-12.
+  capital: '1 000 €',
   address: '11 rue Rouvet, 75019 Paris, France',
   siren: '988 741 773',
   rcs: 'RCS Paris 988 741 773',
@@ -78,13 +80,14 @@ export function cgvProBody(p) {
   return `<!--
   CGV B2B rédigées par Octave (assistant IA de READ FRANCE SAS) le 12 octobre 2026.
   CE N'EST PAS UN CONSEIL JURIDIQUE : texte à faire relire par un avocat ou un juriste avant
-  l'ouverture des ventes (notamment : statut TVA, capital social, clauses de responsabilité et de licence).
+  l'ouverture des ventes (notamment : clauses de responsabilité et de licence). Statut TVA (franchise en base,
+  art. 293 B du CGI) et capital social (1 000 €) renseignés le 12 octobre 2026 sur décision du dirigeant.
 -->
 <h1>Conditions générales de vente aux professionnels</h1>
 <p class="small muted">${esc(p.productName)} — version du ${TERMS_DATE} (référence ${TERMS_VERSION}).</p>
 ${closed ? `<div class="callout callout-warn" role="note"><p><strong>Les ventes ne sont pas encore ouvertes.</strong> Ces conditions s’appliqueront aux commandes passées après leur ouverture. Aucune commande ni aucun paiement n’est possible pour l’instant.</p></div>` : ''}
 <h2>1. Vendeur</h2>
-<p>${SELLER.name}, ${SELLER.form}, dont le siège social est situé ${SELLER.address}, immatriculée sous le numéro SIREN ${SELLER.siren} (${SELLER.rcs})${pr.std ? `, numéro de TVA intracommunautaire ${SELLER.vatNumber}` : ''}, représentée par ${SELLER.president}, président (ci-après « le Vendeur »).</p>
+<p>${SELLER.name}, ${SELLER.form} au capital de ${SELLER.capital}, dont le siège social est situé ${SELLER.address}, immatriculée sous le numéro SIREN ${SELLER.siren} (${SELLER.rcs})${pr.std ? `, numéro de TVA intracommunautaire ${SELLER.vatNumber}` : ', bénéficiant de la franchise en base de TVA (TVA non applicable, art. 293 B du CGI)'}, représentée par ${SELLER.president}, président (ci-après « le Vendeur »).</p>
 <p>Contact : ${p.contact}. Voir aussi les <a href="${p.legalUrl}">mentions légales</a>.</p>
 <h2>2. Champ d’application et acceptation</h2>
 <p>Les présentes conditions générales de vente (« CGV ») s’appliquent exclusivement aux ventes du produit « ${esc(p.productName)} » conclues en ligne entre le Vendeur et un <strong>professionnel</strong> (ci-après « l’Acheteur ») : une entreprise immatriculée en France, identifiée par son numéro SIREN, qui commande pour les besoins de son activité professionnelle. Les ventes aux consommateurs ne sont pas proposées.</p>
@@ -93,7 +96,7 @@ ${closed ? `<div class="callout callout-warn" role="note"><p><strong>Les ventes 
 <p>${p.productDescription}</p>
 <p>Le produit est un <strong>fichier numérique</strong> (archive ZIP) livré par courrier électronique. Il ne comporte aucun support matériel ni dispositif technique de protection (DRM). L’Acheteur dispose du matériel et des logiciels courants nécessaires pour l’ouvrir (logiciel de décompression, traitement de texte).</p>
 <h2>4. Prix</h2>
-<p>Le prix est de <strong>${pr.sentence}</strong>, pour une licence (article 8). Il est payable en une fois, sans abonnement. Le prix applicable est celui affiché sur la page de commande au moment de la validation ; il est rappelé hors taxes et toutes taxes comprises avant le paiement et figure sur la facture.</p>
+<p>Le prix est de <strong>${pr.sentence}</strong>, pour une licence (article 8). Il est payable en une fois, sans abonnement. Le prix applicable est celui affiché sur la page de commande au moment de la validation ; ${pr.std ? 'il est rappelé hors taxes et toutes taxes comprises avant le paiement et figure sur la facture' : 'il est rappelé avant le paiement et figure sur la facture, qui porte la mention « TVA non applicable, art. 293 B du CGI » ; aucune TVA n’est facturée'}.</p>
 <h2>5. Commande et paiement</h2>
 <p>L’Acheteur renseigne sur la page « Commander » : son adresse électronique, la raison sociale et le SIREN de l’entreprise, son adresse de facturation, puis ses données de carte. Il valide en cliquant sur le bouton « Commander avec obligation de paiement ».</p>
 <p>Le paiement s’effectue <strong>par carte bancaire, au comptant, via le prestataire de paiement Stripe</strong> (Stripe Payments Europe, Ltd.). Les données de carte sont saisies dans un module sécurisé de Stripe ; le Vendeur n’y a jamais accès. Le contrat est formé à la confirmation du paiement par Stripe. En cas de refus du paiement, la commande n’est pas enregistrée.</p>
