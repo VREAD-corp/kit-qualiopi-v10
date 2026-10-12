@@ -133,7 +133,7 @@ ${p.disclaimer.map((d) => `<p>${d}</p>`).join('\n')}
 <p class="small muted">Version du ${TERMS_DATE}.</p>`;
 }
 
-/** Pay button text: `payLabel` with {prix} = the price (« 79 € », « 79,50 € »), same format as pay.js. */
+/** Pay button text: `payLabel` with {prix} = the price (« 129 € », « 129,50 € »), same format as pay.js. */
 export function payButtonText(payLabel, cents) {
   const s = cents % 100 === 0 ? String(cents / 100) : (cents / 100).toFixed(2).replace('.', ',');
   return (payLabel || 'Payer {prix}').replace('{prix}', `${s.replace(/\B(?=(\d{3})+(?!\d))/g, '\u202f')}\u00a0€`);

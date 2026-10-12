@@ -22,7 +22,7 @@ const SAMPLE_URL = `${REPO}/releases/download/${SAMPLE_TAG}/${SAMPLE_FILE}`;
 const LASTMOD = '2026-10-12';
 const PUBLISHED = '2026-10-11';
 const BRAND = 'Kit Qualiopi V10';
-// « Commander » button ({prix} = the price, e.g. « Payer 79 € et recevoir le kit Qualiopi V10 »).
+// « Commander » button ({prix} = the price, e.g. « Payer 129 € et recevoir le kit Qualiopi V10 »).
 const PAY_LABEL = 'Payer {prix} et recevoir le kit Qualiopi V10';
 
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -32,7 +32,7 @@ const modifiedNums = DATA.indicators.filter((i) => i.change === 'modifie').map((
 // Contact (remplace les tickets GitHub) et chrome du site (en-tête, pied de page, barre d'achat mobile).
 const CONTACT = 'octave@vread.fr';
 const MAILTO = `mailto:${CONTACT}`;
-// Prix affiché compact (« 79 € »), dérivé de sales.config.json (montant en centimes).
+// Prix affiché compact (« 129 € »), dérivé de sales.config.json (montant en centimes).
 const PRICE_TAG = `${SALES.amount % 100 === 0 ? SALES.amount / 100 : (SALES.amount / 100).toFixed(2).replace('.', ',')} €`;
 const STICKY_PAGES = new Set(['', 'changements-v9-v10.html']);
 // Pages de commande : même en-tête et pied de page que le site, sans le bouton « Commander » de l'en-tête.
@@ -288,7 +288,7 @@ const indexBody = `
   <div class="wrap section offer-grid">
     <div class="offer-copy">
       <p class="kicker">Tarif</p>
-      <h2 id="price-h">Moins qu'une heure de consultant</h2>
+      <h2 id="price-h">Tout le kit, en un seul achat</h2>
       <p class="lead">Un prix fixe pour tout le kit, sans abonnement. Vous gardez la main : les modèles se remplissent avec vos propres informations, à votre rythme.</p>
     </div>
     ${offerCard}

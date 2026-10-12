@@ -21,7 +21,7 @@ const ROOT = resolve(import.meta.dirname, '..');
 const BUILD = ['scripts/build.mjs'];
 const SITE_PREFIX = ''; // pages are served at the root of OUT
 const PRODUCT = 'kit-qualiopi-v10';
-const PRICE_RE = /79,00\s€ net de taxe \(TVA non applicable, art\. 293 B du CGI\)/;
+const PRICE_RE = /129,00\s€ net de taxe \(TVA non applicable, art\. 293 B du CGI\)/;
 const SOON_RE = /La vente n'est pas encore ouverte/;
 const DISCLAIMER_RE = /ne garantit pas l'obtention, le maintien ou le renouvellement de la certification Qualiopi/;
 const BUY_MARKERS = [/js\.stripe\.com/, /commander\.html/, /commande\.html/, /checkout-config/, /octave-pay/, /pk_(live|test)_/, /script\.google\.com/];
@@ -159,7 +159,7 @@ test('SALES_OPEN=true (test build): Commander page, order page, config, sitemap,
   assert.match(cmd, /<meta name="robots" content="noindex">/);
   assert.match(cmd, /Content-Security-Policy[^>]*js\.stripe\.com[^>]*script\.google\.com/);
   assert.match(cmd, /<script src="https:\/\/js\.stripe\.com\/v3\/"><\/script>/);
-  assert.match(cmd, /<button type="submit" id="pay-button" class="pay-button" disabled>Payer 79\u00a0€ et recevoir le kit Qualiopi V10<\/button>/);
+  assert.match(cmd, /<button type="submit" id="pay-button" class="pay-button" disabled>Payer 129\u00a0€ et recevoir le kit Qualiopi V10<\/button>/);
   assert.match(cmd, /id="payment-loading"[^>]*>Chargement du paiement sécurisé…</);
   assert.match(read(openDir, 'commande.html'), /id="order-status"/);
   assert.match(read(openDir, 'commande.html'), /<meta name="robots" content="noindex">/);
@@ -233,8 +233,8 @@ test('browser: form validates SIREN (Luhn) and billing address, then posts creat
     throw new Error(`${e.message}\n${consoleLines.join('\n')}`);
   });
   // Static price: the page never waits for (nor rewrites from) the catalog.
-  assert.match(await page.textContent('#product-price'), /^79,00\s€ net \(TVA non applicable/);
-  assert.equal(await page.textContent('#pay-button'), 'Payer 79\u00a0€ et recevoir le kit Qualiopi V10');
+  assert.match(await page.textContent('#product-price'), /^129,00\s€ net \(TVA non applicable/);
+  assert.equal(await page.textContent('#pay-button'), 'Payer 129\u00a0€ et recevoir le kit Qualiopi V10');
   assert.equal(await page.isEnabled('#pay-button'), true);
   assert.equal(await page.isHidden('#payment-loading'), true);
   await page.fill('input[name="email"]', 'achat@entreprise.example');

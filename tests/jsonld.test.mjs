@@ -1,6 +1,6 @@
 // Données structurées (schema.org JSON-LD) de la page d'accueil.
 //  - docs/index.html (build publié) : chaque bloc JSON-LD se parse ; WebPage publiée par l'Organization du hub (@id) ;
-//    Product + Offer 79.00 EUR InStock vers commander.html quand la vente est ouverte ; FAQPage.
+//    Product + Offer 129.00 EUR InStock vers commander.html quand la vente est ouverte ; FAQPage.
 //  - Build de test avec SALES_OPEN=false : ni Product ni Offer (pas de prix « disponible » affiché).
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
@@ -52,7 +52,7 @@ test('changements-v9-v10.html : Article, auteur et éditeur = référence @id', 
   noDuplicateOrg(items);
 });
 
-test('index.html : Product + Offer 79.00 EUR, InStock, vendeur = Organization', { skip: !config.SALES_OPEN && 'vente fermée' }, () => {
+test('index.html : Product + Offer 129.00 EUR, InStock, vendeur = Organization', { skip: !config.SALES_OPEN && 'vente fermée' }, () => {
   const items = jsonld(readFileSync(join(ROOT, 'docs', 'index.html'), 'utf8'));
   const [product] = byType(items, 'Product');
   assert.ok(product, 'Product présent');
@@ -64,7 +64,7 @@ test('index.html : Product + Offer 79.00 EUR, InStock, vendeur = Organization', 
   assert.ok(product.description.length > 50);
   const o = product.offers;
   assert.equal(o['@type'], 'Offer');
-  assert.equal(o.price, '79.00');
+  assert.equal(o.price, '129.00');
   assert.equal(o.price, (config.amount / 100).toFixed(2), 'prix dérivé de sales.config.json');
   assert.equal(o.priceCurrency, 'EUR');
   assert.equal(o.availability, 'https://schema.org/InStock');
