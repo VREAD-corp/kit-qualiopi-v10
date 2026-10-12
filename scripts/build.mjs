@@ -17,7 +17,8 @@ const REPO = 'https://github.com/VREAD-corp/kit-qualiopi-v10';
 const SAMPLE_TAG = `echantillon-v${DATA.version}`;
 const SAMPLE_FILE = `kit-qualiopi-v10-echantillon-${DATA.version}.zip`;
 const SAMPLE_URL = `${REPO}/releases/download/${SAMPLE_TAG}/${SAMPLE_FILE}`;
-const LASTMOD = '2026-10-11';
+const LASTMOD = '2026-10-12';
+const PUBLISHED = '2026-10-11';
 const BRAND = 'Kit Qualiopi V10';
 
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -109,6 +110,7 @@ const indexBody = `
     <p class="lead">Le décret n° 2026-728 modifie ${modifiedNums.length} indicateurs et en crée un 33e. Ce kit vous dit, indicateur par indicateur, quelles preuves préparer, et vous donne ${DATA.templates.length} modèles éditables (Word et LibreOffice) pour les produire.</p>
     <div class="cta">
       ${downloadBtn()}
+      ${OPEN ? `<a class="btn btn-ghost" href="commander.html">Commander le kit complet<span class="btn-sub">${PRICE.short} · TVA non applicable, art. 293 B du CGI</span></a>` : ''}
       <a class="btn btn-ghost" href="changements-v9-v10.html">Voir ce qui change (V9 → V10)</a>
     </div>
     <p class="note">L'échantillon contient le tableau complet des changements et 3 modèles : procédure violences et ruptures (ind. 12), clause qualité de sous-traitance (ind. 27), amélioration continue et analyse des risques (ind. 32).</p>
@@ -176,7 +178,7 @@ const indexBody = `
       </div>` : `<div class="offer offer-soon">
         <p class="offer-label">Ouverture des ventes prochainement</p>
         <h3>Kit complet</h3>
-        <p class="price">${PRICE.std ? '79 € TTC' : '79 € <small>(TVA non applicable, art. 293 B du CGI)</small>'}</p>
+        <p class="price">${PRICE.std ? PRICE.short : `${PRICE.short} <small>(TVA non applicable, art. 293 B du CGI)</small>`}</p>
         <p>4 synthèses + ${DATA.templates.length} modèles, téléchargement immédiat après paiement, mise à jour après la publication du guide de lecture officiel. Achat unique, pas d'abonnement.</p>
         <p class="soon" role="note">La vente n'est pas encore ouverte : aucun paiement n'est possible pour l'instant. Pour être prévenu, suivez les <a href="${REPO}/releases">publications du dépôt GitHub</a> (Watch → Custom → Releases).</p>
       </div>`}
@@ -218,14 +220,38 @@ const indexBody = `
 </script>
 `;
 
-// Pas d'objet Offer tant que la vente n'est pas ouverte (pas de prix « disponible » dans les résultats de recherche).
+// Organisation : même @id que le site vitrine (https://vread-corp.github.io/) pour que les moteurs fusionnent les entités.
+const ORG_ID = 'https://vread-corp.github.io/#org';
+const orgLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  '@id': ORG_ID,
+  name: 'READ FRANCE SAS',
+  legalName: 'READ FRANCE',
+  url: 'https://vread-corp.github.io/',
+  address: { '@type': 'PostalAddress', streetAddress: '11 rue Rouvet', postalCode: '75019', addressLocality: 'Paris', addressCountry: 'FR' },
+  identifier: { '@type': 'PropertyValue', propertyID: 'SIREN', value: '988741773' },
+};
+// Product + Offer seulement quand la vente est ouverte (pas de prix « disponible » dans les résultats de recherche sinon).
+// Prix dérivé de sales.config.json (montant en centimes) ; franchise en base : prix net, pas de valueAddedTaxIncluded.
 const productLd = {
   '@context': 'https://schema.org',
-  '@type': 'CreativeWork',
+  '@type': 'Product',
   name: BRAND,
-  description: `Kit documentaire pour le référentiel national qualité applicable au 1er novembre 2026 (décret n° 2026-728, 33 indicateurs) : check-list des preuves, tableau des changements V9 → V10, ${DATA.templates.length} modèles DOCX et ODT.`,
-  inLanguage: 'fr',
-  publisher: { '@type': 'Organization', name: 'READ FRANCE SAS' },
+  description: `Kit documentaire pour le nouveau référentiel national qualité Qualiopi applicable au 1er novembre 2026 (décret n° 2026-728, 33 indicateurs) : check-list des preuves, tableau des changements V9 → V10, ${DATA.templates.length} modèles DOCX et ODT. Vendu aux professionnels.${PRICE.std ? '' : ' Prix net, TVA non applicable (art. 293 B du CGI).'}`,
+  image: `${SITE}og.png`,
+  url: SITE,
+  brand: { '@type': 'Brand', name: BRAND },
+  sku: SALES.product,
+  offers: {
+    '@type': 'Offer',
+    price: (SALES.amount / 100).toFixed(2),
+    priceCurrency: 'EUR',
+    availability: 'https://schema.org/InStock',
+    url: `${SITE}commander.html`,
+    seller: { '@id': ORG_ID },
+    itemCondition: 'https://schema.org/NewCondition',
+  },
 };
 const faqLd = { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: faq.map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })) };
 
@@ -362,8 +388,8 @@ const notFoundBody = `<section class="wrap section"><h1>Page introuvable</h1><p>
 // ---------------------------------------------------------------- Écriture
 mkdirSync(OUT, { recursive: true });
 const pages = [
-  { path: '', file: 'index.html', title: 'Kit Qualiopi V10 — nouveau référentiel 2026, 33 indicateurs : check-list et modèles', description: `Préparez le référentiel Qualiopi applicable au 1er novembre 2026 (décret 2026-728, 33 indicateurs) : tableau des changements V9 → V10, check-list des preuves, ${DATA.templates.length} modèles Word et LibreOffice. Échantillon gratuit.`, body: indexBody, jsonld: [productLd, faqLd], priority: '1.0' },
-  { path: 'changements-v9-v10.html', file: 'changements-v9-v10.html', title: 'Qualiopi V10 : ce qui change au 1er novembre 2026, indicateur par indicateur', description: `Nouveau référentiel Qualiopi 2026 : les ${modifiedNums.length} indicateurs modifiés et le nouvel indicateur 33, avant / après et actions à mener. Sources officielles (décret n° 2026-728).`, body: changesBody, jsonld: [{ '@context': 'https://schema.org', '@type': 'Article', headline: 'Qualiopi V10 : tableau des changements du référentiel au 1er novembre 2026', datePublished: LASTMOD, dateModified: LASTMOD, inLanguage: 'fr', author: { '@type': 'Organization', name: 'READ FRANCE SAS' }, publisher: { '@type': 'Organization', name: 'READ FRANCE SAS' } }], priority: '0.9' },
+  { path: '', file: 'index.html', title: 'Kit Qualiopi V10 : modèles du nouveau référentiel Qualiopi 2026', description: `Nouveau référentiel Qualiopi 2026 : check-list des 33 indicateurs, tableau V9 → V10 et ${DATA.templates.length} modèles Word et LibreOffice prêts à adapter. Échantillon gratuit.`, body: indexBody, jsonld: OPEN ? [orgLd, productLd, faqLd] : [orgLd, faqLd], priority: '1.0' },
+  { path: 'changements-v9-v10.html', file: 'changements-v9-v10.html', title: 'Nouveau référentiel Qualiopi 2026 : ce qui change (V9 → V10)', description: `Nouveau référentiel Qualiopi 2026 : les ${modifiedNums.length} indicateurs modifiés et le nouvel indicateur 33, avant / après et actions à mener. Source : décret n° 2026-728.`, body: changesBody, jsonld: [{ '@context': 'https://schema.org', '@type': 'Article', headline: 'Qualiopi V10 : tableau des changements du référentiel au 1er novembre 2026', datePublished: PUBLISHED, dateModified: LASTMOD, inLanguage: 'fr', author: { '@type': 'Organization', name: 'READ FRANCE SAS' }, publisher: { '@type': 'Organization', name: 'READ FRANCE SAS' } }], priority: '0.9' },
   { path: 'mentions-legales.html', file: 'mentions-legales.html', title: 'Mentions légales — Kit Qualiopi V10', description: 'Éditeur, hébergeur et propriété intellectuelle du site Kit Qualiopi V10 (READ FRANCE SAS).', body: mentionsBody, priority: '0.2' },
   { path: 'confidentialite.html', file: 'confidentialite.html', title: 'Confidentialité — Kit Qualiopi V10', description: 'Aucun cookie, aucun traceur, aucune donnée personnelle collectée par le site Kit Qualiopi V10.', body: privacyBody, priority: '0.2' },
   { path: 'cgv-pro.html', file: 'cgv-pro.html', title: 'Conditions générales de vente aux professionnels — Kit Qualiopi V10', description: 'CGV B2B du Kit Qualiopi V10 (READ FRANCE SAS), version du 12 octobre 2026 : vente aux professionnels, prix, paiement Stripe, livraison par e-mail, licence, facturation.', body: cgvProPage, priority: '0.2', noindex: !OPEN },
