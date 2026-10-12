@@ -125,3 +125,22 @@ thead th { background: var(--surface); }
 .foot { border-top: 1px solid var(--line); background: var(--surface); padding: 24px 0 32px; margin-top: 24px; }
 .foot-nav { display: flex; flex-wrap: wrap; gap: 8px 18px; }
 .foot-nav a { padding: 6px 0; }
+
+/* Commander (only emitted when SALES_OPEN=true) */
+.checkout { max-width: 680px; }
+.checkout-form label.field { display: block; margin: .8em 0; }
+.checkout-form label.field span { display: block; font-weight: 600; margin-bottom: .25em; }
+.checkout-form input[type=email], .checkout-form input[type=text] { width: 100%; font: inherit; padding: .6em; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); color: var(--text); }
+.checkout-form input:focus-visible { outline: 3px solid var(--accent); outline-offset: 1px; }
+.field-group { border: 1px solid var(--line); border-radius: 8px; padding: 4px 12px 8px; margin: 1em 0; min-width: 0; }
+.field-group legend { font-weight: 700; padding: 0 .3em; }
+label.check { display: flex; gap: .6em; align-items: flex-start; margin: 1em 0; }
+label.check input { margin-top: .3em; width: 20px; height: 20px; flex: none; }
+#payment-element { margin: 1em 0; min-height: 120px; }
+.pay-button { font: inherit; font-weight: 700; background: var(--accent); color: var(--accent-ink); border: 0; border-radius: 10px; padding: .85em 1.2em; cursor: pointer; width: 100%; min-height: 48px; }
+.pay-button:hover { background: var(--accent-hover); }
+.pay-button[disabled] { opacity: .6; cursor: progress; }
+.status { font-weight: 700; }
+.status.ok { color: #137333; }
+.status.err { color: #b3261e; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .status.ok { color: #81c995; } :root:not([data-theme="light"]) .status.err { color: #f28b82; } }

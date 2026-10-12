@@ -1,10 +1,16 @@
 // Génère le site statique dans docs/ (servi par GitHub Pages depuis la branche main, dossier /docs).
 // Aucune dépendance : node scripts/build.mjs
-import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { copyFileSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
+import { checkoutCsp, orderCsp, cgvProBody, checkoutConfigJs, loadSalesConfig, orderFormHtml, orderPageBody, prices } from './checkout-pages.mjs';
 
 const ROOT = resolve(import.meta.dirname, '..');
-const OUT = join(ROOT, 'docs');
+// OUT_DIR: test builds only (the published site is docs/).
+const OUT = process.env.OUT_DIR ? resolve(process.env.OUT_DIR) : join(ROOT, 'docs');
+// Sales gate: with SALES_OPEN=false (sales.config.json) the build emits no buy UI at all.
+const SALES = loadSalesConfig(ROOT);
+const OPEN = SALES.SALES_OPEN === true;
+const PRICE = prices(SALES);
 const DATA = JSON.parse(readFileSync(join(ROOT, 'src/data/changements.json'), 'utf8'));
 const SITE = 'https://vread-corp.github.io/kit-qualiopi-v10/';
 const REPO = 'https://github.com/VREAD-corp/kit-qualiopi-v10';
@@ -18,7 +24,7 @@ const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replac
 const changed = DATA.indicators.filter((i) => i.change === 'modifie' || i.change === 'nouveau');
 const modifiedNums = DATA.indicators.filter((i) => i.change === 'modifie').map((i) => i.n);
 
-function layout({ path, title, description, body, jsonld = [], noindex = false }) {
+function layout({ path, title, description, body, jsonld = [], noindex = false, head = '', tail = '' }) {
   const url = SITE + path;
   return `<!doctype html>
 <html lang="fr">
@@ -41,7 +47,7 @@ ${noindex ? '<meta name="robots" content="noindex">' : `<link rel="canonical" hr
 <meta name="theme-color" content="#1d4ed8">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="styles.css">
-${jsonld.map((j) => `<script type="application/ld+json">${JSON.stringify(j)}</script>`).join('\n')}
+${head}${jsonld.map((j) => `<script type="application/ld+json">${JSON.stringify(j)}</script>`).join('\n')}
 </head>
 <body>
 <a class="skip" href="#contenu">Aller au contenu</a>
@@ -65,12 +71,12 @@ ${body}
     <nav aria-label="Liens légaux" class="foot-nav">
       <a href="mentions-legales.html">Mentions légales</a>
       <a href="confidentialite.html">Confidentialité</a>
-      <a href="cgv.html">CGV (projet)</a>
+      <a href="cgv-pro.html">CGV professionnels</a>
       <a href="${REPO}/issues">Contact</a>
     </nav>
   </div>
 </footer>
-</body>
+${tail}</body>
 </html>
 `;
 }
@@ -90,7 +96,9 @@ const faq = [
   ['Mon certificat en cours reste-t-il valable ?', 'Le décret ne prévoit pas de disposition transitoire spécifique. Les modalités pour les audits de surveillance et de renouvellement réalisés après le 1er novembre 2026 sont à confirmer avec votre organisme certificateur.'],
   ['Le kit garantit-il la certification ?', 'Non. Seul un organisme certificateur décide, après audit. Le kit vous aide à organiser vos preuves ; il ne remplace ni le texte officiel, ni le guide de lecture, ni un conseil juridique ou un accompagnement.'],
   ['Dans quels formats sont les modèles ?', 'DOCX (Word) et ODT (LibreOffice), modifiables. Les synthèses sont aussi fournies en PDF.'],
-  ['Puis-je acheter le kit complet maintenant ?', 'Pas encore : l\'ouverture des ventes est en préparation. L\'échantillon gratuit est disponible dès maintenant. Pour être prévenu, suivez les publications du dépôt GitHub (bouton Watch, puis Custom, puis Releases).'],
+  OPEN
+    ? ['Comment acheter le kit complet ?', `Le kit complet est vendu aux professionnels (SIREN obligatoire) au prix de ${PRICE.sentence}. Commandez sur la page Commander : paiement par carte bancaire avec Stripe, fichier ZIP et facture acquittée envoyés par e-mail dès le paiement confirmé.`]
+    : ['Puis-je acheter le kit complet maintenant ?', 'Pas encore : l\'ouverture des ventes est en préparation. L\'échantillon gratuit est disponible dès maintenant. Pour être prévenu, suivez les publications du dépôt GitHub (bouton Watch, puis Custom, puis Releases).'],
 ];
 
 const indexBody = `
@@ -157,13 +165,21 @@ const indexBody = `
         <p>Tableau des changements V9 → V10 + 3 modèles (indicateurs 12, 27, 32). Sans inscription, sans e-mail.</p>
         ${downloadBtn('Télécharger l\'échantillon')}
       </div>
-      <div class="offer offer-soon">
+      ${OPEN ? `<div class="offer" id="commander">
+        <p class="offer-label">Disponible · réservé aux professionnels</p>
+        <h3>Kit complet</h3>
+        <p class="price">${PRICE.short}</p>
+        <p class="small muted">${PRICE.std ? `soit ${PRICE.ht} HT + ${PRICE.vat} de TVA (20 %)` : 'TVA non applicable, art. 293 B du CGI'}</p>
+        <p>4 synthèses + ${DATA.templates.length} modèles, envoyés par e-mail avec la facture dès le paiement confirmé, mise à jour après la publication du guide de lecture officiel. Achat unique, pas d'abonnement.</p>
+        <a class="btn btn-primary" href="commander.html">Commander<span class="btn-sub">entreprises · SIREN · carte bancaire (Stripe)</span></a>
+        <p class="small muted">Conditions : <a href="cgv-pro.html">CGV professionnels</a>.</p>
+      </div>` : `<div class="offer offer-soon">
         <p class="offer-label">Ouverture des ventes prochainement</p>
         <h3>Kit complet</h3>
         <p class="price">79 € TTC</p>
         <p>4 synthèses + ${DATA.templates.length} modèles, téléchargement immédiat après paiement, mise à jour après la publication du guide de lecture officiel. Achat unique, pas d'abonnement.</p>
         <p class="soon" role="note">La vente n'est pas encore ouverte : aucun paiement n'est possible pour l'instant. Pour être prévenu, suivez les <a href="${REPO}/releases">publications du dépôt GitHub</a> (Watch → Custom → Releases).</p>
-      </div>
+      </div>`}
     </div>
   </div>
 </section>
@@ -294,41 +310,50 @@ const privacyBody = `
   <p>Le site est hébergé par GitHub Pages et le fichier est distribué par GitHub Releases (GitHub, Inc.). Comme tout hébergeur, GitHub traite des données techniques de connexion (dont l'adresse IP) pour fournir le service et en assurer la sécurité, selon sa propre <a href="https://docs.github.com/fr/site-policy/privacy-policies/github-general-privacy-statement">déclaration de confidentialité</a>.</p>
   <h2>Contact par ticket GitHub</h2>
   <p>Si vous nous écrivez via un ticket (issue) GitHub, votre message et votre pseudonyme GitHub sont publics. N'y indiquez pas de données personnelles.</p>
-  <h2>Ventes futures</h2>
-  <p>La vente du kit complet n'est pas ouverte. Avant son ouverture, cette politique sera complétée (données de commande, prestataire de paiement, durées de conservation, droits d'accès, de rectification et d'effacement, réclamation auprès de la CNIL).</p>
+  ${OPEN ? `<h2>Commandes du kit complet</h2>
+  <p>La page <a href="commander.html">Commander</a> est la seule à collecter des données : adresse e-mail, raison sociale, SIREN et adresse de facturation de l'entreprise acheteuse, pour exécuter la commande et établir la facture. Le paiement par carte est traité par Stripe, qui charge son module de paiement (et ses cookies de sécurité anti-fraude) sur cette page uniquement. Destinataires, durées de conservation et droits : voir l'article 13 des <a href="cgv-pro.html">CGV professionnels</a>.</p>` : `<h2>Ventes futures</h2>
+  <p>La vente du kit complet n'est pas ouverte. Les traitements prévus pour les commandes (données de commande et de facturation, prestataire de paiement Stripe, durées de conservation, droits d'accès, de rectification et d'effacement, réclamation auprès de la CNIL) sont décrits à l'article 13 des <a href="cgv-pro.html">CGV professionnels</a>.</p>`}
   <p class="small muted">Dernière mise à jour : 11 octobre 2026.</p>
 </section>`;
 
+// Ancien projet de CGV grand public (11 octobre 2026) : remplacé par les CGV professionnels (vente B2B uniquement).
 const cgvBody = `
 <section class="wrap section prose">
-  <div class="callout callout-warn" role="note"><p><strong>Projet de conditions générales de vente — non applicable.</strong> Ce texte est en attente de validation par le président de READ FRANCE SAS. La vente du kit complet n'est pas ouverte et aucune commande ne peut être passée.</p></div>
-  <h1>Conditions générales de vente (projet)</h1>
-  <p class="small muted">Version projet « cgv-2026-10-projet » du 11 octobre 2026.</p>
-  <h2>1. Vendeur</h2>
-  <p>READ FRANCE SAS, 11 rue Rouvet, 75019 Paris — SIREN 988 741 773, RCS Paris — contact : voir les <a href="mentions-legales.html">mentions légales</a>.</p>
-  <h2>2. Produit</h2>
-  <p>« ${BRAND} » : contenu numérique téléchargeable (fichier ZIP) comprenant 4 synthèses (DOCX, ODT, PDF) et ${DATA.templates.length} modèles éditables (DOCX, ODT) relatifs au référentiel national qualité applicable au 1er novembre 2026. Les fichiers s'ouvrent avec un traitement de texte courant (Microsoft Word, LibreOffice) ; ils ne comportent aucun dispositif de protection technique (DRM).</p>
-  <p>Le kit est un outil d'information et d'organisation. Il ne constitue ni un conseil juridique, ni une prestation d'accompagnement, et ne garantit pas l'obtention ou le maintien d'une certification.</p>
-  <h2>3. Prix</h2>
-  <p>79 € TTC (soit 65,83 € HT et 13,17 € de TVA à 20 %), payable en une fois. Pas d'abonnement.</p>
-  <h2>4. Commande et paiement</h2>
-  <p>La commande est passée sur une page présentant les informations précontractuelles, puis payée par carte bancaire sur la page de paiement sécurisée de Stripe. Le bouton de validation porte la mention « Commander avec obligation de paiement ». Le contrat est conclu à la confirmation du paiement.</p>
-  <h2>5. Livraison</h2>
-  <p>Après paiement, un lien de téléchargement est affiché et envoyé par courrier électronique. Il est valable 72 heures et peut être renouvelé depuis la page de suivi de la commande. Une confirmation de commande reprenant ces conditions est adressée sur un support durable.</p>
-  <h2>6. Droit de rétractation</h2>
-  <p>Pour les acheteurs consommateurs, et les professionnels qui en bénéficient en application de l'article L. 221-3 du code de la consommation : conformément à l'article L. 221-28, 13° du code de la consommation, le droit de rétractation ne peut être exercé pour la fourniture d'un contenu numérique sans support matériel dont l'exécution a commencé avec l'accord préalable exprès de l'acheteur et son renoncement exprès à ce droit. Avant le paiement, l'acheteur coche une case distincte par laquelle il demande la mise à disposition immédiate du kit et renonce à son droit de rétractation. À défaut, la commande ne peut être passée.</p>
-  <h2>7. Garantie légale de conformité</h2>
-  <p>Les acheteurs consommateurs bénéficient de la garantie légale de conformité des contenus numériques (articles L. 224-25-12 et suivants du code de la consommation). En cas de défaut (fichier illisible ou incomplet), contactez le vendeur : le fichier sera remplacé ou, à défaut, le prix remboursé.</p>
-  <h2>8. Mises à jour</h2>
-  <p>Le kit sera mis à jour après la publication du nouveau guide de lecture officiel et des arrêtés d'application attendus. Les acheteurs pourront télécharger la mise à jour depuis leur page de commande pendant 12 mois après l'achat.</p>
-  <h2>9. Licence d'utilisation</h2>
-  <p>L'acheteur obtient une licence non exclusive d'utilisation interne pour son organisme (tous établissements compris) : il peut modifier les modèles et les utiliser pour ses besoins propres. La revente, la redistribution et la mise à disposition à des tiers sont interdites.</p>
-  <h2>10. Responsabilité</h2>
-  <p>Le vendeur met en œuvre ses meilleurs efforts pour que le contenu soit exact à sa date de version. Il ne saurait être tenu responsable du résultat d'un audit, de l'usage fait des modèles ni d'une évolution réglementaire postérieure. Le texte officiel et le guide de lecture font foi.</p>
-  <h2>11. Données personnelles</h2>
-  <p>Les données de commande (adresse électronique, nom, données de facturation) sont traitées pour exécuter la vente et respecter les obligations comptables. Le détail figurera dans la <a href="confidentialite.html">politique de confidentialité</a> avant l'ouverture des ventes.</p>
-  <h2>12. Médiation et droit applicable</h2>
-  <p>Médiateur de la consommation : <em>à désigner avant l'ouverture des ventes</em>. Droit français. En cas de litige avec un professionnel, compétence des tribunaux de Paris.</p>
+  <h1>Conditions générales de vente</h1>
+  <p>Le ${BRAND} est vendu <strong>uniquement aux professionnels</strong>. Les conditions applicables sont les <a href="cgv-pro.html">conditions générales de vente aux professionnels</a>. L'ancien projet de conditions grand public du 11 octobre 2026 est abandonné.</p>
+</section>`;
+
+const cgvProPage = `
+<section class="wrap section prose">
+${cgvProBody({
+  config: SALES,
+  productName: BRAND,
+  contact: `en répondant à l'e-mail de livraison de la commande, ou par les <a href="${REPO}/issues">tickets (issues) du dépôt GitHub du site</a> (publics : n'y mettez aucune donnée personnelle)`,
+  legalUrl: 'mentions-legales.html',
+  privacyUrl: 'confidentialite.html',
+  productDescription: `« ${BRAND} » : kit documentaire relatif au référentiel national qualité applicable au 1er novembre 2026 (décret n° 2026-728 du 1er août 2026, 33 indicateurs), comprenant 4 synthèses (DOCX, ODT, PDF), dont une check-list des 33 indicateurs et un tableau des changements, et ${DATA.templates.length} modèles éditables (DOCX, ODT), tels que décrits sur la <a href="./#contenu-kit">page de présentation</a> à la date de la commande.`,
+  licenceScope: `l'Acheteur peut copier les fichiers, modifier les modèles et les utiliser dans tous ses établissements, pour son propre organisme de formation, CFA ou centre de bilans de compétences ou de VAE.`,
+  updates: `Une mise à jour du kit établie après la publication du guide de lecture officiel du référentiel 2026 est envoyée sans frais à l'adresse électronique de commande si elle paraît dans les 12 mois suivant la commande.`,
+  disclaimer: [
+    `Le kit est un <strong>outil d'information et d'organisation</strong>. Il ne constitue ni un conseil juridique, ni une prestation d'accompagnement, de conseil ou d'audit, et <strong>ne garantit pas l'obtention, le maintien ou le renouvellement de la certification Qualiopi</strong> : seul l'organisme certificateur décide, après audit.`,
+    `Le kit est indépendant : il n'est ni édité, ni validé, ni approuvé par l'État, France compétences, le COFRAC ou un organisme certificateur. « Qualiopi » est une marque de l'État ; le kit n'en utilise pas le logo. Les libellés des indicateurs sont des reformulations : le texte publié au Journal officiel et le guide de lecture officiel font foi.`,
+    `Le contenu est à jour à sa date de version. Le guide de lecture officiel et les arrêtés d'application attendus peuvent préciser ou modifier les attentes ; il appartient à l'Acheteur de vérifier les textes applicables et de les confirmer avec son organisme certificateur.`,
+  ],
+})}
+</section>`;
+
+const commanderPage = `
+<section class="wrap section">
+  <p class="eyebrow"><a href="./">${BRAND}</a> › Commander</p>
+  <h1>Commander le ${BRAND}</h1>
+  <p class="lead">Kit complet : 4 synthèses et ${DATA.templates.length} modèles éditables. ${PRICE.sentence}.</p>
+  ${orderFormHtml({ config: SALES, productName: BRAND, cgvUrl: 'cgv-pro.html' })}
+</section>`;
+
+const orderPage = `
+<section class="wrap section">
+  ${orderPageBody()}
+  <p class="small muted">Une question ? Répondez à l'e-mail de livraison. <a href="./">Retour à l'accueil du ${BRAND}</a></p>
 </section>`;
 
 const notFoundBody = `<section class="wrap section"><h1>Page introuvable</h1><p><a href="./">Retour à l'accueil du ${BRAND}</a></p></section>`;
@@ -340,17 +365,31 @@ const pages = [
   { path: 'changements-v9-v10.html', file: 'changements-v9-v10.html', title: 'Qualiopi V10 : ce qui change au 1er novembre 2026, indicateur par indicateur', description: `Nouveau référentiel Qualiopi 2026 : les ${modifiedNums.length} indicateurs modifiés et le nouvel indicateur 33, avant / après et actions à mener. Sources officielles (décret n° 2026-728).`, body: changesBody, jsonld: [{ '@context': 'https://schema.org', '@type': 'Article', headline: 'Qualiopi V10 : tableau des changements du référentiel au 1er novembre 2026', datePublished: LASTMOD, dateModified: LASTMOD, inLanguage: 'fr', author: { '@type': 'Organization', name: 'READ FRANCE SAS' }, publisher: { '@type': 'Organization', name: 'READ FRANCE SAS' } }], priority: '0.9' },
   { path: 'mentions-legales.html', file: 'mentions-legales.html', title: 'Mentions légales — Kit Qualiopi V10', description: 'Éditeur, hébergeur et propriété intellectuelle du site Kit Qualiopi V10 (READ FRANCE SAS).', body: mentionsBody, priority: '0.2' },
   { path: 'confidentialite.html', file: 'confidentialite.html', title: 'Confidentialité — Kit Qualiopi V10', description: 'Aucun cookie, aucun traceur, aucune donnée personnelle collectée par le site Kit Qualiopi V10.', body: privacyBody, priority: '0.2' },
-  { path: 'cgv.html', file: 'cgv.html', title: 'Conditions générales de vente (projet) — Kit Qualiopi V10', description: 'Projet de conditions générales de vente du Kit Qualiopi V10, en attente de validation ; ventes non ouvertes.', body: cgvBody, priority: '0.2' },
+  { path: 'cgv-pro.html', file: 'cgv-pro.html', title: 'Conditions générales de vente aux professionnels — Kit Qualiopi V10', description: 'CGV B2B du Kit Qualiopi V10 (READ FRANCE SAS), version du 12 octobre 2026 : vente aux professionnels, prix HT et TTC, paiement Stripe, livraison par e-mail, licence, facturation.', body: cgvProPage, priority: '0.2', noindex: !OPEN },
+  { path: 'cgv.html', file: 'cgv.html', title: 'Conditions générales de vente — Kit Qualiopi V10', description: 'Le Kit Qualiopi V10 est vendu uniquement aux professionnels : voir les conditions générales de vente aux professionnels.', body: cgvBody, priority: '0.1', noindex: true },
+  ...(OPEN
+    ? [
+        { path: 'commander.html', file: 'commander.html', title: 'Commander le Kit Qualiopi V10 — professionnels', description: `Commande du Kit Qualiopi V10 par les entreprises (SIREN) : ${PRICE.sentence}, paiement par carte avec Stripe, fichier et facture par e-mail.`, body: commanderPage, noindex: true, head: `<meta http-equiv="Content-Security-Policy" content="${checkoutCsp(SALES)}">\n`, tail: '<script src="checkout/checkout-config.js"></script>\n<script src="https://js.stripe.com/v3/"></script>\n<script src="checkout/pay.js"></script>\n' },
+        { path: 'commande.html', file: 'commande.html', title: 'Votre commande — Kit Qualiopi V10', description: 'Confirmation de la commande du Kit Qualiopi V10 : envoi du fichier et de la facture par e-mail.', body: orderPage, noindex: true, head: `<meta http-equiv="Content-Security-Policy" content="${orderCsp(SALES)}">\n<meta name="referrer" content="no-referrer">\n`, tail: '<script src="checkout/checkout-config.js"></script>\n<script src="checkout/order.js"></script>\n' },
+      ]
+    : []),
 ];
+// Clean previous buy-UI output so that closing the sales removes it from docs/.
+for (const f of ['commander.html', 'commande.html', 'checkout']) rmSync(join(OUT, f), { recursive: true, force: true });
 for (const p of pages) writeFileSync(join(OUT, p.file), layout(p));
+if (OPEN) {
+  mkdirSync(join(OUT, 'checkout'), { recursive: true });
+  for (const f of ['pay.js', 'order.js']) copyFileSync(join(ROOT, 'src', 'checkout', f), join(OUT, 'checkout', f));
+  writeFileSync(join(OUT, 'checkout', 'checkout-config.js'), checkoutConfigJs(SALES, { termsUrl: `${SITE}cgv-pro.html`, orderPage: 'commande.html' }));
+}
 writeFileSync(join(OUT, '404.html'), layout({ path: '404.html', title: 'Page introuvable — Kit Qualiopi V10', description: 'Page introuvable.', body: notFoundBody, noindex: true }));
 writeFileSync(join(OUT, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${pages.map((p) => `  <url><loc>${SITE}${p.path}</loc><lastmod>${LASTMOD}</lastmod><priority>${p.priority}</priority></url>`).join('\n')}
+${pages.filter((p) => !p.noindex).map((p) => `  <url><loc>${SITE}${p.path}</loc><lastmod>${LASTMOD}</lastmod><priority>${p.priority}</priority></url>`).join('\n')}
 </urlset>
 `);
 writeFileSync(join(OUT, 'robots.txt'), `User-agent: *\nAllow: /\nSitemap: ${SITE}sitemap.xml\n`);
 writeFileSync(join(OUT, '.nojekyll'), '');
 for (const f of ['styles.css', 'favicon.svg']) copyFileSync(join(ROOT, 'src', f), join(OUT, f));
 if (existsSync(join(ROOT, 'src/og.png'))) copyFileSync(join(ROOT, 'src/og.png'), join(OUT, 'og.png'));
-console.log(`site généré dans docs/ (${pages.length + 1} pages) — échantillon : ${SAMPLE_URL}`);
+console.log(`site généré dans ${OUT} (${pages.length + 1} pages, ventes ${OPEN ? 'OUVERTES' : 'fermées'}) — échantillon : ${SAMPLE_URL}`);

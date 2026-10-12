@@ -9,7 +9,9 @@ import { extname, join, resolve, normalize } from 'node:path';
 import { chromium } from 'playwright';
 
 const ROOT = resolve(import.meta.dirname, '..', 'docs');
-const PAGES = ['', 'changements-v9-v10.html', 'mentions-legales.html', 'confidentialite.html', 'cgv.html'];
+const PAGES = ['', 'changements-v9-v10.html', 'mentions-legales.html', 'confidentialite.html', 'cgv-pro.html', 'cgv.html'];
+// Gate: while sales.config.json has SALES_OPEN=false, no page may offer to buy.
+const SALES_OPEN = JSON.parse(await readFile(resolve(import.meta.dirname, '..', 'sales.config.json'), 'utf8')).SALES_OPEN === true;
 const TYPES = { '.html': 'text/html; charset=utf-8', '.css': 'text/css', '.svg': 'image/svg+xml', '.png': 'image/png', '.xml': 'application/xml', '.txt': 'text/plain' };
 let server, base, browser;
 
@@ -53,9 +55,10 @@ for (const path of PAGES) {
     const body = await page.locator('body').innerText();
     assert.match(body, /READ FRANCE SAS/);
     const actions = (await page.$$eval('a, button, input[type=submit]', (els) => els.map((e) => e.innerText || e.value || ''))).join(' | ');
-    assert.doesNotMatch(actions, /acheter|commander|panier|payer/i, 'aucun bouton d\'achat tant que la vente est fermée');
+    if (!SALES_OPEN) assert.doesNotMatch(actions, /acheter|commander|panier|payer/i, 'aucun bouton d\'achat tant que la vente est fermée');
     const hrefs = await page.$$eval('a[href]', (as) => as.map((a) => a.href));
     assert.ok(!hrefs.some((h) => /stripe\.com|checkout/i.test(h)), 'aucun lien de paiement');
+    if (!SALES_OPEN) assert.ok(!hrefs.some((h) => /commander\.html|commande\.html/.test(h)), 'aucun lien vers la commande');
     hrefs.forEach((h) => links.add(h));
     await page.close();
   });

@@ -20,3 +20,11 @@ npm run check:live   # mêmes tests contre le site en ligne
 ## Contact
 
 Ouvrez un ticket (issue). N'y mettez pas de données personnelles.
+
+## Vente (B2B) : interrupteur `SALES_OPEN`
+
+`sales.config.json` contrôle la vente. Avec `"SALES_OPEN": false` (valeur actuelle), le site généré ne contient **aucun** élément d'achat : pas de page Commander ni de page de commande, pas de Stripe.js, rien dans le sitemap. Le message « pas encore en vente » reste affiché. `tests/sales-gate.test.mjs` le vérifie sur la sortie de build et sur `docs/`.
+
+Les CGV professionnels sont dans `cgv-pro.html` (version du 12 octobre 2026, à faire relire). Avec `"SALES_OPEN": true`, la configuration doit aussi contenir l'URL `/exec` du web app Apps Script et une clé publique `pk_live_`.
+
+L'ouverture se fait uniquement par `octave-checkout/gas/scripts/go-live.sh`. `src/checkout/pay.js` et `src/checkout/order.js` sont des copies exactes de `octave-checkout/gas/web/` : go-live refuse de continuer si elles diffèrent. `scripts/checkout-pages.mjs` est identique dans les deux sites de kits.
