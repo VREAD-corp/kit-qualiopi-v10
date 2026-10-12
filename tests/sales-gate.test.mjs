@@ -128,7 +128,6 @@ before(async () => {
   });
   await new Promise((r) => server.listen(0, '127.0.0.1', r));
   base = `http://127.0.0.1:${server.address().port}/${SITE_PREFIX}`;
-  browser = await chromium.launch();
 });
 after(async () => {
   await browser?.close();
@@ -164,6 +163,7 @@ const FAKE_STRIPE = `window.Stripe = function () { return {
   confirmPayment: function () { return Promise.resolve({ error: { message: 'stub: no payment in tests' } }); } }; };`;
 
 test('browser: form validates SIREN (Luhn) and billing address, then posts createIntent with all B2B fields', async () => {
+  browser ??= await chromium.launch(); // launched here only: the build-level checks above need no browser
   const page = await browser.newPage({ viewport: { width: 390, height: 900 } });
   const errors = [];
   page.on('pageerror', (e) => errors.push(String(e)));
