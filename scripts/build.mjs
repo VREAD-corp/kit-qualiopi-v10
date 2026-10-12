@@ -129,7 +129,8 @@ ${noindex ? '<meta name="robots" content="noindex">' : `<link rel="canonical" hr
 <meta name="theme-color" content="#1d4ed8">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="styles.css">
-${head}${jsonld.map((j) => `<script type="application/ld+json">${JSON.stringify(j)}</script>`).join('\n')}
+${head}<script src="mesure.js" defer></script>
+${jsonld.map((j) => `<script type="application/ld+json">${JSON.stringify(j)}</script>`).join('\n')}
 </head>
 <body${!legacy && OPEN && STICKY_PAGES.has(path) ? ' class="has-sticky"' : ''}>
 ${legacy ? legacyChrome(body) : siteChrome(body, path)}${tail}</body>
@@ -138,7 +139,7 @@ ${legacy ? legacyChrome(body) : siteChrome(body, path)}${tail}</body>
 }
 
 const downloadBtn = (label = 'Télécharger l\'échantillon gratuit') =>
-  `<a class="btn btn-primary" href="${SAMPLE_URL}" download>${label}<span class="btn-sub">ZIP · DOCX, ODT, PDF · sans inscription</span></a>`;
+  `<a class="btn btn-primary" href="${SAMPLE_URL}" download data-mesure="free_download">${label}<span class="btn-sub">ZIP · DOCX, ODT, PDF · sans inscription</span></a>`;
 
 const sourcesList = () => `<ul class="sources">${DATA.sources.map((s) => `<li><a href="${esc(s.url)}" rel="noopener">${esc(s.label)}</a></li>`).join('')}</ul>`;
 
@@ -186,7 +187,7 @@ const priceNote = PRICE.std ? `TTC, soit ${PRICE.ht} HT + ${PRICE.vat} de TVA (2
 const heroCta = OPEN
   ? `<div class="cta">
         <a class="btn btn-primary btn-lg" href="commander.html">Obtenir le kit complet – ${PRICE_TAG}</a>
-        <a class="link-arrow" href="${SAMPLE_URL}" download>ou téléchargez d'abord 3 modèles gratuits</a>
+        <a class="link-arrow" href="${SAMPLE_URL}" download data-mesure="free_download">ou téléchargez d'abord 3 modèles gratuits</a>
       </div>
       <p class="cta-meta">Achat unique, sans abonnement · fichiers et facture par e-mail dès le paiement · réservé aux professionnels</p>`
   : `<div class="cta">
@@ -310,7 +311,7 @@ const indexBody = `
     ${offerCard}
     <div class="sample-box">
         <p><strong>Pas encore décidé ?</strong> L'échantillon gratuit contient le tableau des changements et ${templatesFree.length} modèles complets (indicateurs 12, 27 et 32). Sans inscription, sans e-mail.</p>
-        <a class="btn btn-ghost" href="${SAMPLE_URL}" download>Télécharger l'échantillon gratuit<span class="btn-sub">ZIP · DOCX, ODT, PDF</span></a>
+        <a class="btn btn-ghost" href="${SAMPLE_URL}" download data-mesure="free_download">Télécharger l'échantillon gratuit<span class="btn-sub">ZIP · DOCX, ODT, PDF</span></a>
     </div>
   </div>
 </section>
@@ -470,9 +471,10 @@ const mentionsBody = `
 const privacyBody = `
 <section class="wrap section prose">
   <h1>Politique de confidentialité</h1>
-  <p><strong>En résumé : ce site ne collecte aucune donnée personnelle.</strong> Il n'utilise ni cookie, ni outil de mesure d'audience, ni traceur tiers, ni formulaire. C'est pourquoi aucun bandeau de consentement n'est affiché.</p>
+  <p><strong>En résumé : ce site ne collecte aucune donnée personnelle.</strong> Il n'utilise ni cookie, ni traceur tiers, ni formulaire ; la seule mesure d'audience est anonyme et sans cookie (voir ci-dessous). C'est pourquoi aucun bandeau de consentement n'est affiché.</p>
   <h2>Ce que fait l'éditeur</h2>
-  <p>READ FRANCE SAS ne dépose aucun cookie et ne reçoit aucune donnée vous concernant lorsque vous consultez ce site ou téléchargez l'échantillon. Le seul chiffre que nous consultons est le <strong>nombre total de téléchargements</strong> du fichier, fourni par GitHub de manière agrégée et anonyme.</p>
+  <p>READ FRANCE SAS ne dépose aucun cookie et ne reçoit aucune donnée personnelle vous concernant lorsque vous consultez ce site ou téléchargez l'échantillon. Nous consultons le <strong>nombre total de téléchargements</strong> du fichier, fourni par GitHub de manière agrégée et anonyme, et la mesure d'audience anonyme décrite ci-dessous.</p>
+  <p><strong>Mesure d'audience.</strong> Nous comptons la fréquentation de ce site de façon anonyme : pages vues, clics vers la page de commande et étapes de la commande, totalisés par jour, avec le domaine du site d'origine et les paramètres de campagne (utm) éventuels. Cette mesure ne dépose aucun cookie, n'utilise aucun identifiant et n'enregistre ni adresse IP ni donnée personnelle ; seuls ces totaux journaliers sont conservés, dans un tableur de READ FRANCE hébergé par Google. Elle respecte le réglage « Do Not Track » de votre navigateur. Strictement limitée à la mesure d'audience, anonyme et non recoupée avec d'autres données, elle remplit les critères d'exemption de consentement de la CNIL.</p>
   <h2>Ce que fait l'hébergeur</h2>
   <p>Le site est hébergé par GitHub Pages et le fichier est distribué par GitHub Releases (GitHub, Inc.). Comme tout hébergeur, GitHub traite des données techniques de connexion (dont l'adresse IP) pour fournir le service et en assurer la sécurité, selon sa propre <a href="https://docs.github.com/fr/site-policy/privacy-policies/github-general-privacy-statement">déclaration de confidentialité</a>.</p>
   <h2>Contact par e-mail</h2>
@@ -531,7 +533,7 @@ const pages = [
   { path: '', file: 'index.html', title: 'Kit Qualiopi V10 : modèles du nouveau référentiel Qualiopi 2026', description: `Nouveau référentiel Qualiopi 2026 : check-list des 33 indicateurs, tableau V9 → V10 et ${DATA.templates.length} modèles Word et LibreOffice prêts à adapter. Échantillon gratuit.`, body: indexBody, jsonld: OPEN ? [orgLd, productLd, faqLd] : [orgLd, faqLd], priority: '1.0' },
   { path: 'changements-v9-v10.html', file: 'changements-v9-v10.html', title: 'Nouveau référentiel Qualiopi 2026 : ce qui change (V9 → V10)', description: `Nouveau référentiel Qualiopi 2026 : les ${modifiedNums.length} indicateurs modifiés et le nouvel indicateur 33, avant / après et actions à mener. Source : décret n° 2026-728.`, body: changesBody, jsonld: [{ '@context': 'https://schema.org', '@type': 'Article', headline: 'Qualiopi V10 : tableau des changements du référentiel au 1er novembre 2026', datePublished: PUBLISHED, dateModified: LASTMOD, inLanguage: 'fr', author: { '@type': 'Organization', name: 'READ FRANCE SAS' }, publisher: { '@type': 'Organization', name: 'READ FRANCE SAS' } }], priority: '0.9' },
   { path: 'mentions-legales.html', file: 'mentions-legales.html', title: 'Mentions légales — Kit Qualiopi V10', description: 'Éditeur, hébergeur et propriété intellectuelle du site Kit Qualiopi V10 (READ FRANCE SAS).', body: mentionsBody, priority: '0.2' },
-  { path: 'confidentialite.html', file: 'confidentialite.html', title: 'Confidentialité — Kit Qualiopi V10', description: 'Aucun cookie, aucun traceur, aucune donnée personnelle collectée par le site Kit Qualiopi V10.', body: privacyBody, priority: '0.2' },
+  { path: 'confidentialite.html', file: 'confidentialite.html', title: 'Confidentialité — Kit Qualiopi V10', description: 'Aucun cookie, aucune donnée personnelle collectée par le site Kit Qualiopi V10, mesure d\'audience anonyme uniquement.', body: privacyBody, priority: '0.2' },
   { path: 'cgv-pro.html', file: 'cgv-pro.html', title: 'Conditions générales de vente aux professionnels — Kit Qualiopi V10', description: 'CGV B2B du Kit Qualiopi V10 (READ FRANCE SAS), version du 12 octobre 2026 : vente aux professionnels, prix, paiement Stripe, livraison par e-mail, licence, facturation.', body: cgvProPage, priority: '0.2', noindex: !OPEN },
   { path: 'cgv.html', file: 'cgv.html', title: 'Conditions générales de vente — Kit Qualiopi V10', description: 'Le Kit Qualiopi V10 est vendu uniquement aux professionnels : voir les conditions générales de vente aux professionnels.', body: cgvBody, priority: '0.1', noindex: true },
   ...(OPEN
@@ -557,7 +559,7 @@ ${pages.filter((p) => !p.noindex).map((p) => `  <url><loc>${SITE}${p.path}</loc>
 `);
 writeFileSync(join(OUT, 'robots.txt'), `User-agent: *\nAllow: /\nSitemap: ${SITE}sitemap.xml\n`);
 writeFileSync(join(OUT, '.nojekyll'), '');
-for (const f of ['styles.css', 'favicon.svg']) copyFileSync(join(ROOT, 'src', f), join(OUT, f));
+for (const f of ['styles.css', 'favicon.svg', 'mesure.js']) copyFileSync(join(ROOT, 'src', f), join(OUT, f));
 if (existsSync(join(ROOT, 'src/og.png'))) copyFileSync(join(ROOT, 'src/og.png'), join(OUT, 'og.png'));
 // Aperçus du kit (WebP rendus depuis les vrais documents du dépôt de contenu).
 cpSync(join(ROOT, 'src/img'), join(OUT, 'img'), { recursive: true });

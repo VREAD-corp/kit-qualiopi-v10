@@ -15,7 +15,7 @@ npm test             # build + tests Playwright (rendu, console, 390 px, liens)
 npm run check:live   # mêmes tests contre le site en ligne
 ```
 
-`src/data/changements.json` est exporté depuis le dépôt privé du contenu (seules les données déjà présentes dans l'échantillon gratuit). Aucun cookie, aucun traceur, aucune donnée personnelle collectée.
+`src/data/changements.json` est exporté depuis le dépôt privé du contenu (seules les données déjà présentes dans l'échantillon gratuit). Aucun cookie, aucune donnée personnelle collectée ; mesure d'audience anonyme sans cookie (`src/mesure.js`, copie exacte de `octave-checkout/gas/web/mesure.js`).
 
 ## Contact
 

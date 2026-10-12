@@ -39,7 +39,8 @@ const read = (dir, f) => readFileSync(join(dir, SITE_PREFIX, f), 'utf8');
 
 function assertClosed(dir) {
   for (const f of ['commander.html', 'commande.html', 'checkout/pay.js', 'checkout/order.js', 'checkout/checkout-config.js']) assert.ok(!existsSync(join(dir, SITE_PREFIX, f)), `${f} must not exist while SALES_OPEN=false`);
-  for (const f of files(dir).filter((x) => /\.(html|js|xml|txt|json)$/.test(x))) {
+  // mesure.js (anonymous audience snippet, posts to the Apps Script endpoint) is not buy UI.
+  for (const f of files(dir).filter((x) => /\.(html|js|xml|txt|json)$/.test(x) && x !== join(SITE_PREFIX, 'mesure.js'))) {
     const body = readFileSync(join(dir, f), 'utf8');
     for (const re of BUY_MARKERS) assert.doesNotMatch(body, re, `${f} contains buy UI marker ${re}`);
     assert.doesNotMatch(body, /<form/i, `${f} contains a form`);
