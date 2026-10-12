@@ -99,12 +99,23 @@ test('B2B terms (cgv-pro.html): every required clause, version, review comment, 
   assert.match(html, /<!--[\s\S]*PAS UN CONSEIL JURIDIQUE[\s\S]*relire[\s\S]*-->/);
   const text = html.replace(/<!--[\s\S]*?-->/g, '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ');
   for (const re of [
-    /version du 12 octobre 2026/,
+    /version du 13 octobre 2026/,
     /READ FRANCE SAS, société par actions simplifiée \(SAS\) au capital de 1 000\s€/, /11 rue Rouvet, 75019 Paris/, /SIREN 988 741 773/, /RCS Paris/, /TVA non applicable, art\. 293 B du CGI/, /Tanguy Warsmann/,
     /Champ d’application et acceptation/, /professionnel/, /accepte expressément/,
     /fichier numérique/, /livré par courrier électronique/,
     PRICE_RE,
-    /par carte bancaire, au comptant, via le prestataire de paiement Stripe/,
+    /payable comptant et d’avance, en une fois, au choix de l’Acheteur/, /par carte bancaire : l’Acheteur saisit ses données de carte dans un module sécurisé de Stripe/,
+    /par virement bancaire SEPA en euros, après demande de devis sur la même page/,
+    /Stripe Payments Europe, Limited et Stripe Technology Europe, Limited, sociétés de droit irlandais/,
+    /numéro de compte bancaire virtuel attribué par Stripe, dont le bénéficiaire est le Vendeur, propre à l’Acheteur et identique pour tous ses devis/,
+    /offre du Vendeur, valable trente \(30\) jours/, /Un paiement partiel ne forme pas le contrat/, /Affectation des paiements/,
+    /effectué par le moyen de paiement utilisé : sur la carte débitée, ou par virement sur le compte bancaire d’origine/,
+    /la « confirmation du paiement » désigne/,
+    /Avant de payer par carte ou de demander un devis, l’Acheteur accepte expressément/,
+    /dans l’heure qui suit la réception d’un virement/,
+    /pendant la durée de validité du devis en cas de paiement par virement \(article 5\)/, /Escompte pour paiement anticipé : néant/,
+    /quatre derniers chiffres de l’IBAN/, /mesures précontractuelles/, /devis non suivis de commande, 1 an après leur expiration/,
+    /lors de sa commande ou de sa demande de devis, rappelée sur le devis/,
     /Livraison et délai/, /au plus tard dans les 24 heures/,
     /droit de rétractation[^.]*ne s’applique pas/,
     /licence non exclusive, non cessible et non transférable/, /pour ses besoins internes/,
@@ -115,6 +126,7 @@ test('B2B terms (cgv-pro.html): every required clause, version, review comment, 
     /droit français/, /compétence exclusive des tribunaux de Paris/,
   ]) assert.match(text, re, String(re));
   if (repoConfig.VAT === 'franchise293B') assert.doesNotMatch(text, /TTC|toutes taxes comprises|FR57988741773|de TVA au taux/, 'franchise 293 B: no VAT wording in the B2B terms');
+  assert.doesNotMatch(text, /Ltd\.|compte de paiement|dédié à sa commande|à réception du devis/, 'inaccurate Stripe / payment wording (REVUE-CGV-VIREMENT M1–M3)');
   assert.match(html, /READ FRANCE SAS/);
   assert.match(html, /<footer/);
   assert.match(html, /href="cgv-pro\.html"/);
@@ -169,7 +181,7 @@ test('SALES_OPEN=true (test build): Commander page, order page, config, sitemap,
   assert.match(conf, /"product":"kit-qualiopi-v10"/);
   assert.match(conf, /"orderPage":"commande\.html"/);
   assert.match(conf, /cgv-pro\.html/);
-  assert.match(conf, new RegExp(`"amount":${OPEN_CFG.amount},"currency":"eur","termsVersion":"cgv-pro-2026-10-12"`));
+  assert.match(conf, new RegExp(`"amount":${OPEN_CFG.amount},"currency":"eur","termsVersion":"cgv-pro-2026-10-13"`));
   for (const f of ['pay.js', 'order.js', 'devis.js']) assert.equal(read(openDir, `checkout/${f}`), readFileSync(join(ROOT, 'src/checkout', f), 'utf8'));
   assert.doesNotMatch(read(openDir, 'sitemap.xml'), /commande|commander/);
   assert.match(read(openDir, 'sitemap.xml'), /cgv-pro\.html/);
@@ -191,7 +203,7 @@ test('browser: a stale displayed price (catalog or createIntent disagree) never 
     await page.route('https://js.stripe.com/**', (r) => r.fulfill({ contentType: 'text/javascript', body: fake }));
     await page.route('https://octave-test.invalid/**', async (r) => {
       const stale = { amount: 9900, label: '99,00 € net' };
-      if (r.request().method() === 'GET') return r.fulfill({ contentType: 'application/json', body: JSON.stringify({ ok: true, currency: 'eur', termsVersion: 'cgv-pro-2026-10-12', ...(mode === 'catalog' ? stale : { amount: OPEN_CFG.amount, label: 'x' }) }) });
+      if (r.request().method() === 'GET') return r.fulfill({ contentType: 'application/json', body: JSON.stringify({ ok: true, currency: 'eur', termsVersion: 'cgv-pro-2026-10-13', ...(mode === 'catalog' ? stale : { amount: OPEN_CFG.amount, label: 'x' }) }) });
       return r.fulfill({ contentType: 'application/json', body: JSON.stringify({ ok: true, client_secret: 'pi_test123456789_secret_x', order_id: 'ok_x', currency: 'eur', ...stale }) });
     });
     await page.goto(base + 'commander.html?octave_notrack=1');
@@ -226,7 +238,7 @@ test('browser: form validates SIREN (Luhn) and billing address, then posts creat
   await page.route('https://js.stripe.com/**', (r) => r.fulfill({ contentType: 'text/javascript', body: FAKE_STRIPE }));
   await page.route('https://octave-test.invalid/**', async (r) => {
     const req = r.request();
-    if (req.method() === 'GET') return r.fulfill({ contentType: 'application/json', body: JSON.stringify({ ok: true, name: 'Kit Qualiopi V10', amount: OPEN_CFG.amount, currency: 'eur', label: 'catalogue: prix serveur', termsVersion: 'cgv-pro-2026-10-12' }) });
+    if (req.method() === 'GET') return r.fulfill({ contentType: 'application/json', body: JSON.stringify({ ok: true, name: 'Kit Qualiopi V10', amount: OPEN_CFG.amount, currency: 'eur', label: 'catalogue: prix serveur', termsVersion: 'cgv-pro-2026-10-13' }) });
     posts.push(JSON.parse(req.postData()));
     return r.fulfill({ contentType: 'application/json', body: JSON.stringify({ ok: false, error: 'stub', message: 'stub: arrêt avant paiement' }) });
   });
@@ -256,7 +268,7 @@ test('browser: form validates SIREN (Luhn) and billing address, then posts creat
   await page.click('#pay-button');
   await page.waitForSelector('#pay-error:not([hidden])');
   assert.equal(posts.length, 1);
-  assert.deepEqual({ ...posts[0], attempt: 'x' }, { action: 'createIntent', product: PRODUCT, email: 'achat@entreprise.example', company: 'Organisme Exemple SAS', siren: '732829320', addressLine1: '1 place Exemple', addressLine2: '', postalCode: '75011', city: 'Paris', termsAccepted: true, termsVersion: 'cgv-pro-2026-10-12', expectedAmount: OPEN_CFG.amount, attempt: 'x' });
+  assert.deepEqual({ ...posts[0], attempt: 'x' }, { action: 'createIntent', product: PRODUCT, email: 'achat@entreprise.example', company: 'Organisme Exemple SAS', siren: '732829320', addressLine1: '1 place Exemple', addressLine2: '', postalCode: '75011', city: 'Paris', termsAccepted: true, termsVersion: 'cgv-pro-2026-10-13', expectedAmount: OPEN_CFG.amount, attempt: 'x' });
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
   assert.ok(overflow <= 0, `horizontal scroll ${overflow}px`);
   assert.deepEqual(errors, []);
@@ -299,7 +311,7 @@ test('quotesEnabled=true (test build): one quote block right after #octave-pay, 
   for (const name of ['email', 'company', 'siren', 'addressLine1', 'addressLine2', 'postalCode', 'city', 'buyerRef', 'website', 'terms']) assert.match(box, new RegExp(`name="${name}"`), name);
   assert.match(box, /<div class="hp" aria-hidden="true">/);
   assert.match(box, /class="terms-link" href="cgv-pro\.html"/); // same CGV link as the card form
-  assert.match(box, /\(version du 12 octobre 2026\)/);
+  assert.match(box, /\(version du 13 octobre 2026\)/);
   assert.doesNotMatch(box, /\{\{|CGV_DATE/);
   assert.match(read(quotesDir, 'checkout/checkout-config.js'), /"quotesEnabled":true\}/);
   assert.equal(read(quotesDir, 'checkout/devis.js'), readFileSync(join(ROOT, 'src/checkout/devis.js'), 'utf8'));
@@ -321,7 +333,7 @@ test('browser: quote box hidden when quotesEnabled=false, shown when true, posts
     await page.route('https://js.stripe.com/**', (r) => r.fulfill({ contentType: 'text/javascript', body: FAKE_STRIPE }));
     await page.route('https://octave-test.invalid/**', async (r) => {
       const req = r.request();
-      if (req.method() === 'GET') return r.fulfill({ contentType: 'application/json', body: JSON.stringify({ ok: true, amount: OPEN_CFG.amount, currency: 'eur', label: 'x', termsVersion: 'cgv-pro-2026-10-12' }) });
+      if (req.method() === 'GET') return r.fulfill({ contentType: 'application/json', body: JSON.stringify({ ok: true, amount: OPEN_CFG.amount, currency: 'eur', label: 'x', termsVersion: 'cgv-pro-2026-10-13' }) });
       posts.push(JSON.parse(req.postData()));
       return r.fulfill({ contentType: 'application/json', body: JSON.stringify({ ok: true, quote: 'D-2026-0001', email_masked: 'a***@entreprise.example' }) });
     });
@@ -355,10 +367,20 @@ test('browser: quote box hidden when quotesEnabled=false, shown when true, posts
   assert.match(await page.textContent('#devis-ok'), /Devis D-2026-0001 envoyé à a\*\*\*@entreprise\.example/);
   const quotes = posts.filter((p) => p.action === 'quote');
   assert.equal(quotes.length, 1);
-  assert.deepEqual({ ...quotes[0], attempt: 'x' }, { action: 'quote', product: PRODUCT, email: 'achat@entreprise.example', company: 'Organisme Exemple SAS', siren: '732829320', addressLine1: '1 place Exemple', addressLine2: '', postalCode: '75011', city: 'Paris', buyerRef: 'BC-42', website: '', termsAccepted: true, termsVersion: 'cgv-pro-2026-10-12', expectedAmount: OPEN_CFG.amount, attempt: 'x' });
+  assert.deepEqual({ ...quotes[0], attempt: 'x' }, { action: 'quote', product: PRODUCT, email: 'achat@entreprise.example', company: 'Organisme Exemple SAS', siren: '732829320', addressLine1: '1 place Exemple', addressLine2: '', postalCode: '75011', city: 'Paris', buyerRef: 'BC-42', website: '', termsAccepted: true, termsVersion: 'cgv-pro-2026-10-13', expectedAmount: OPEN_CFG.amount, attempt: 'x' });
   assert.equal(await page.getAttribute('#octave-devis .terms-link', 'href'), 'https://outils.vread.fr/kit-qualiopi-v10/cgv-pro.html');
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
   assert.ok(overflow <= 0, `horizontal scroll ${overflow}px`);
   assert.deepEqual(errors, []);
   await page.close();
+});
+
+test('bank transfer on quote: FAQ and privacy page match the B2B terms (articles 5 and 13)', () => {
+  const plain = (h) => h.replace(/<!--[\s\S]*?-->/g, '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ');
+  const faq = read(openDir, 'index.html');
+  assert.match(faq, /Puis-je payer sur devis ou par virement \?/);
+  assert.match(plain(faq), /Oui\. Sur la page Commander , vous payez par carte bancaire \(Stripe\) ou vous demandez un devis/);
+  assert.doesNotMatch(plain(faq), /ne sont pas proposés en ligne/);
+  const privacy = plain(read(openDir, 'confidentialite.html'));
+  for (const re of [/demande de devis/, /nom du titulaire du compte émetteur, BIC, quatre derniers chiffres de l'IBAN/, /devis non suivis de commande, 1 an après leur expiration/, /Dernière mise à jour : 13 octobre 2026/]) assert.match(privacy, re, String(re));
 });
