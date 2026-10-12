@@ -1,0 +1,338 @@
+{
+ "_note": "Texte officiel des 33 indicateurs (décret n° 2026-728, article 1er) et colonnes d'application de l'annexe, relevés sur Légifrance le 2026-10-13. texte2019 = rédaction de l'annexe en vigueur du 1er janvier 2021 au 1er novembre 2026, seulement quand elle diffère. cats : 1 = actions de formation, 2 = bilans de compétences, 3 = VAE, 4 = actions de formation par apprentissage (article L. 6313-1 du code du travail). cond : condition d'application écrite dans l'indicateur.",
+ "checked": "2026-10-13",
+ "source2026": "https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000054608509",
+ "source2019": "https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000038591641",
+ "categories": {
+  "1": "Actions de formation",
+  "2": "Bilans de compétences",
+  "3": "VAE",
+  "4": "Apprentissage"
+ },
+ "indicators": [
+  {
+   "n": 1,
+   "cats": [
+    1,
+    2,
+    3,
+    4
+   ],
+   "texte2026": "Le prestataire diffuse une information accessible au public, détaillée et vérifiable sur les prestations proposées : prérequis, objectifs, type de reconnaissance de la formation délivrée, durée, modalités pédagogiques et de financements, délais d'accès, tarifs, contacts, méthodes mobilisées et modalités d'évaluation, accessibilité aux personnes en situation de handicap. Sa communication ne comporte aucune mention de nature à induire le public en erreur, notamment sur les conditions d'accès, le contenu, les modalités pédagogiques, le financement des formations, les droits ou l'absence de droits de poursuite d'études conférés par la formation préparée.",
+   "texte2019": "Le prestataire diffuse une information accessible au public, détaillée et vérifiable sur les prestations proposées : prérequis, objectifs, durée, modalités et délais d'accès, tarifs, contacts, méthodes mobilisées et modalités d'évaluation, accessibilité aux personnes handicapées."
+  },
+  {
+   "n": 2,
+   "cats": [
+    1,
+    2,
+    3,
+    4
+   ],
+   "texte2026": "Le prestataire diffuse des indicateurs de résultats adaptés à la nature des prestations mises en œuvre et des publics accueillis en précisant de manière transparente leurs modalités de calcul ou en s'appuyant sur des dispositifs existants.",
+   "texte2019": "Le prestataire diffuse des indicateurs de résultats adaptés à la nature des prestations mises en œuvre et des publics accueillis."
+  },
+  {
+   "n": 3,
+   "cats": [
+    1,
+    3,
+    4
+   ],
+   "texte2026": "Lorsque le prestataire met en œuvre des prestations conduisant à une certification professionnelle, il informe sur les taux d'obtention des certifications préparées, les possibilités de valider un/ ou des blocs de compétences, ainsi que sur les équivalences, passerelles, suites de parcours, en particulier les poursuites d'études, et les débouchés.",
+   "cond": "certifiant",
+   "texte2019": "Lorsque le prestataire met en œuvre des prestations conduisant à une certification professionnelle, il informe sur les taux d'obtention des certifications préparées, les possibilités de valider un/ ou des blocs de compétences, ainsi que sur les équivalences, passerelles, suites de parcours et les débouchés."
+  },
+  {
+   "n": 4,
+   "cats": [
+    1,
+    2,
+    3,
+    4
+   ],
+   "texte2026": "Le prestataire analyse le besoin du bénéficiaire en lien avec l'entreprise et/ ou le financeur concerné (s)."
+  },
+  {
+   "n": 5,
+   "cats": [
+    1,
+    2,
+    3,
+    4
+   ],
+   "texte2026": "Le prestataire définit les objectifs opérationnels et évaluables de la prestation."
+  },
+  {
+   "n": 6,
+   "cats": [
+    1,
+    2,
+    3,
+    4
+   ],
+   "texte2026": "Le prestataire établit les contenus et les modalités de mise en œuvre de la prestation, adaptés aux objectifs définis et aux publics bénéficiaires."
+  },
+  {
+   "n": 7,
+   "cats": [
+    1,
+    4
+   ],
+   "texte2026": "Lorsque le prestataire met en œuvre des prestations conduisant à une certification professionnelle, il s'assure de l'adéquation du ou des contenus de la prestation aux exigences de la certification visée et peut prouver sa capacité à assurer cette certification, y compris en qualité d'organisme habilité.",
+   "cond": "certifiant",
+   "texte2019": "Lorsque le prestataire met en œuvre des prestations conduisant à une certification professionnelle, il s'assure de l'adéquation du ou des contenus de la prestation aux exigences de la certification visée."
+  },
+  {
+   "n": 8,
+   "cats": [
+    1,
+    4
+   ],
+   "texte2026": "Le prestataire détermine les procédures de positionnement et d'évaluation des acquis à l'entrée de la prestation."
+  },
+  {
+   "n": 9,
+   "cats": [
+    1,
+    2,
+    3,
+    4
+   ],
+   "texte2026": "Le prestataire informe les publics bénéficiaires sur les conditions de déroulement de la prestation."
+  },
+  {
+   "n": 10,
+   "cats": [
+    1,
+    2,
+    3,
+    4
+   ],
+   "texte2026": "Le prestataire met en œuvre et adapte la prestation, l'accompagnement et le suivi aux publics bénéficiaires."
+  },
+  {
+   "n": 11,
+   "cats": [
+    1,
+    2,
+    3,
+    4
+   ],
+   "texte2026": "Le prestataire évalue l'atteinte par les publics bénéficiaires des objectifs de la prestation."
+  },
+  {
+   "n": 12,
+   "cats": [
+    1,
+    2,
+    3,
+    4
+   ],
+   "texte2026": "Le prestataire décrit et met en œuvre les mesures pour favoriser l'engagement des bénéficiaires et prévenir les ruptures de parcours. Il s'assure de la prévention et du traitement de toute situation de violence, dont les violences sexistes et sexuelles, de harcèlement ou de discrimination dans le cadre de leur formation.",
+   "texte2019": "Le prestataire décrit et met en œuvre les mesures pour favoriser l'engagement des bénéficiaires et prévenir les ruptures de parcours."
+  },
+  {
+   "n": 13,
+   "cats": [
+    1,
+    4
+   ],
+   "texte2026": "Pour les formations en alternance, le prestataire, en lien avec l'entreprise, anticipe avec l'apprenant les missions confiées, à court, moyen et long terme, et assure la coordination et la progressivité des apprentissages réalisés en centre de formation et en entreprise.",
+   "cond": "alternance"
+  },
+  {
+   "n": 14,
+   "cats": [
+    4
+   ],
+   "texte2026": "Le prestataire met en œuvre un accompagnement socio-professionnel, éducatif et relatif à l'exercice de la citoyenneté. Il dispose d'une procédure de traitement sans délai des situations de rupture liées à des difficultés, violences ou discriminations subies par l'apprenant en formation ou dans l'entreprise d'accueil.",
+   "texte2019": "Le prestataire met en œuvre un accompagnement socio-professionnel, éducatif et relatif à l'exercice de la citoyenneté."
+  },
+  {
+   "n": 15,
+   "cats": [
+    4
+   ],
+   "texte2026": "Le prestataire informe les apprentis de leurs droits et devoirs en tant qu'apprentis et salariés ainsi que des règles applicables en matière de santé et de sécurité en milieu professionnel, de manière renforcée lorsqu'ils sont mineurs. Il les informe des dispositifs d'accompagnement, de prévention et de signalement des situations de violences, de harcèlement moral ou sexuel, d'agissements sexistes et de discriminations, ainsi que des interlocuteurs susceptibles de les accompagner. Il communique les coordonnées du médiateur de l'apprentissage et veille à signaler les dysfonctionnements à l'inspection du travail.",
+   "texte2019": "Le prestataire informe les apprentis de leurs droits et devoirs en tant qu'apprentis et salariés ainsi que des règles applicables en matière de santé et de sécurité en milieu professionnel."
+  },
+  {
+   "n": 16,
+   "cats": [
+    1,
+    3,
+    4
+   ],
+   "texte2026": "Lorsque le prestataire met en œuvre des formations conduisant à une certification professionnelle, il s'assure que les conditions de présentation des bénéficiaires à la certification respectent les exigences formelles de l'autorité de certification.",
+   "cond": "certifiant"
+  },
+  {
+   "n": 17,
+   "cats": [
+    1,
+    2,
+    3,
+    4
+   ],
+   "texte2026": "Le prestataire met à disposition ou s'assure de la mise à disposition des moyens humains et techniques adaptés et d'un environnement approprié (conditions, locaux, équipements, plateaux techniques …)."
+  },
+  {
+   "n": 18,
+   "cats": [
+    1,
+    2,
+    3,
+    4
+   ],
+   "texte2026": "Le prestataire mobilise et coordonne les différents intervenants internes et/ ou externes (pédagogiques, administratifs, logistiques, commerciaux …)."
+  },
+  {
+   "n": 19,
+   "cats": [
+    1,
+    2,
+    3,
+    4
+   ],
+   "texte2026": "Le prestataire met à disposition du bénéficiaire des ressources pédagogiques et permet à celui-ci de se les approprier. Lorsque des modules pédagogiques sont réalisés à distance, le prestataire vérifie l'effectivité de leur suivi par les apprenants. Au-delà d'un nombre d'intervenants par formation, fixé par arrêté du ministre chargé de la formation professionnelle, le prestataire dispose d'un référent pédagogique par formation chargé d'assurer la coordination pédagogique entre les intervenants.",
+   "texte2019": "Le prestataire met à disposition du bénéficiaire des ressources pédagogiques et permet à celui-ci de se les approprier."
+  },
+  {
+   "n": 20,
+   "cats": [
+    4
+   ],
+   "texte2026": "Le prestataire dispose d'un personnel dédié à l'appui à la mobilité nationale et internationale, d'un référent handicap et d'un conseil de perfectionnement. Il s'assure de la qualité du pilotage de la formation, de la participation des apprentis, formateurs et entreprises à sa gouvernance. Lorsque la proportion d'heures d'enseignement réalisées par des intervenants permanents est inférieure à un seuil fixé par arrêté du ministre chargé de la formation professionnelle, le prestataire s'assure de la mise en œuvre de modalités renforcées de supervision pédagogique et de contrôle de la qualité des interventions.",
+   "texte2019": "Le prestataire dispose d'un personnel dédié à l'appui à la mobilité nationale et internationale, d'un référent handicap et d'un conseil de perfectionnement."
+  },
+  {
+   "n": 21,
+   "cats": [
+    1,
+    2,
+    3,
+    4
+   ],
+   "texte2026": "Le prestataire détermine, mobilise et évalue les compétences des différents intervenants internes et/ ou externes, adaptées aux prestations."
+  },
+  {
+   "n": 22,
+   "cats": [
+    1,
+    2,
+    3,
+    4
+   ],
+   "texte2026": "Le prestataire entretient et développe les compétences de ses salariés, adaptées aux prestations qu'il délivre."
+  },
+  {
+   "n": 23,
+   "cats": [
+    1,
+    2,
+    3,
+    4
+   ],
+   "texte2026": "Le prestataire réalise une veille légale et réglementaire sur le champ de la formation professionnelle et en exploite les enseignements."
+  },
+  {
+   "n": 24,
+   "cats": [
+    1,
+    2,
+    3,
+    4
+   ],
+   "texte2026": "Le prestataire réalise une veille sur les évolutions des compétences, des métiers et des emplois dans ses secteurs d'intervention et en exploite les enseignements."
+  },
+  {
+   "n": 25,
+   "cats": [
+    1,
+    2,
+    3,
+    4
+   ],
+   "texte2026": "Le prestataire réalise une veille sur les innovations pédagogiques et technologiques permettant une évolution de ses prestations et en exploite les enseignements."
+  },
+  {
+   "n": 26,
+   "cats": [
+    1,
+    2,
+    3,
+    4
+   ],
+   "texte2026": "Le prestataire mobilise les expertises, outils et réseaux nécessaires pour accueillir, accompagner/ former ou orienter les publics en situation de handicap."
+  },
+  {
+   "n": 27,
+   "cats": [
+    1,
+    2,
+    3,
+    4
+   ],
+   "texte2026": "Lorsque le prestataire fait appel à la sous-traitance ou au portage salarial, il s'assure du respect de la conformité au présent référentiel et en assure la traçabilité dans les contrats de sous-traitance.",
+   "cond": "sous-traitance",
+   "texte2019": "Lorsque le prestataire fait appel à la sous-traitance ou au portage salarial, il s'assure du respect de la conformité au présent référentiel."
+  },
+  {
+   "n": 28,
+   "cats": [
+    1,
+    4
+   ],
+   "texte2026": "Lorsque les prestations dispensées au bénéficiaire comprennent des périodes de formation en situation de travail, le prestataire mobilise son réseau de partenaires socio-économiques pour co-construire l'ingénierie de formation et favoriser l'accueil en entreprise.",
+   "cond": "travail"
+  },
+  {
+   "n": 29,
+   "cats": [
+    4
+   ],
+   "texte2026": "Le prestataire développe des actions qui concourent à l'insertion professionnelle ou la poursuite d'étude par la voie de l'apprentissage ou par toute autre voie permettant de développer leurs connaissances et leurs compétences."
+  },
+  {
+   "n": 30,
+   "cats": [
+    1,
+    2,
+    3,
+    4
+   ],
+   "texte2026": "Le prestataire recueille les appréciations des parties prenantes : bénéficiaires, financeurs (le cas échéant), équipes pédagogiques et entreprises concernées.",
+   "texte2019": "Le prestataire recueille les appréciations des parties prenantes : bénéficiaires, financeurs, équipes pédagogiques et entreprises concernées."
+  },
+  {
+   "n": 31,
+   "cats": [
+    1,
+    2,
+    3,
+    4
+   ],
+   "texte2026": "Le prestataire met en œuvre des modalités de traitement des difficultés rencontrées par les parties prenantes, des réclamations exprimées par ces dernières ainsi que des aléas survenus en cours de prestation.",
+   "texte2019": "Le prestataire met en œuvre des modalités de traitement des difficultés rencontrées par les parties prenantes, des réclamations exprimées par ces dernières, des aléas survenus en cours de prestation."
+  },
+  {
+   "n": 32,
+   "cats": [
+    1,
+    2,
+    3,
+    4
+   ],
+   "texte2026": "Le prestataire met en place une démarche d'amélioration continue à partir de l'analyse des appréciations et des réclamations, ainsi qu'une analyse des risques sur la qualité des formations délivrées.",
+   "texte2019": "Le prestataire met en œuvre des mesures d'amélioration à partir de l'analyse des appréciations et des réclamations."
+  },
+  {
+   "n": 33,
+   "cats": [
+    4
+   ],
+   "texte2026": "Le prestataire met en place un dispositif d'évaluation des contenus et des enseignements par les apprenants, distinct du recueil général de satisfaction, dont les résultats sont partagés avec les équipes pédagogiques et donnent lieu à la formalisation d'une démarche d'amélioration continue, dont il mesure périodiquement l'efficacité."
+  }
+ ]
+}

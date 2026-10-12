@@ -3,6 +3,9 @@
 import { copyFileSync, cpSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { checkoutCsp, orderCsp, cgvProBody, checkoutConfigJs, loadSalesConfig, orderFormHtml, orderPageBody, prices } from './checkout-pages.mjs';
+// Pages guides (indicateur 33, préparation d'audit, modèles gratuits, 1er novembre) : scripts/seo-pages.mjs.
+import { seoPages, rebase, indicatorHref, guideLinksHtml, GUIDE_STATUS, INDICATOR_PAGES } from './seo-pages.mjs';
+import { FREE_FILES } from './seo-page-modeles.mjs';
 
 const ROOT = resolve(import.meta.dirname, '..');
 // OUT_DIR: test builds only (the published site is docs/).
@@ -47,6 +50,7 @@ function siteChrome(body, path) {
     <nav class="top-nav" aria-label="Navigation principale">
       <a href="./#contenu-kit">Le kit</a>
       <a href="changements-v9-v10.html">Ce qui change</a>
+      <a href="preparer-audit-qualiopi-2026.html">Préparer l'audit</a>
       <a href="./#offre">Tarif</a>
       <a href="./#faq">FAQ</a>
       <a href="./#qui">Contact</a>
@@ -129,7 +133,7 @@ const sourcesList = () => `<ul class="sources">${DATA.sources.map((s) => `<li><a
 // ---------------------------------------------------------------- Accueil
 // Statut du guide de lecture : page officielle du ministère du Travail consultée le 12 octobre 2026
 // (mise à jour du 16/09/2026, dernière version proposée : V9 du 8 janvier 2024).
-const GUIDE_STATUS = 'non publié à ce jour (vérifié le 12/10/2026)';
+// GUIDE_STATUS : importé de seo-pages.mjs, calculé depuis src/data/statut-textes.json.
 const GUIDE_URL = 'https://travail-emploi.gouv.fr/referentiel-national-qualite-guide-de-lecture-qualiopi';
 const CGV_LINK = '<a href="cgv-pro.html">CGV professionnels</a>';
 const mail = `<a href="${MAILTO}">${CONTACT}</a>`;
@@ -238,7 +242,7 @@ const indexBody = `
     <caption class="sr">Indicateurs modifiés ou créés par le décret n° 2026-728 (intitulés reformulés)</caption>
     <thead><tr><th scope="col">N°</th><th scope="col">Indicateur (reformulé) et publics concernés</th><th scope="col" class="st">Statut</th></tr></thead>
     <tbody>
-    ${changed.map((i) => `<tr><td class="num">${i.n}</td><td><a href="changements-v9-v10.html#indicateur-${i.n}">${esc(i.titre)}</a><span class="scope">${esc(i.scope)} <span class="badge ${i.change} badge-m">${esc(i.changeLabel)}</span></span></td><td class="st"><span class="badge ${i.change}">${esc(i.changeLabel)}</span></td></tr>`).join('\n    ')}
+    ${changed.map((i) => `<tr><td class="num">${i.n}</td><td><a href="${indicatorHref(i.n)}">${esc(i.titre)}</a><span class="scope">${esc(i.scope)} <span class="badge ${i.change} badge-m">${esc(i.changeLabel)}</span></span></td><td class="st"><span class="badge ${i.change}">${esc(i.changeLabel)}</span></td></tr>`).join('\n    ')}
     </tbody>
   </table>
   </div>
@@ -396,7 +400,7 @@ const faqLd = { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity
 // ---------------------------------------------------------------- Tableau des changements
 // Table row → detail: the indicator page once it exists (indicateurs/indicateur-N.html), else the section on this page.
 const indicatorLink = (i) => {
-  if (existsSync(join(OUT, 'indicateurs', `indicateur-${i.n}.html`))) return `<a href="indicateurs/indicateur-${i.n}.html">${esc(i.titre)}</a>`;
+  if (INDICATOR_PAGES.has(i.n)) return `<a href="${indicatorHref(i.n)}">${esc(i.titre)}</a>`;
   return changed.includes(i) ? `<a href="#indicateur-${i.n}">${esc(i.titre)}</a>` : esc(i.titre);
 };
 const changesBody = `
@@ -439,6 +443,9 @@ const changesBody = `
 
   <h2>Les 7 critères (inchangés)</h2>
   <ol>${DATA.criteria.map((c) => `<li>${esc(c.title)} (indicateurs ${c.range[0]} à ${c.range[1]})</li>`).join('')}</ol>
+
+  <h2>Guides pratiques</h2>
+  ${guideLinksHtml()}
 
   <h2>Points encore en attente</h2>
   <ul>${DATA.pending.map((p) => `<li>${esc(p)}</li>`).join('')}</ul>
@@ -548,7 +555,12 @@ const pages = [
 ];
 // Clean previous buy-UI output so that closing the sales removes it from docs/.
 for (const f of ['commander.html', 'commande.html', 'checkout']) rmSync(join(OUT, f), { recursive: true, force: true });
-for (const p of pages) writeFileSync(join(OUT, p.file), layout(p));
+pages.push(...seoPages({ DATA, SITE, OPEN, PRICE_TAG, PRICE_NOTE: priceNote, ORG_ID, MAILTO, CONTACT, SAMPLE_URL, esc }));
+rmSync(join(OUT, 'indicateurs'), { recursive: true, force: true });
+for (const p of pages) {
+  if (p.file.includes('/')) mkdirSync(join(OUT, p.file, '..'), { recursive: true });
+  writeFileSync(join(OUT, p.file), rebase(layout(p), p.prefix));
+}
 if (OPEN) {
   mkdirSync(join(OUT, 'checkout'), { recursive: true });
   for (const f of ['pay.js', 'order.js', 'devis.js']) copyFileSync(join(ROOT, 'src', 'checkout', f), join(OUT, 'checkout', f));
@@ -557,12 +569,16 @@ if (OPEN) {
 writeFileSync(join(OUT, '404.html'), layout({ path: '404.html', title: 'Page introuvable — Kit Qualiopi V10', description: 'Page introuvable.', body: notFoundBody, noindex: true }));
 writeFileSync(join(OUT, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${pages.filter((p) => !p.noindex).map((p) => `  <url><loc>${SITE}${p.path}</loc><lastmod>${LASTMOD}</lastmod><priority>${p.priority}</priority></url>`).join('\n')}
+${pages.filter((p) => !p.noindex).map((p) => `  <url><loc>${SITE}${p.path}</loc><lastmod>${p.lastmod ?? LASTMOD}</lastmod><priority>${p.priority}</priority></url>`).join('\n')}
 </urlset>
 `);
 writeFileSync(join(OUT, 'robots.txt'), `User-agent: *\nAllow: /\nSitemap: ${SITE}sitemap.xml\n`);
 writeFileSync(join(OUT, '.nojekyll'), '');
-for (const f of ['styles.css', 'favicon.svg', 'mesure.js']) copyFileSync(join(ROOT, 'src', f), join(OUT, f));
+for (const f of ['styles.css', 'favicon.svg', 'mesure.js', 'guides.css', 'guides.js']) copyFileSync(join(ROOT, 'src', f), join(OUT, f));
+// Échantillon gratuit servi depuis le site (page modeles-qualiopi-gratuits.html), en plus de la Release GitHub.
+rmSync(join(OUT, 'telechargements'), { recursive: true, force: true });
+mkdirSync(join(OUT, 'telechargements'), { recursive: true });
+for (const f of FREE_FILES) copyFileSync(join(ROOT, 'src/telechargements', f), join(OUT, 'telechargements', f));
 if (existsSync(join(ROOT, 'src/og.png'))) copyFileSync(join(ROOT, 'src/og.png'), join(OUT, 'og.png'));
 // Aperçus du kit (WebP rendus depuis les vrais documents du dépôt de contenu).
 cpSync(join(ROOT, 'src/img'), join(OUT, 'img'), { recursive: true });

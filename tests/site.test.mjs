@@ -9,10 +9,12 @@ import { extname, join, resolve, normalize } from 'node:path';
 import { chromium } from 'playwright';
 
 const ROOT = resolve(import.meta.dirname, '..', 'docs');
-const PAGES = ['', 'changements-v9-v10.html', 'mentions-legales.html', 'confidentialite.html', 'cgv-pro.html', 'cgv.html'];
+const PAGES = ['', 'changements-v9-v10.html', 'mentions-legales.html', 'confidentialite.html', 'cgv-pro.html', 'cgv.html',
+  // Pages guides (scripts/seo-pages.mjs)
+  'indicateurs/indicateur-33.html', 'preparer-audit-qualiopi-2026.html', 'modeles-qualiopi-gratuits.html', 'qualiopi-1er-novembre-2026.html'];
 // Gate: while sales.config.json has SALES_OPEN=false, no page may offer to buy.
 const SALES_OPEN = JSON.parse(await readFile(resolve(import.meta.dirname, '..', 'sales.config.json'), 'utf8')).SALES_OPEN === true;
-const TYPES = { '.html': 'text/html; charset=utf-8', '.css': 'text/css', '.webp': 'image/webp', '.svg': 'image/svg+xml', '.png': 'image/png', '.xml': 'application/xml', '.txt': 'text/plain' };
+const TYPES = { '.js': 'text/javascript', '.pdf': 'application/pdf', '.docx': 'application/octet-stream', '.odt': 'application/octet-stream', '.html': 'text/html; charset=utf-8', '.css': 'text/css', '.webp': 'image/webp', '.svg': 'image/svg+xml', '.png': 'image/png', '.xml': 'application/xml', '.txt': 'text/plain' };
 let server, base, browser;
 
 before(async () => {
