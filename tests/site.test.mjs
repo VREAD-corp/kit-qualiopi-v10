@@ -12,7 +12,7 @@ const ROOT = resolve(import.meta.dirname, '..', 'docs');
 const PAGES = ['', 'changements-v9-v10.html', 'mentions-legales.html', 'confidentialite.html', 'cgv-pro.html', 'cgv.html'];
 // Gate: while sales.config.json has SALES_OPEN=false, no page may offer to buy.
 const SALES_OPEN = JSON.parse(await readFile(resolve(import.meta.dirname, '..', 'sales.config.json'), 'utf8')).SALES_OPEN === true;
-const TYPES = { '.html': 'text/html; charset=utf-8', '.css': 'text/css', '.svg': 'image/svg+xml', '.png': 'image/png', '.xml': 'application/xml', '.txt': 'text/plain' };
+const TYPES = { '.html': 'text/html; charset=utf-8', '.css': 'text/css', '.webp': 'image/webp', '.svg': 'image/svg+xml', '.png': 'image/png', '.xml': 'application/xml', '.txt': 'text/plain' };
 let server, base, browser;
 
 before(async () => {
@@ -66,7 +66,7 @@ for (const path of PAGES) {
 
 test('liens internes et ressources : 200', async () => {
   const internal = [...links].filter((h) => h.startsWith(base)).map((h) => h.split('#')[0]);
-  for (const extra of ['sitemap.xml', 'robots.txt', 'styles.css', 'og.png', 'favicon.svg']) internal.push(base + extra);
+  for (const extra of ['sitemap.xml', 'robots.txt', 'styles.css', 'og.png', 'favicon.svg', 'img/apercu-d02-checklist-33-indicateurs.webp', 'img/apercu-d04-plan-21-jours.webp', 'img/apercu-t01-fiche-programme.webp', 'img/apercu-t07-procedure-violences.webp']) internal.push(base + extra);
   for (const h of new Set(internal)) {
     const r = await fetch(h);
     assert.equal(r.status, 200, h);
@@ -86,7 +86,7 @@ test('lien de téléchargement de l\'échantillon joignable', { skip: process.en
 });
 
 test('liens externes (sources officielles, GitHub) : pas de 404', async () => {
-  const external = [...links].filter((h) => !h.startsWith(base) && !h.includes('/releases/download/') && !h.includes('legifrance.gouv.fr'));
+  const external = [...links].filter((h) => /^https?:/.test(h) && !h.startsWith(base) && !h.includes('/releases/download/') && !h.includes('legifrance.gouv.fr') && !h.includes('travail-emploi.gouv.fr')); // both sit behind bot protection
   for (const h of new Set(external)) {
     const r = await fetch(h, { method: 'GET', redirect: 'follow' });
     assert.ok(r.status < 400, `${h} → ${r.status}`);

@@ -1,6 +1,6 @@
 // Génère le site statique dans docs/ (servi par GitHub Pages depuis la branche main, dossier /docs).
 // Aucune dépendance : node scripts/build.mjs
-import { copyFileSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { copyFileSync, cpSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { checkoutCsp, orderCsp, cgvProBody, checkoutConfigJs, loadSalesConfig, orderFormHtml, orderPageBody, prices } from './checkout-pages.mjs';
 
@@ -27,33 +27,9 @@ const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replac
 const changed = DATA.indicators.filter((i) => i.change === 'modifie' || i.change === 'nouveau');
 const modifiedNums = DATA.indicators.filter((i) => i.change === 'modifie').map((i) => i.n);
 
-function layout({ path, title, description, body, jsonld = [], noindex = false, head = '', tail = '' }) {
-  const url = SITE + path;
-  return `<!doctype html>
-<html lang="fr">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>${esc(title)}</title>
-<meta name="description" content="${esc(description)}">
-${noindex ? '<meta name="robots" content="noindex">' : `<link rel="canonical" href="${url}">`}
-<meta property="og:type" content="website">
-<meta property="og:locale" content="fr_FR">
-<meta property="og:site_name" content="${BRAND}">
-<meta property="og:title" content="${esc(title)}">
-<meta property="og:description" content="${esc(description)}">
-<meta property="og:url" content="${url}">
-<meta property="og:image" content="${SITE}og.png">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="theme-color" content="#1d4ed8">
-<link rel="icon" href="favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="styles.css">
-${head}${jsonld.map((j) => `<script type="application/ld+json">${JSON.stringify(j)}</script>`).join('\n')}
-</head>
-<body>
-<a class="skip" href="#contenu">Aller au contenu</a>
+// Pages owned by the checkout (commander.html, commande.html) keep the previous header/footer byte for byte.
+const LEGACY_CHROME = new Set(['commander.html', 'commande.html']);
+const legacyChrome = (body) => `<a class="skip" href="#contenu">Aller au contenu</a>
 <header class="top">
   <div class="wrap top-in">
     <a class="logo" href="./">${BRAND}<span>référentiel 2026 · 33 indicateurs</span></a>
@@ -79,7 +55,84 @@ ${body}
     </nav>
   </div>
 </footer>
-${tail}</body>
+`;
+
+// Contact (remplace les tickets GitHub) et chrome du site (en-tête, pied de page, barre d'achat mobile).
+const CONTACT = 'octave@vread.fr';
+const MAILTO = `mailto:${CONTACT}`;
+// Prix affiché compact (« 79 € »), dérivé de sales.config.json (montant en centimes).
+const PRICE_TAG = `${SALES.amount % 100 === 0 ? SALES.amount / 100 : (SALES.amount / 100).toFixed(2).replace('.', ',')} €`;
+const STICKY_PAGES = new Set(['', 'changements-v9-v10.html']);
+
+function siteChrome(body, path) {
+  const sticky = OPEN && STICKY_PAGES.has(path);
+  return `<a class="skip" href="#contenu">Aller au contenu</a>
+<header class="top">
+  <div class="wrap top-in">
+    <a class="logo" href="./"><span class="logo-mark" aria-hidden="true">33</span><span class="logo-txt">${BRAND}<small>par READ FRANCE SAS</small></span></a>
+    <nav class="top-nav" aria-label="Navigation principale">
+      <a href="./#contenu-kit">Le kit</a>
+      <a href="changements-v9-v10.html">Ce qui change</a>
+      <a href="./#offre">Tarif</a>
+      <a href="./#faq">FAQ</a>
+      <a href="./#qui">Contact</a>
+    </nav>
+    ${OPEN ? `<a class="btn btn-primary btn-sm top-cta" href="commander.html">Commander · ${PRICE_TAG}</a>` : ''}
+  </div>
+</header>
+<main id="contenu">
+${body}
+</main>
+<footer class="foot">
+  <div class="wrap foot-in">
+    <div>
+      <p class="foot-brand"><strong>${BRAND}</strong> — un produit de READ FRANCE SAS, Paris · SIREN 988 741 773</p>
+      <p class="small muted">Produit indépendant : ni édité ni validé par l'État, France compétences ou un organisme certificateur. Qualiopi est une marque de l'État. Information, pas un conseil juridique ; aucune garantie de certification.</p>
+    </div>
+    <nav aria-label="Liens légaux" class="foot-nav">
+      <a href="mentions-legales.html">Mentions légales</a>
+      <a href="confidentialite.html">Confidentialité</a>
+      <a href="cgv-pro.html">CGV professionnels</a>
+      <a href="${MAILTO}">Contact : ${CONTACT}</a>
+      <a href="${REPO}">Code source du site</a>
+    </nav>
+  </div>
+</footer>
+${sticky ? `<div class="sticky-cta" role="region" aria-label="Commander le kit">
+  <p><strong>Kit complet</strong> <span>${PRICE_TAG}</span></p>
+  <a class="btn btn-primary btn-sm" href="commander.html">Commander →</a>
+</div>
+` : ''}`;
+}
+
+function layout({ path, title, description, body, jsonld = [], noindex = false, head = '', tail = '' }) {
+  const url = SITE + path;
+  const legacy = LEGACY_CHROME.has(path);
+  return `<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>${esc(title)}</title>
+<meta name="description" content="${esc(description)}">
+${noindex ? '<meta name="robots" content="noindex">' : `<link rel="canonical" href="${url}">`}
+<meta property="og:type" content="website">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:site_name" content="${BRAND}">
+<meta property="og:title" content="${esc(title)}">
+<meta property="og:description" content="${esc(description)}">
+<meta property="og:url" content="${url}">
+<meta property="og:image" content="${SITE}og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#1d4ed8">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="styles.css">
+${head}${jsonld.map((j) => `<script type="application/ld+json">${JSON.stringify(j)}</script>`).join('\n')}
+</head>
+<body${!legacy && OPEN && STICKY_PAGES.has(path) ? ' class="has-sticky"' : ''}>
+${legacy ? legacyChrome(body) : siteChrome(body, path)}${tail}</body>
 </html>
 `;
 }
@@ -90,59 +143,147 @@ const downloadBtn = (label = 'Télécharger l\'échantillon gratuit') =>
 const sourcesList = () => `<ul class="sources">${DATA.sources.map((s) => `<li><a href="${esc(s.url)}" rel="noopener">${esc(s.label)}</a></li>`).join('')}</ul>`;
 
 // ---------------------------------------------------------------- Accueil
+// Statut du guide de lecture : page officielle du ministère du Travail consultée le 12 octobre 2026
+// (mise à jour du 16/09/2026, dernière version proposée : V9 du 8 janvier 2024).
+const GUIDE_STATUS = 'non publié à ce jour (vérifié le 12/10/2026)';
+const GUIDE_URL = 'https://travail-emploi.gouv.fr/referentiel-national-qualite-guide-de-lecture-qualiopi';
+const CGV_LINK = '<a href="cgv-pro.html">CGV professionnels</a>';
+const mail = `<a href="${MAILTO}">${CONTACT}</a>`;
+const stripTags = (s) => s.replace(/<[^>]+>/g, '');
+const templatesFree = DATA.templates.filter((t) => t.sample);
+
+// Aperçus : vraies premières pages des documents du kit (rendues depuis les DOCX/PDF du dépôt de contenu).
+const PREVIEWS = [
+  { file: 'apercu-d02-checklist-33-indicateurs.webp', id: 'D02', title: 'Check-list des preuves, 33 indicateurs', text: 'Pour chaque indicateur : à qui il s\'applique, ce qui change, les preuves possibles, les pièges fréquents et le modèle à utiliser.', alt: 'Première page de la check-list des preuves attendues pour les 33 indicateurs : indicateur 1, preuves possibles à cocher, pièges fréquents et grille de suivi.' },
+  { file: 'apercu-d04-plan-21-jours.webp', id: 'D04', title: 'Plan d\'action en 21 jours', text: 'Une action par jour, le livrable attendu et le modèle à utiliser, de l\'état des lieux à l\'audit à blanc.', alt: 'Première page du plan d\'action en 21 jours : tableaux jour par jour avec action, livrable et modèle, semaines 1 et 2.' },
+  { file: 'apercu-t01-fiche-programme.webp', id: 'T01', title: 'Fiche programme de formation', text: 'Les rubriques exigées par l\'indicateur 1 modifié, avec les zones « À compléter » surlignées.', alt: 'Première page du modèle T01 fiche programme de formation : public et prérequis, objectifs évaluables, contenu et déroulé, avec des zones à compléter surlignées en jaune.' },
+  { file: 'apercu-t07-procedure-violences.webp', id: 'T07', title: 'Procédure violences et ruptures', text: 'La procédure exigée par l\'indicateur 12 modifié : rôles, prévention, signalement, traitement.', alt: 'Première page du modèle T07 procédure de prévention des ruptures et des violences, harcèlement et discriminations : objet, rôles et prévention.', free: true },
+];
+const img = (p, { cls = '', lazy = true, priority = false } = {}) => `<img${cls ? ` class="${cls}"` : ''} src="img/${p.file}" width="760" height="1075" alt="${esc(p.alt)}"${lazy ? ' loading="lazy"' : ''}${priority ? ' fetchpriority="high"' : ''} decoding="async">`;
+
+// FAQ : [question, réponse HTML]. Les questions d'achat d'abord. Le JSON-LD reprend le texte sans balises.
 const faq = [
+  ['Combien de temps faut-il pour adapter les modèles ?', 'Le plan d\'action fourni est découpé en 21 jours et compte <strong>1 à 2 heures par jour</strong>, à adapter selon la taille de votre organisme. Chaque modèle signale en surligné les zones « [À compléter] » à remplacer par vos informations ; supprimez les rubriques qui ne vous concernent pas.'],
+  ['Puis-je payer sur devis ou par virement ?', `La commande en ligne se règle par carte bancaire (Stripe), en une fois. La facture acquittée, établie au nom et au SIREN de votre organisme, est envoyée par e-mail avec les fichiers. Le devis et le virement ne sont pas proposés en ligne : si votre service achats en a besoin, écrivez à ${mail}.`],
+  ['Et si le guide de lecture officiel change les attendus ?', `Le guide de lecture du référentiel 2026 est ${GUIDE_STATUS}. Une mise à jour du kit établie après sa publication vous est envoyée sans frais, à l'adresse e-mail de commande, si elle paraît dans les 12 mois suivant votre achat (article 10 des ${CGV_LINK}).`],
+  ['Puis-je être remboursé ?', `La vente est conclue entre professionnels : le droit de rétractation des consommateurs ne s'applique pas et la commande est ferme dès le paiement (article 7 des ${CGV_LINK}). Si le fichier livré est illisible, incomplet ou ne correspond pas à la description, signalez-le dans les 30 jours : nous fournissons un fichier conforme ou, à défaut, remboursons le prix (article 10). Pour juger la qualité avant d'acheter, téléchargez l'échantillon gratuit.`],
+  ['Qui a rédigé le kit ?', `READ FRANCE SAS, société basée à Paris (SIREN 988 741 773), à partir des textes officiels cités en bas de page : décret n° 2026-728, annexe du code du travail, délibération de France compétences. La rédaction est originale ; les libellés des indicateurs sont des reformulations et le texte officiel fait foi. READ FRANCE n'est pas un organisme certificateur. Une question sur le contenu : ${mail}.`],
+  OPEN
+    ? ['Comment se passe la commande ?', `Le kit est vendu aux professionnels (SIREN obligatoire), ${PRICE_TAG} en achat unique. Sur la page <a href="commander.html">Commander</a>, vous payez par carte ; le fichier ZIP et la facture acquittée arrivent par e-mail dès le paiement confirmé, au plus tard sous 24 heures.`]
+    : ['Puis-je acheter le kit complet maintenant ?', `Pas encore : l'ouverture des ventes est en préparation. L'échantillon gratuit est disponible dès maintenant. Pour être prévenu, écrivez à ${mail}.`],
+  ['Dans quels formats sont les modèles ?', 'DOCX (Word) et ODT (LibreOffice), modifiables. Les synthèses sont aussi fournies en PDF. Vous pouvez utiliser les modèles dans tous vos établissements (licence décrite à l\'article 8 des CGV).'],
+  ['Quand le nouveau référentiel s\'applique-t-il ?', 'Le décret n° 2026-728 du 1er août 2026 entre en vigueur le 1er novembre 2026. Jusqu\'au 31 octobre 2026, le référentiel de 2019 (32 indicateurs) reste applicable. Vérifiez avec votre organisme certificateur quel référentiel et quel guide de lecture seront utilisés pour votre prochain audit.'],
   ['Qu\'est-ce que « Qualiopi V10 » ?', 'C\'est le nom couramment donné au référentiel national qualité modifié par le décret n° 2026-728 du 1er août 2026, publié au Journal officiel du 4 août 2026. Le texte officiel ne parle pas de « V10 » : l\'expression fait suite à la version 9 du guide de lecture (8 janvier 2024).'],
-  ['Quand le nouveau référentiel s\'applique-t-il ?', 'Le décret entre en vigueur le 1er novembre 2026. Jusqu\'au 31 octobre 2026, le référentiel de 2019 (32 indicateurs) reste applicable. Vérifiez avec votre organisme certificateur quel référentiel et quel guide de lecture seront utilisés pour votre prochain audit.'],
-  ['Combien d\'indicateurs et qu\'est-ce qui change ?', `Les 7 critères sont inchangés. Le référentiel passe de 32 à 33 indicateurs : l\'indicateur 33 est créé et, selon notre lecture du texte, ${modifiedNums.length} indicateurs sont modifiés sur le fond (${modifiedNums.join(', ')}).`],
+  ['Combien d\'indicateurs et qu\'est-ce qui change ?', `Les 7 critères sont inchangés. Le référentiel passe de 32 à 33 indicateurs : l'indicateur 33 est créé et, selon notre lecture du texte, ${modifiedNums.length} indicateurs sont modifiés sur le fond (${modifiedNums.join(', ')}).`],
   ['L\'indicateur 33 me concerne-t-il ?', 'L\'indicateur 33 (évaluation des contenus et des enseignements par les apprenants) est rattaché aux CFA par les analyses publiées. Vérifiez la colonne d\'application dans l\'annexe officielle sur Légifrance ; le kit fournit un modèle dédié.'],
-  ['Le guide de lecture officiel est-il publié ?', 'Pas à la date du 11 octobre 2026, pas plus que les arrêtés qui fixeront les seuils des indicateurs 19 et 20. Le kit le signale dans chaque document et sera mis à jour après leur parution.'],
+  ['Le guide de lecture officiel est-il publié ?', `Non : ${GUIDE_STATUS}. La <a href="${GUIDE_URL}" rel="noopener">page du ministère du Travail</a> propose toujours la version 9 du 8 janvier 2024. Les arrêtés qui fixeront les seuils des indicateurs 19 et 20 n'étaient pas publiés au 11 octobre 2026. Le kit le signale dans chaque document.`],
   ['Mon certificat en cours reste-t-il valable ?', 'Le décret ne prévoit pas de disposition transitoire spécifique. Les modalités pour les audits de surveillance et de renouvellement réalisés après le 1er novembre 2026 sont à confirmer avec votre organisme certificateur.'],
   ['Le kit garantit-il la certification ?', 'Non. Seul un organisme certificateur décide, après audit. Le kit vous aide à organiser vos preuves ; il ne remplace ni le texte officiel, ni le guide de lecture, ni un conseil juridique ou un accompagnement.'],
-  ['Dans quels formats sont les modèles ?', 'DOCX (Word) et ODT (LibreOffice), modifiables. Les synthèses sont aussi fournies en PDF.'],
-  OPEN
-    ? ['Comment acheter le kit complet ?', `Le kit complet est vendu aux professionnels (SIREN obligatoire) au prix de ${PRICE.sentence}. Commandez sur la page Commander : paiement par carte bancaire avec Stripe, fichier ZIP et facture acquittée envoyés par e-mail dès le paiement confirmé.`]
-    : ['Puis-je acheter le kit complet maintenant ?', 'Pas encore : l\'ouverture des ventes est en préparation. L\'échantillon gratuit est disponible dès maintenant. Pour être prévenu, suivez les publications du dépôt GitHub (bouton Watch, puis Custom, puis Releases).'],
 ];
+
+const priceNote = PRICE.std ? `TTC, soit ${PRICE.ht} HT + ${PRICE.vat} de TVA (20 %)` : 'Prix net — TVA non applicable, art. 293 B du CGI';
+
+const heroCta = OPEN
+  ? `<div class="cta">
+        <a class="btn btn-primary btn-lg" href="commander.html">Obtenir le kit complet – ${PRICE_TAG}</a>
+        <a class="link-arrow" href="${SAMPLE_URL}" download>ou téléchargez d'abord 3 modèles gratuits</a>
+      </div>
+      <p class="cta-meta">Achat unique, sans abonnement · fichiers et facture par e-mail dès le paiement · réservé aux professionnels</p>`
+  : `<div class="cta">
+        ${downloadBtn('Télécharger 3 modèles gratuits')}
+      </div>
+      <p class="cta-meta">Kit complet ${PRICE_TAG} : la vente n'est pas encore ouverte.</p>`;
+
+const offerCard = OPEN
+  ? `<div class="offer" id="commander">
+        <p class="offer-label">Kit complet · réservé aux professionnels</p>
+        <p class="price">${PRICE_TAG}</p>
+        <p class="price-note">${priceNote}</p>
+        <ul class="checks">
+          <li>Check-list des preuves pour les 33 indicateurs</li>
+          <li>Plan d'action en 21 jours et check-list de préparation de l'audit</li>
+          <li>Tableau des changements V9 → V10</li>
+          <li>${DATA.templates.length} modèles éditables, Word et LibreOffice</li>
+          <li>Mise à jour sans frais après la publication du guide de lecture officiel (si elle paraît dans les 12 mois)</li>
+          <li>Utilisable dans tous vos établissements</li>
+        </ul>
+        <a class="btn btn-primary btn-lg btn-block" href="commander.html">Obtenir le kit complet – ${PRICE_TAG}</a>
+        <p class="small muted offer-foot">Paiement par carte (Stripe) · SIREN demandé · facture acquittée par e-mail · ${CGV_LINK}</p>
+        <p class="small offer-guarantee">Fichier illisible, incomplet ou non conforme à la description ? Signalez-le sous 30 jours : nous le remplaçons ou, à défaut, vous remboursons (article 10 des CGV).</p>
+      </div>`
+  : `<div class="offer offer-soon">
+        <p class="offer-label">Ouverture des ventes prochainement</p>
+        <h3>Kit complet</h3>
+        <p class="price">${PRICE_TAG}</p>
+        <p class="price-note">${priceNote}</p>
+        <p>4 synthèses + ${DATA.templates.length} modèles, mise à jour après la publication du guide de lecture officiel. Achat unique, pas d'abonnement.</p>
+        <p class="soon" role="note">La vente n'est pas encore ouverte : aucun paiement n'est possible pour l'instant. Pour être prévenu, écrivez à ${mail}.</p>
+      </div>`;
 
 const indexBody = `
 <section class="hero">
-  <div class="wrap">
-    <p class="eyebrow">Entrée en vigueur le <strong>1er novembre 2026</strong> · <span id="jours">décret n° 2026-728</span></p>
-    <h1>Kit Qualiopi V10 : préparez le nouveau référentiel qualité 2026 à 33 indicateurs</h1>
-    <p class="lead">Le décret n° 2026-728 modifie ${modifiedNums.length} indicateurs et en crée un 33e. Ce kit vous dit, indicateur par indicateur, quelles preuves préparer, et vous donne ${DATA.templates.length} modèles éditables (Word et LibreOffice) pour les produire.</p>
-    <div class="cta">
-      ${downloadBtn()}
-      ${OPEN ? `<a class="btn btn-ghost" href="commander.html">Commander le kit complet<span class="btn-sub">${PRICE.short} · TVA non applicable, art. 293 B du CGI</span></a>` : ''}
-      <a class="btn btn-ghost" href="changements-v9-v10.html">Voir ce qui change (V9 → V10)</a>
+  <div class="wrap hero-in">
+    <div class="hero-copy">
+      <p class="countdown" id="countdown"><span class="countdown-d" id="jours" hidden></span><span>Nouveau référentiel en vigueur le <strong>1er novembre 2026</strong></span></p>
+      <h1>Nouveau référentiel Qualiopi au 1er novembre&nbsp;: préparez vos 33 indicateurs pour l'audit, sans consultant</h1>
+      <p class="lead">La check-list des preuves pour chaque indicateur, un plan d'action en 21 jours et ${DATA.templates.length} modèles Word et LibreOffice à adapter à votre organisme.</p>
+      ${heroCta}
     </div>
-    <p class="note">L'échantillon contient le tableau complet des changements et 3 modèles : procédure violences et ruptures (ind. 12), clause qualité de sous-traitance (ind. 27), amélioration continue et analyse des risques (ind. 32).</p>
+    <div class="hero-visual">
+      <div class="stack">
+        ${img(PREVIEWS[3], { cls: 'sheet sheet-3', lazy: false })}
+        ${img(PREVIEWS[2], { cls: 'sheet sheet-2', lazy: false })}
+        ${img(PREVIEWS[0], { cls: 'sheet sheet-1', lazy: false, priority: true })}
+      </div>
+      <p class="visual-cap">Vraies pages du kit : check-list des 33 indicateurs, modèles T01 et T07</p>
+    </div>
   </div>
 </section>
 
 <section class="wrap section" aria-labelledby="changes-h">
-  <h2 id="changes-h">Ce qui change au 1er novembre 2026</h2>
-  <p>Les 7 critères restent les mêmes. Voici les indicateurs dont le contenu évolue, résumés avec nos mots (le texte officiel fait foi).</p>
-  <ul class="cards">
-    ${changed.map((i) => `<li class="card"><p class="card-n"><span class="badge ${i.change}">${esc(i.changeLabel)}</span> Indicateur ${i.n}</p><h3>${esc(i.titre)}</h3><p class="small muted">${esc(i.scope)}</p></li>`).join('\n    ')}
+  <p class="kicker">Ce qui change</p>
+  <h2 id="changes-h">Au 1er novembre 2026, ${modifiedNums.length + 1} indicateurs évoluent</h2>
+  <ul class="stats">
+    <li><strong>33</strong><span>indicateurs, contre 32</span></li>
+    <li><strong>${modifiedNums.length}</strong><span>modifiés sur le fond</span></li>
+    <li><strong>1</strong><span>nouveau : l'indicateur 33</span></li>
+    <li><strong>7</strong><span>critères, inchangés</span></li>
   </ul>
-  <p><a href="changements-v9-v10.html">Tableau détaillé : avant, après et ce qu'il faut faire →</a></p>
+  <div class="table-wrap" tabindex="0" role="region" aria-label="Indicateurs modifiés ou nouveaux">
+  <table class="tbl-changes">
+    <caption class="sr">Indicateurs modifiés ou créés par le décret n° 2026-728 (intitulés reformulés)</caption>
+    <thead><tr><th scope="col">N°</th><th scope="col">Indicateur (reformulé) et publics concernés</th><th scope="col" class="st">Statut</th></tr></thead>
+    <tbody>
+    ${changed.map((i) => `<tr><td class="num">${i.n}</td><td><a href="changements-v9-v10.html#indicateur-${i.n}">${esc(i.titre)}</a><span class="scope">${esc(i.scope)} <span class="badge ${i.change} badge-m">${esc(i.changeLabel)}</span></span></td><td class="st"><span class="badge ${i.change}">${esc(i.changeLabel)}</span></td></tr>`).join('\n    ')}
+    </tbody>
+  </table>
+  </div>
+  <p class="small muted">Guide de lecture officiel du référentiel 2026 : ${GUIDE_STATUS}. Le kit sera mis à jour à sa parution. <a href="changements-v9-v10.html">Tableau détaillé : avant, après, ce qu'il faut faire →</a></p>
 </section>
 
 <section class="band" id="contenu-kit" aria-labelledby="kit-h">
   <div class="wrap section">
-    <h2 id="kit-h">Ce que contient le kit complet</h2>
-    <div class="grid2">
+    <p class="kicker">Ce que vous obtenez</p>
+    <h2 id="kit-h">Tout ce qu'il faut pour réunir vos preuves, prêt à adapter</h2>
+    <ul class="gallery">
+      ${PREVIEWS.map((p) => `<li>
+        <figure>
+          <a class="shot" href="img/${p.file}">${img(p)}</a>
+          <figcaption><span class="tid">${p.id}</span> <strong>${esc(p.title)}</strong>${p.free ? ' <span class="tag">gratuit</span>' : ''}<br><span class="small muted">${esc(p.text)}</span></figcaption>
+        </figure>
+      </li>`).join('\n      ')}
+    </ul>
+    <div class="grid2 contents">
       <div>
         <h3>4 synthèses (DOCX, ODT, PDF)</h3>
         <ul class="checks">
-          ${DATA.docs.filter((d) => d.id !== 'D00').map((d) => `<li>${esc(d.title)}${d.sample ? ' <span class="tag">dans l\'échantillon</span>' : ''}</li>`).join('\n          ')}
+          ${DATA.docs.filter((d) => d.id !== 'D00').map((d) => `<li><span class="tid">${d.id}</span> ${esc(d.title)}</li>`).join('\n          ')}
         </ul>
-        <p class="small muted">La check-list des 33 indicateurs donne pour chacun : à qui il s'applique, ce qui change, des exemples de preuves, les pièges fréquents, le modèle à utiliser et une grille « mon état / emplacement / responsable / échéance ».</p>
       </div>
       <div>
         <h3>${DATA.templates.length} modèles éditables (Word et LibreOffice)</h3>
         <ul class="tpl">
-          ${DATA.templates.map((t) => `<li><span class="tid">${t.id}</span> ${esc(t.title)} <span class="small muted">— ind. ${t.indicators.join(', ')}</span>${t.sample ? ' <span class="tag">gratuit</span>' : ''}</li>`).join('\n          ')}
+          ${DATA.templates.map((t) => `<li><span class="tid">${t.id}</span> ${esc(t.title)} <span class="small muted">· ind. ${t.indicators.join(', ')}</span>${t.sample ? ' <span class="tag">gratuit</span>' : ''}</li>`).join('\n          ')}
         </ul>
       </div>
     </div>
@@ -150,74 +291,70 @@ const indexBody = `
 </section>
 
 <section class="wrap section" aria-labelledby="who-h">
-  <h2 id="who-h">Pour qui ?</h2>
+  <p class="kicker">Pour qui</p>
+  <h2 id="who-h">Conçu pour les petites structures sans responsable qualité</h2>
   <ul class="cards cards-3">
-    <li class="card"><h3>Organismes de formation</h3><p>Déjà certifiés et audités après le 1er novembre 2026, ou en préparation d'un audit initial. Particulièrement utile aux structures de 1 à 10 personnes sans responsable qualité.</p></li>
+    <li class="card"><h3>Organismes de formation</h3><p>Déjà certifiés et audités après le 1er novembre 2026, ou en préparation d'un audit initial. Particulièrement utile aux structures de 1 à 10 personnes.</p></li>
     <li class="card"><h3>CFA</h3><p>Les indicateurs 14, 15 et 20 sont renforcés et l'indicateur 33 est créé : modèles dédiés (livret apprenti, gouvernance, évaluation des enseignements).</p></li>
     <li class="card"><h3>Bilans de compétences et VAE</h3><p>Les indicateurs communs modifiés (1, 2, 12, 19, 27, 32) vous concernent aussi. La check-list indique ce qui ne s'applique pas à votre activité.</p></li>
   </ul>
 </section>
 
-<section class="band" aria-labelledby="price-h">
-  <div class="wrap section">
-    <h2 id="price-h">Disponibilité</h2>
-    <div class="grid2">
-      <div class="offer">
-        <p class="offer-label">Disponible maintenant</p>
-        <h3>Échantillon gratuit</h3>
-        <p class="price">0 €</p>
-        <p>Tableau des changements V9 → V10 + 3 modèles (indicateurs 12, 27, 32). Sans inscription, sans e-mail.</p>
-        ${downloadBtn('Télécharger l\'échantillon')}
-      </div>
-      ${OPEN ? `<div class="offer" id="commander">
-        <p class="offer-label">Disponible · réservé aux professionnels</p>
-        <h3>Kit complet</h3>
-        <p class="price">${PRICE.short}</p>
-        <p class="small muted">${PRICE.std ? `soit ${PRICE.ht} HT + ${PRICE.vat} de TVA (20 %)` : 'TVA non applicable, art. 293 B du CGI'}</p>
-        <p>4 synthèses + ${DATA.templates.length} modèles, envoyés par e-mail avec la facture dès le paiement confirmé, mise à jour après la publication du guide de lecture officiel. Achat unique, pas d'abonnement.</p>
-        <a class="btn btn-primary" href="commander.html">Commander<span class="btn-sub">entreprises · SIREN · carte bancaire (Stripe)</span></a>
-        <p class="small muted">Conditions : <a href="cgv-pro.html">CGV professionnels</a>.</p>
-      </div>` : `<div class="offer offer-soon">
-        <p class="offer-label">Ouverture des ventes prochainement</p>
-        <h3>Kit complet</h3>
-        <p class="price">${PRICE.std ? PRICE.short : `${PRICE.short} <small>(TVA non applicable, art. 293 B du CGI)</small>`}</p>
-        <p>4 synthèses + ${DATA.templates.length} modèles, téléchargement immédiat après paiement, mise à jour après la publication du guide de lecture officiel. Achat unique, pas d'abonnement.</p>
-        <p class="soon" role="note">La vente n'est pas encore ouverte : aucun paiement n'est possible pour l'instant. Pour être prévenu, suivez les <a href="${REPO}/releases">publications du dépôt GitHub</a> (Watch → Custom → Releases).</p>
-      </div>`}
+<section class="band" id="offre" aria-labelledby="price-h">
+  <div class="wrap section offer-grid">
+    <div class="offer-copy">
+      <p class="kicker">Tarif</p>
+      <h2 id="price-h">Moins qu'une heure de consultant</h2>
+      <p class="lead">Un prix fixe pour tout le kit, sans abonnement. Vous gardez la main : les modèles se remplissent avec vos propres informations, à votre rythme.</p>
+    </div>
+    ${offerCard}
+    <div class="sample-box">
+        <p><strong>Pas encore décidé ?</strong> L'échantillon gratuit contient le tableau des changements et ${templatesFree.length} modèles complets (indicateurs 12, 27 et 32). Sans inscription, sans e-mail.</p>
+        <a class="btn btn-ghost" href="${SAMPLE_URL}" download>Télécharger l'échantillon gratuit<span class="btn-sub">ZIP · DOCX, ODT, PDF</span></a>
     </div>
   </div>
 </section>
 
-<section class="wrap section" aria-labelledby="not-h">
-  <h2 id="not-h">Ce que le kit n'est pas</h2>
-  <ul class="checks checks-neutral">
-    <li>Ce n'est pas un conseil juridique, ni un accompagnement, ni un audit.</li>
-    <li>Il ne garantit pas la certification : seul votre organisme certificateur décide, après audit.</li>
-    <li>Il n'est ni édité ni validé par l'État, France compétences ou un certificateur, et ne contient pas le logo Qualiopi.</li>
-    <li>Il ne remplace pas le texte officiel ni le guide de lecture, encore attendu au 11 octobre 2026.</li>
-  </ul>
+<section class="wrap section" id="faq" aria-labelledby="faq-h">
+  <p class="kicker">Questions fréquentes</p>
+  <h2 id="faq-h">Avant d'acheter</h2>
+  <div class="faq">
+    ${faq.map(([q, a]) => `<details><summary>${esc(q)}</summary><p>${a}</p></details>`).join('\n    ')}
+  </div>
 </section>
 
-<section class="band" id="faq" aria-labelledby="faq-h">
-  <div class="wrap section">
-    <h2 id="faq-h">Questions fréquentes</h2>
-    ${faq.map(([q, a]) => `<details><summary>${esc(q)}</summary><p>${esc(a)}</p></details>`).join('\n    ')}
+<section class="band" id="qui" aria-labelledby="qui-h">
+  <div class="wrap section about">
+    <!-- TODO founder photo/name -->
+    <div>
+      <p class="kicker">Qui sommes-nous</p>
+      <h2 id="qui-h">READ FRANCE SAS, Paris</h2>
+      <p>READ FRANCE conçoit des kits documentaires et des outils en ligne qui aident les professionnels à appliquer les nouvelles obligations réglementaires.</p>
+      <p class="small muted">SAS au capital de 1 000 € · 11 rue Rouvet, 75019 Paris · SIREN 988 741 773 · <a href="mentions-legales.html">mentions légales</a></p>
+    </div>
+    <div class="contact-card">
+      <p><strong>Une question avant d'acheter ?</strong><br>Écrivez-nous, nous répondons par e-mail.</p>
+      <a class="btn btn-ghost" href="${MAILTO}">${CONTACT}</a>
+    </div>
   </div>
 </section>
 
 <section class="wrap section" aria-labelledby="src-h">
   <h2 id="src-h">Sources officielles</h2>
   ${sourcesList()}
-  <p class="small muted">Contenu vérifié le 11 octobre 2026.</p>
+  <p class="small muted">Contenu vérifié le 11 octobre 2026 ; statut du guide de lecture vérifié le 12 octobre 2026.</p>
 </section>
 <script>
 (function () {
+  // J-xx jusqu'au 1er novembre 2026, compté en jours calendaires à Paris.
   var el = document.getElementById('jours');
   if (!el) return;
-  var d = Math.ceil((Date.UTC(2026, 10, 1) - Date.now()) / 86400000);
-  if (d > 1) el.textContent = 'dans ' + d + ' jours';
-  else if (d === 1) el.textContent = 'demain';
-  else el.textContent = 'en vigueur';
+  var parts = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Paris', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date()).split('-');
+  var today = Date.UTC(+parts[0], +parts[1] - 1, +parts[2]);
+  var d = Math.round((Date.UTC(2026, 10, 1) - today) / 86400000);
+  if (d > 0) { el.innerHTML = 'J-' + d + '<span class="sr"> (dans ' + d + (d > 1 ? ' jours' : ' jour') + ')</span>'; }
+  else { el.textContent = 'En vigueur'; }
+  el.hidden = false;
 })();
 </script>
 `;
@@ -233,6 +370,7 @@ const orgLd = {
   url: 'https://outils.vread.fr/',
   address: { '@type': 'PostalAddress', streetAddress: '11 rue Rouvet', postalCode: '75019', addressLocality: 'Paris', addressCountry: 'FR' },
   identifier: { '@type': 'PropertyValue', propertyID: 'SIREN', value: '988741773' },
+  email: CONTACT,
 };
 // Product + Offer seulement quand la vente est ouverte (pas de prix « disponible » dans les résultats de recherche sinon).
 // Prix dérivé de sales.config.json (montant en centimes) ; franchise en base : prix net, pas de valueAddedTaxIncluded.
@@ -255,7 +393,7 @@ const productLd = {
     itemCondition: 'https://schema.org/NewCondition',
   },
 };
-const faqLd = { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: faq.map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })) };
+const faqLd = { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: faq.map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: stripTags(a) } })) };
 
 // ---------------------------------------------------------------- Tableau des changements
 const changesBody = `
@@ -269,7 +407,7 @@ const changesBody = `
     <li><strong>${modifiedNums.length} indicateurs modifiés sur le fond</strong> : ${modifiedNums.join(', ')}.</li>
     <li><strong>1 indicateur nouveau</strong> : 33, évaluation des contenus et des enseignements par les apprenants.</li>
     <li>1 ajustement mineur (30) ; les autres indicateurs sont inchangés sur le fond.</li>
-    <li>Encore attendus au 11 octobre 2026 : le nouveau guide de lecture et les arrêtés fixant les seuils des indicateurs 19 et 20.</li>
+    <li>Nouveau guide de lecture officiel : ${GUIDE_STATUS}. Arrêtés fixant les seuils des indicateurs 19 et 20 : non publiés au 11 octobre 2026.</li>
   </ul>
   <p>${downloadBtn('Télécharger ce tableau (DOCX, ODT, PDF) + 3 modèles')}</p>
 
@@ -318,7 +456,7 @@ const mentionsBody = `
   Capital social : 1 000 €<br>
   ${PRICE.std ? 'N° TVA intracommunautaire : FR57988741773' : 'TVA non applicable, art. 293 B du CGI (franchise en base)'}<br>
   Directeur de la publication : Tanguy Warsmann, président<br>
-  Contact : en attendant l'ouverture d'une adresse dédiée, par les <a href="${REPO}/issues">tickets (issues) du dépôt GitHub du site</a>. Ne publiez pas de données personnelles dans un ticket public.</p>
+  Contact : <a href="${MAILTO}">${CONTACT}</a><!-- TODO phone --></p>
   <p class="small muted">Données d'identification issues de l'annuaire des entreprises (recherche-entreprises.api.gouv.fr), consultées le 11 octobre 2026.</p>
   <h2>Hébergeur</h2>
   <p>GitHub, Inc. (GitHub Pages et GitHub Releases), 88 Colin P. Kelly Jr. Street, San Francisco, CA 94107, États-Unis — <a href="https://github.com">github.com</a>.</p>
@@ -337,12 +475,12 @@ const privacyBody = `
   <p>READ FRANCE SAS ne dépose aucun cookie et ne reçoit aucune donnée vous concernant lorsque vous consultez ce site ou téléchargez l'échantillon. Le seul chiffre que nous consultons est le <strong>nombre total de téléchargements</strong> du fichier, fourni par GitHub de manière agrégée et anonyme.</p>
   <h2>Ce que fait l'hébergeur</h2>
   <p>Le site est hébergé par GitHub Pages et le fichier est distribué par GitHub Releases (GitHub, Inc.). Comme tout hébergeur, GitHub traite des données techniques de connexion (dont l'adresse IP) pour fournir le service et en assurer la sécurité, selon sa propre <a href="https://docs.github.com/fr/site-policy/privacy-policies/github-general-privacy-statement">déclaration de confidentialité</a>.</p>
-  <h2>Contact par ticket GitHub</h2>
-  <p>Si vous nous écrivez via un ticket (issue) GitHub, votre message et votre pseudonyme GitHub sont publics. N'y indiquez pas de données personnelles.</p>
+  <h2>Contact par e-mail</h2>
+  <p>Si vous nous écrivez à <a href="${MAILTO}">${CONTACT}</a>, votre adresse et votre message servent uniquement à vous répondre. Vous pouvez demander leur suppression à la même adresse.</p>
   ${OPEN ? `<h2>Commandes du kit complet</h2>
   <p>La page <a href="commander.html">Commander</a> est la seule à collecter des données : adresse e-mail, raison sociale, SIREN et adresse de facturation de l'entreprise acheteuse, pour exécuter la commande et établir la facture. Le paiement par carte est traité par Stripe, qui charge son module de paiement (et ses cookies de sécurité anti-fraude) sur cette page uniquement. Destinataires, durées de conservation et droits : voir l'article 13 des <a href="cgv-pro.html">CGV professionnels</a>.</p>` : `<h2>Ventes futures</h2>
   <p>La vente du kit complet n'est pas ouverte. Les traitements prévus pour les commandes (données de commande et de facturation, prestataire de paiement Stripe, durées de conservation, droits d'accès, de rectification et d'effacement, réclamation auprès de la CNIL) sont décrits à l'article 13 des <a href="cgv-pro.html">CGV professionnels</a>.</p>`}
-  <p class="small muted">Dernière mise à jour : 11 octobre 2026.</p>
+  <p class="small muted">Dernière mise à jour : 12 octobre 2026.</p>
 </section>`;
 
 // Ancien projet de CGV grand public (11 octobre 2026) : remplacé par les CGV professionnels (vente B2B uniquement).
@@ -357,7 +495,7 @@ const cgvProPage = `
 ${cgvProBody({
   config: SALES,
   productName: BRAND,
-  contact: `en répondant à l'e-mail de livraison de la commande, ou par les <a href="${REPO}/issues">tickets (issues) du dépôt GitHub du site</a> (publics : n'y mettez aucune donnée personnelle)`,
+  contact: `par e-mail à <a href="${MAILTO}">${CONTACT}</a>, ou en répondant à l'e-mail de livraison de la commande`,
   legalUrl: 'mentions-legales.html',
   privacyUrl: 'confidentialite.html',
   productDescription: `« ${BRAND} » : kit documentaire relatif au référentiel national qualité applicable au 1er novembre 2026 (décret n° 2026-728 du 1er août 2026, 33 indicateurs), comprenant 4 synthèses (DOCX, ODT, PDF), dont une check-list des 33 indicateurs et un tableau des changements, et ${DATA.templates.length} modèles éditables (DOCX, ODT), tels que décrits sur la <a href="./#contenu-kit">page de présentation</a> à la date de la commande.`,
@@ -421,4 +559,6 @@ writeFileSync(join(OUT, 'robots.txt'), `User-agent: *\nAllow: /\nSitemap: ${SITE
 writeFileSync(join(OUT, '.nojekyll'), '');
 for (const f of ['styles.css', 'favicon.svg']) copyFileSync(join(ROOT, 'src', f), join(OUT, f));
 if (existsSync(join(ROOT, 'src/og.png'))) copyFileSync(join(ROOT, 'src/og.png'), join(OUT, 'og.png'));
+// Aperçus du kit (WebP rendus depuis les vrais documents du dépôt de contenu).
+cpSync(join(ROOT, 'src/img'), join(OUT, 'img'), { recursive: true });
 console.log(`site généré dans ${OUT} (${pages.length + 1} pages, ventes ${OPEN ? 'OUVERTES' : 'fermées'}) — échantillon : ${SAMPLE_URL}`);

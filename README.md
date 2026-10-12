@@ -19,7 +19,7 @@ npm run check:live   # mêmes tests contre le site en ligne
 
 ## Contact
 
-Ouvrez un ticket (issue). N'y mettez pas de données personnelles.
+Par e-mail : octave@vread.fr.
 
 ## Vente (B2B) : interrupteur `SALES_OPEN`
 
