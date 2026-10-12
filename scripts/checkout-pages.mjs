@@ -73,7 +73,7 @@ const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replac
 
 /**
  * Body of cgv-pro.html (French, B2B). `p`: { config, productName, productDescription, disclaimer[],
- * licenceScope, updates, legalUrl, privacyUrl, contact }.
+ * licenceScope, updates, legalUrl, privacyUrl, contact, payLabel? } (`payLabel`: the pay button text, cited in article 5).
  */
 export function cgvProBody(p) {
   const pr = prices(p.config);
@@ -99,7 +99,7 @@ ${closed ? `<div class="callout callout-warn" role="note"><p><strong>Les ventes 
 <h2>4. Prix</h2>
 <p>Le prix est de <strong>${pr.sentence}</strong>, pour une licence (article 8). Il est payable en une fois, sans abonnement. Le prix applicable est celui affiché sur la page de commande au moment de la validation ; ${pr.std ? 'il est rappelé hors taxes et toutes taxes comprises avant le paiement et figure sur la facture' : 'il est rappelé avant le paiement et figure sur la facture, qui porte la mention « TVA non applicable, art. 293 B du CGI » ; aucune TVA n’est facturée'}.</p>
 <h2>5. Commande et paiement</h2>
-<p>L’Acheteur renseigne sur la page « Commander » : son adresse électronique, la raison sociale et le SIREN de l’entreprise, son adresse de facturation, puis ses données de carte. Il valide en cliquant sur le bouton « Commander avec obligation de paiement ».</p>
+<p>L’Acheteur renseigne sur la page « Commander » : son adresse électronique, la raison sociale et le SIREN de l’entreprise, son adresse de facturation, puis ses données de carte. Il valide en cliquant sur le bouton de paiement (par exemple « ${payButtonText(p.payLabel || 'Payer {prix} et recevoir le fichier', p.config.amount)} »).</p>
 <p>Le paiement s’effectue <strong>par carte bancaire, au comptant, via le prestataire de paiement Stripe</strong> (Stripe Payments Europe, Ltd.). Les données de carte sont saisies dans un module sécurisé de Stripe ; le Vendeur n’y a jamais accès. Le contrat est formé à la confirmation du paiement par Stripe. En cas de refus du paiement, la commande n’est pas enregistrée.</p>
 <h2>6. Livraison et délai</h2>
 <p>Dès la confirmation du paiement, le fichier ZIP et la facture acquittée sont envoyés à l’adresse électronique indiquée lors de la commande. L’envoi a lieu en principe dans les minutes qui suivent le paiement, y compris si l’Acheteur ferme la page de confirmation, et au plus tard dans les 24 heures. La livraison est réputée effectuée à l’envoi du courrier électronique.</p>

@@ -27,42 +27,14 @@ const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replac
 const changed = DATA.indicators.filter((i) => i.change === 'modifie' || i.change === 'nouveau');
 const modifiedNums = DATA.indicators.filter((i) => i.change === 'modifie').map((i) => i.n);
 
-// Pages owned by the checkout (commander.html, commande.html) keep the previous header/footer byte for byte.
-const LEGACY_CHROME = new Set(['commander.html', 'commande.html']);
-const legacyChrome = (body) => `<a class="skip" href="#contenu">Aller au contenu</a>
-<header class="top">
-  <div class="wrap top-in">
-    <a class="logo" href="./">${BRAND}<span>référentiel 2026 · 33 indicateurs</span></a>
-    <nav aria-label="Navigation principale">
-      <a href="./#contenu-kit">Le kit</a>
-      <a href="changements-v9-v10.html">Ce qui change</a>
-      <a href="./#faq">FAQ</a>
-    </nav>
-  </div>
-</header>
-<main id="contenu">
-${body}
-</main>
-<footer class="foot">
-  <div class="wrap">
-    <p class="foot-brand"><strong>${BRAND}</strong> — un produit de READ FRANCE SAS</p>
-    <p class="small">Produit indépendant : ni édité, ni validé par l'État, France compétences ou un organisme certificateur. Qualiopi est une marque de l'État. Information, pas un conseil juridique ; aucune garantie de certification.</p>
-    <nav aria-label="Liens légaux" class="foot-nav">
-      <a href="mentions-legales.html">Mentions légales</a>
-      <a href="confidentialite.html">Confidentialité</a>
-      <a href="cgv-pro.html">CGV professionnels</a>
-      <a href="${REPO}/issues">Contact</a>
-    </nav>
-  </div>
-</footer>
-`;
-
 // Contact (remplace les tickets GitHub) et chrome du site (en-tête, pied de page, barre d'achat mobile).
 const CONTACT = 'octave@vread.fr';
 const MAILTO = `mailto:${CONTACT}`;
 // Prix affiché compact (« 79 € »), dérivé de sales.config.json (montant en centimes).
 const PRICE_TAG = `${SALES.amount % 100 === 0 ? SALES.amount / 100 : (SALES.amount / 100).toFixed(2).replace('.', ',')} €`;
 const STICKY_PAGES = new Set(['', 'changements-v9-v10.html']);
+// Pages de commande : même en-tête et pied de page que le site, sans le bouton « Commander » de l'en-tête.
+const CHECKOUT_PAGES = new Set(['commander.html', 'commande.html']);
 
 function siteChrome(body, path) {
   const sticky = OPEN && STICKY_PAGES.has(path);
@@ -77,7 +49,7 @@ function siteChrome(body, path) {
       <a href="./#faq">FAQ</a>
       <a href="./#qui">Contact</a>
     </nav>
-    ${OPEN ? `<a class="btn btn-primary btn-sm top-cta" href="commander.html">Commander · ${PRICE_TAG}</a>` : ''}
+    ${OPEN && !CHECKOUT_PAGES.has(path) ? `<a class="btn btn-primary btn-sm top-cta" href="commander.html">Commander · ${PRICE_TAG}</a>` : ''}
   </div>
 </header>
 <main id="contenu">
@@ -107,7 +79,6 @@ ${sticky ? `<div class="sticky-cta" role="region" aria-label="Commander le kit">
 
 function layout({ path, title, description, body, jsonld = [], noindex = false, head = '', tail = '' }) {
   const url = SITE + path;
-  const legacy = LEGACY_CHROME.has(path);
   return `<!doctype html>
 <html lang="fr">
 <head>
@@ -132,8 +103,8 @@ ${noindex ? '<meta name="robots" content="noindex">' : `<link rel="canonical" hr
 ${head}<script src="mesure.js" defer></script>
 ${jsonld.map((j) => `<script type="application/ld+json">${JSON.stringify(j)}</script>`).join('\n')}
 </head>
-<body${!legacy && OPEN && STICKY_PAGES.has(path) ? ' class="has-sticky"' : ''}>
-${legacy ? legacyChrome(body) : siteChrome(body, path)}${tail}</body>
+<body${OPEN && STICKY_PAGES.has(path) ? ' class="has-sticky"' : ''}>
+${siteChrome(body, path)}${tail}</body>
 </html>
 `;
 }
@@ -326,16 +297,29 @@ const indexBody = `
 
 <section class="band" id="qui" aria-labelledby="qui-h">
   <div class="wrap section about">
-    <!-- TODO founder photo/name -->
-    <div>
+    <div class="about-intro">
       <p class="kicker">Qui sommes-nous</p>
       <h2 id="qui-h">READ FRANCE SAS, Paris</h2>
       <p>READ FRANCE conçoit des kits documentaires et des outils en ligne qui aident les professionnels à appliquer les nouvelles obligations réglementaires.</p>
-      <p class="small muted">SAS au capital de 1 000 € · 11 rue Rouvet, 75019 Paris · SIREN 988 741 773 · <a href="mentions-legales.html">mentions légales</a></p>
     </div>
-    <div class="contact-card">
-      <p><strong>Une question avant d'acheter ?</strong><br>Écrivez-nous, nous répondons par e-mail.</p>
-      <a class="btn btn-ghost" href="${MAILTO}">${CONTACT}</a>
+    <ul class="founders" aria-label="Fondateurs">
+      <li class="founder">
+        <img class="founder-photo" src="img/tanguy-warsmann.webp" width="112" height="112" alt="Portrait de Tanguy Warsmann" loading="lazy" decoding="async">
+        <div><h3 class="founder-name">Tanguy Warsmann</h3><p class="founder-role">Fondateur &amp; CEO</p></div>
+        <p class="founder-bio">Formé aux lettres à la Sorbonne puis à emlyon business school, il a travaillé chez Cartier, puis chez AR/Factory, où il a piloté la stratégie de contenus shopping de médias comme Ouest-France, 20 Minutes et Le Figaro.</p>
+      </li>
+      <li class="founder">
+        <img class="founder-photo" src="img/vincent-cance.webp" width="112" height="112" alt="Portrait de Vincent Cance" loading="lazy" decoding="async">
+        <div><h3 class="founder-name">Vincent Cance</h3><p class="founder-role">Cofondateur &amp; CTO</p></div>
+        <p class="founder-bio">Développeur full stack web et mobile, il a été cofondateur et CTO de Genipatient, un logiciel de gestion de cabinet pour ostéopathes.</p>
+      </li>
+    </ul>
+    <div class="about-foot">
+      <p class="small muted">READ FRANCE SAS, SAS au capital de 1 000 € · 11 rue Rouvet, 75019 Paris · SIREN 988 741 773 · <a href="mentions-legales.html">mentions légales</a></p>
+      <div class="contact-card">
+        <p><strong>Une question avant d'acheter ?</strong><br>Écrivez-nous, nous répondons par e-mail.</p>
+        <a class="btn btn-ghost" href="${MAILTO}">${CONTACT}</a>
+      </div>
     </div>
   </div>
 </section>
@@ -497,6 +481,7 @@ const cgvProPage = `
 ${cgvProBody({
   config: SALES,
   productName: BRAND,
+  payLabel: PAY_LABEL,
   contact: `par e-mail à <a href="${MAILTO}">${CONTACT}</a>, ou en répondant à l'e-mail de livraison de la commande`,
   legalUrl: 'mentions-legales.html',
   privacyUrl: 'confidentialite.html',
