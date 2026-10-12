@@ -31,13 +31,14 @@ L'ouverture se fait uniquement par `octave-checkout/gas/scripts/go-live.sh`. `sr
 
 ## Pages guides (SEO)
 
-Générées par `scripts/seo-pages.mjs` (un module par page : `seo-page-33.mjs`, `seo-page-audit.mjs`, `seo-page-modeles.mjs`, `seo-page-novembre.mjs`), testées par `tests/guides.test.mjs` :
+Générées par `scripts/seo-pages.mjs` (un module par page : `seo-page-33.mjs`, `seo-page-audit.mjs`, `seo-page-modeles.mjs`, `seo-page-novembre.mjs`, `seo-indicateurs.mjs`), testées par `tests/guides.test.mjs` :
 
 | Page | Contenu |
 |---|---|
 | `indicateurs/indicateur-33.html` | Le nouvel indicateur 33 : texte officiel, champ d'application (colonnes de l'annexe), différence avec 30 et 32, grille d'exemple |
 | `preparer-audit-qualiopi-2026.html` | Règles d'audit (arrêté du 6 juin 2019), calendrier J-60, auto-diagnostic des 33 indicateurs (`src/guides.js`, stockage local, impression), audit à blanc |
 | `modeles-qualiopi-gratuits.html` | L'échantillon gratuit servi depuis le site (`src/telechargements/`, copie de `qualiopi-kit-content/dist/kit-qualiopi-v10-echantillon-1.0.0/` ; PDF de T07, T13, T16 convertis des DOCX par `soffice --headless --convert-to pdf`) |
+| `indicateurs/indicateur-N.html` (N = 1, 2, 3, 7, 12, 14, 15, 19, 20, 27, 30, 32) | Une page par indicateur réécrit : texte 2019 et 2026 avec les ajouts surlignés (diff calculé), champ d'application, règles d'audit, pratique, exemple, preuves et pièges. Contenu propre dans `scripts/seo-indicateurs-data.mjs`, rendu par `scripts/seo-indicateurs.mjs` |
 | `qualiopi-1er-novembre-2026.html` | Date d'application, certificats en cours, état du guide de lecture et des arrêtés, e-mail à copier pour le certificateur |
 
 Sources de faits : `src/data/referentiel-2026.json` (texte officiel des 33 indicateurs et colonnes d'application, relevés sur Légifrance) et `src/data/statut-textes.json` (état des textes d'application). Les dates « vérifié le » des pages viennent de `statut-textes.json` → `checked`.

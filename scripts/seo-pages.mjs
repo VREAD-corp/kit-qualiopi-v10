@@ -37,7 +37,8 @@ export function frTypo(html) {
   return html.split(/(<[^>]+>)/).map((part) => (part.startsWith('<') ? part : part
     .replace(/ ([:;?!»])/g, ' $1')
     .replace(/« /g, '« ')
-    .replace(/(\d) (€|%)/g, '$1 $2'))).join('');
+    .replace(/(\d) (€|%)/g, '$1 $2')
+    .replace(/(\d) (\d{3})(?!\d)/g, '$1 $2'))).join('');
 }
 // Pages en sous-dossier : les liens relatifs du gabarit (styles.css, ./, commander.html…) remontent d'un niveau.
 export function rebase(html, prefix) {

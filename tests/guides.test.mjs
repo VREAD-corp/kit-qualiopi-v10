@@ -12,11 +12,12 @@ import { FREE_FILES } from '../scripts/seo-page-modeles.mjs';
 const DOCS = resolve(import.meta.dirname, '..', 'docs');
 const SITE = 'https://outils.vread.fr/kit-qualiopi-v10/';
 const GUIDES = ['indicateurs/indicateur-33.html', 'preparer-audit-qualiopi-2026.html', 'modeles-qualiopi-gratuits.html', 'qualiopi-1er-novembre-2026.html'];
+const P2 = [1, 2, 3, 7, 12, 14, 15, 19, 20, 27, 30, 32].map((n) => `indicateurs/indicateur-${n}.html`);
 const html = (p) => readFileSync(join(DOCS, p), 'utf8');
 const ld = (h) => [...h.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].map((m) => JSON.parse(m[1]));
 const words = (h) => h.replace(/<(script|style|head)[\s\S]*?<\/\1>/g, ' ').replace(/<header[\s\S]*?<\/header>|<footer class="foot"[\s\S]*?<\/footer>/g, ' ').replace(/<[^>]+>/g, ' ').split(/\s+/).filter(Boolean).length;
 
-for (const p of GUIDES) {
+for (const p of [...GUIDES, ...P2]) {
   test(`${p} : canonique, JSON-LD, sources officielles, un seul CTA payant, sitemap`, () => {
     const h = html(p);
     assert.ok(h.includes(`<link rel="canonical" href="${SITE}${p}">`), 'canonique');
@@ -43,17 +44,25 @@ test('pages en sous-dossier : feuilles de style et liens remontent d\'un niveau'
   assert.ok(!/href="indicateurs\//.test(h), 'aucun lien indicateurs/… relatif depuis indicateurs/');
 });
 
+test('pages indicateur modifié : texte 2019 et 2026 cités, ajouts surlignés', () => {
+  for (const p of P2) {
+    const h = html(p);
+    assert.equal((h.match(/class="official diff"/g) || []).length, 2, p);
+    assert.match(h, /<ins>/, `${p} : ajouts surlignés`);
+  }
+});
+
 test('pages indicateur : au moins 600 mots et le texte officiel cité', () => {
-  for (const p of GUIDES.filter((x) => x.startsWith('indicateurs/'))) {
+  for (const p of [...GUIDES, ...P2].filter((x) => x.startsWith('indicateurs/'))) {
     const h = html(p);
     assert.ok(words(h) >= 600, `${p} : ${words(h)} mots`);
-    assert.match(h, /class="official"/);
+    assert.match(h, /class="official( diff)?"/);
   }
 });
 
 test('hub : la page « Ce qui change » et l\'accueil renvoient vers l\'indicateur 33 et les guides', () => {
   const c = html('changements-v9-v10.html');
-  for (const p of GUIDES) assert.ok(c.includes(`href="${p}"`), `changements → ${p}`);
+  for (const p of [...GUIDES, ...P2]) assert.ok(c.includes(`href="${p}"`), `changements → ${p}`);
   assert.ok(html('index.html').includes('href="indicateurs/indicateur-33.html"'), 'accueil → indicateur 33');
 });
 
