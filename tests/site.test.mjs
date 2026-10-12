@@ -69,7 +69,7 @@ for (const path of PAGES) {
 
 test('liens internes et ressources : 200', async () => {
   const internal = [...links].filter((h) => h.startsWith(base)).map((h) => h.split('#')[0]);
-  for (const extra of ['sitemap.xml', 'robots.txt', 'styles.css', 'og.png', 'favicon.svg', 'img/apercu-d02-checklist-33-indicateurs.webp', 'img/apercu-d04-plan-21-jours.webp', 'img/apercu-t01-fiche-programme.webp', 'img/apercu-t07-procedure-violences.webp']) internal.push(base + extra);
+  for (const extra of ['sitemap.xml', 'robots.txt', 'styles.css', 'og.png', 'favicon.svg', 'img/apercu-d02-checklist-33-indicateurs.webp', 'img/apercu-d04-plan-21-jours.webp', 'img/apercu-t01-fiche-programme.webp', 'img/apercu-t07-procedure-violences.webp', 'img/apercu-t20-convention-formation.webp', 'img/apercu-t22-reglement-interieur.webp', 'img/apercu-t30-questionnaire-chaud.webp']) internal.push(base + extra);
   for (const h of new Set(internal)) {
     const r = await fetch(h);
     assert.equal(r.status, 200, h);

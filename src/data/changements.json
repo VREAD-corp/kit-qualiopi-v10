@@ -1,6 +1,6 @@
 {
-  "version": "1.0.0",
-  "date": "2026-10-11",
+  "version": "1.1.0",
+  "date": "2026-10-13",
   "sources": [
     {
       "id": "decret-2026-728",
@@ -589,6 +589,247 @@
       "id": "D04",
       "title": "Plan d'action en 21 jours pour passer au référentiel 2026",
       "sample": false
+    },
+    {
+      "id": "D05",
+      "title": "Index des documents du kit par indicateur",
+      "sample": false
+    }
+  ],
+  "pack": [
+    {
+      "id": "T20",
+      "title": "Convention de formation professionnelle",
+      "indicators": [
+        4,
+        9
+      ],
+      "sample": false
+    },
+    {
+      "id": "T21",
+      "title": "Contrat de formation (personne qui paie elle-même)",
+      "indicators": [
+        1,
+        9
+      ],
+      "sample": false
+    },
+    {
+      "id": "T22",
+      "title": "Règlement intérieur des stagiaires et apprentis",
+      "indicators": [
+        9,
+        12,
+        15
+      ],
+      "sample": false
+    },
+    {
+      "id": "T23",
+      "title": "Convocation à la formation",
+      "indicators": [
+        9
+      ],
+      "sample": false
+    },
+    {
+      "id": "T24",
+      "title": "Feuille d'émargement par demi-journée (présentiel et distanciel)",
+      "indicators": [
+        10,
+        12,
+        19
+      ],
+      "sample": false
+    },
+    {
+      "id": "T25",
+      "title": "Attestation de fin de formation et d'assiduité",
+      "indicators": [
+        11
+      ],
+      "sample": false
+    },
+    {
+      "id": "T26",
+      "title": "Certificat de réalisation",
+      "indicators": [
+        10,
+        12
+      ],
+      "sample": false
+    },
+    {
+      "id": "T27",
+      "title": "Programme détaillé et déroulé pédagogique",
+      "indicators": [
+        1,
+        5,
+        6,
+        19
+      ],
+      "sample": false
+    },
+    {
+      "id": "T28",
+      "title": "Livret d'accueil du stagiaire et de l'apprenti",
+      "indicators": [
+        9,
+        15,
+        17,
+        26
+      ],
+      "sample": false
+    },
+    {
+      "id": "T29",
+      "title": "Test de positionnement : trame, barème et décision",
+      "indicators": [
+        8
+      ],
+      "sample": false
+    },
+    {
+      "id": "T30",
+      "title": "Questionnaire d'appréciation à chaud (participant)",
+      "indicators": [
+        2,
+        30
+      ],
+      "sample": false
+    },
+    {
+      "id": "T31",
+      "title": "Questionnaire d'évaluation à froid (participant)",
+      "indicators": [
+        2,
+        30
+      ],
+      "sample": false
+    },
+    {
+      "id": "T32",
+      "title": "Questionnaire d'appréciation du financeur",
+      "indicators": [
+        30
+      ],
+      "sample": false
+    },
+    {
+      "id": "T33",
+      "title": "Questionnaire d'appréciation de l'entreprise et du tuteur",
+      "indicators": [
+        4,
+        13,
+        30
+      ],
+      "sample": false
+    },
+    {
+      "id": "T34",
+      "title": "Référent handicap : lettre de mission et recueil des besoins",
+      "indicators": [
+        20,
+        26
+      ],
+      "sample": false
+    },
+    {
+      "id": "T35",
+      "title": "Formations CPF : check-list et suivi du dossier",
+      "indicators": [
+        1,
+        3,
+        16
+      ],
+      "sample": false
+    },
+    {
+      "id": "T36",
+      "title": "Contrat de sous-traitance d'actions de formation",
+      "indicators": [
+        21,
+        27
+      ],
+      "sample": false
+    },
+    {
+      "id": "T37",
+      "title": "Bilan de compétences : convention, confidentialité, synthèse",
+      "indicators": [
+        4,
+        9,
+        11
+      ],
+      "sample": false
+    },
+    {
+      "id": "T38",
+      "title": "Accompagnement VAE : engagement, plan et suivi des délais",
+      "indicators": [
+        9,
+        10,
+        16
+      ],
+      "sample": false
+    },
+    {
+      "id": "T39",
+      "title": "Convention de formation par apprentissage et calendrier d'alternance (CFA)",
+      "indicators": [
+        13,
+        15
+      ],
+      "sample": false
+    }
+  ],
+  "sheets": [
+    {
+      "id": "X01",
+      "title": "Registre des réclamations, difficultés et aléas",
+      "indicators": [
+        31,
+        32
+      ]
+    },
+    {
+      "id": "X02",
+      "title": "Plan d'amélioration continue et analyse des risques",
+      "indicators": [
+        32,
+        33
+      ]
+    },
+    {
+      "id": "X03",
+      "title": "Registre de veille (légale, métiers, pédagogique)",
+      "indicators": [
+        23,
+        24,
+        25
+      ]
+    },
+    {
+      "id": "X04",
+      "title": "Matrice des compétences et suivi des intervenants",
+      "indicators": [
+        18,
+        21,
+        22
+      ]
+    },
+    {
+      "id": "X05",
+      "title": "Suivi des sous-traitants et salariés portés",
+      "indicators": [
+        27
+      ]
+    },
+    {
+      "id": "X06",
+      "title": "Tableau de suivi des 33 indicateurs, avec taux par critère",
+      "indicators": []
     }
   ]
 }
