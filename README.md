@@ -1,6 +1,6 @@
 # Kit Qualiopi V10 — site public
 
-Site : https://vread-corp.github.io/kit-qualiopi-v10/ (GitHub Pages, branche `main`, dossier `/docs`).
+Site : https://outils.vread.fr/kit-qualiopi-v10/ (GitHub Pages, branche `main`, dossier `/docs`).
 
 Préparation au référentiel national qualité applicable au **1er novembre 2026** (décret n° 2026-728 du 1er août 2026, 33 indicateurs) : tableau des changements V9 → V10, échantillon gratuit (Release), présentation du kit complet (79 €, TVA non applicable, art. 293 B du CGI ; vente aux professionnels sur la page « Commander » quand `SALES_OPEN=true` dans `sales.config.json`).
 

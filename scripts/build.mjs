@@ -12,7 +12,7 @@ const SALES = loadSalesConfig(ROOT);
 const OPEN = SALES.SALES_OPEN === true;
 const PRICE = prices(SALES);
 const DATA = JSON.parse(readFileSync(join(ROOT, 'src/data/changements.json'), 'utf8'));
-const SITE = 'https://vread-corp.github.io/kit-qualiopi-v10/';
+const SITE = 'https://outils.vread.fr/kit-qualiopi-v10/';
 const REPO = 'https://github.com/VREAD-corp/kit-qualiopi-v10';
 const SAMPLE_TAG = `echantillon-v${DATA.version}`;
 const SAMPLE_FILE = `kit-qualiopi-v10-echantillon-${DATA.version}.zip`;
@@ -220,15 +220,15 @@ const indexBody = `
 </script>
 `;
 
-// Organisation : même @id que le site vitrine (https://vread-corp.github.io/) pour que les moteurs fusionnent les entités.
-const ORG_ID = 'https://vread-corp.github.io/#org';
+// Organisation : même @id que le site vitrine (https://outils.vread.fr/) pour que les moteurs fusionnent les entités.
+const ORG_ID = 'https://outils.vread.fr/#org';
 const orgLd = {
   '@context': 'https://schema.org',
   '@type': 'Organization',
   '@id': ORG_ID,
   name: 'READ FRANCE SAS',
   legalName: 'READ FRANCE',
-  url: 'https://vread-corp.github.io/',
+  url: 'https://outils.vread.fr/',
   address: { '@type': 'PostalAddress', streetAddress: '11 rue Rouvet', postalCode: '75019', addressLocality: 'Paris', addressCountry: 'FR' },
   identifier: { '@type': 'PropertyValue', propertyID: 'SIREN', value: '988741773' },
 };

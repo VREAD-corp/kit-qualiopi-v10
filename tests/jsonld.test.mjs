@@ -10,8 +10,8 @@ import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 
 const ROOT = resolve(import.meta.dirname, '..');
-const SITE = 'https://vread-corp.github.io/kit-qualiopi-v10/';
-const ORG_ID = 'https://vread-corp.github.io/#org';
+const SITE = 'https://outils.vread.fr/kit-qualiopi-v10/';
+const ORG_ID = 'https://outils.vread.fr/#org';
 const config = JSON.parse(readFileSync(join(ROOT, 'sales.config.json'), 'utf8'));
 
 function jsonld(html) {
@@ -32,7 +32,7 @@ test('index.html : JSON-LD valide, Organization (SIREN), FAQPage', () => {
   assert.equal(org['@id'], ORG_ID);
   assert.equal(org.name, 'READ FRANCE SAS');
   assert.equal(org.legalName, 'READ FRANCE');
-  assert.equal(org.url, 'https://vread-corp.github.io/');
+  assert.equal(org.url, 'https://outils.vread.fr/');
   assert.deepEqual(org.identifier, { '@type': 'PropertyValue', propertyID: 'SIREN', value: '988741773' });
   assert.equal(org.address['@type'], 'PostalAddress');
   assert.equal(org.address.streetAddress, '11 rue Rouvet');
