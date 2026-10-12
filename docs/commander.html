@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Commander le Kit Qualiopi V10 — professionnels</title>
+<meta name="description" content="Commande du Kit Qualiopi V10 par les entreprises (SIREN) : 79,00 € net de taxe (TVA non applicable, art. 293 B du CGI), paiement par carte avec Stripe, fichier et facture par e-mail.">
+<meta name="robots" content="noindex">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:site_name" content="Kit Qualiopi V10">
+<meta property="og:title" content="Commander le Kit Qualiopi V10 — professionnels">
+<meta property="og:description" content="Commande du Kit Qualiopi V10 par les entreprises (SIREN) : 79,00 € net de taxe (TVA non applicable, art. 293 B du CGI), paiement par carte avec Stripe, fichier et facture par e-mail.">
+<meta property="og:url" content="https://vread-corp.github.io/kit-qualiopi-v10/commander.html">
+<meta property="og:image" content="https://vread-corp.github.io/kit-qualiopi-v10/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#1d4ed8">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="styles.css">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://js.stripe.com https://*.js.stripe.com; frame-src https://js.stripe.com https://*.js.stripe.com https://hooks.stripe.com https://link.com https://*.link.com; connect-src 'self' https://script.google.com https://script.googleusercontent.com https://api.stripe.com https://link.com https://*.link.com; img-src 'self' data: https://*.stripe.com https://*.link.com; style-src 'self' 'unsafe-inline'; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
+
+</head>
+<body>
+<a class="skip" href="#contenu">Aller au contenu</a>
+<header class="top">
+  <div class="wrap top-in">
+    <a class="logo" href="./">Kit Qualiopi V10<span>référentiel 2026 · 33 indicateurs</span></a>
+    <nav aria-label="Navigation principale">
+      <a href="./#contenu-kit">Le kit</a>
+      <a href="changements-v9-v10.html">Ce qui change</a>
+      <a href="./#faq">FAQ</a>
+    </nav>
+  </div>
+</header>
+<main id="contenu">
+
+<section class="wrap section">
+  <p class="eyebrow"><a href="./">Kit Qualiopi V10</a> › Commander</p>
+  <h1>Commander le Kit Qualiopi V10</h1>
+  <p class="lead">Kit complet : 4 synthèses et 19 modèles éditables. 79,00 € net de taxe (TVA non applicable, art. 293 B du CGI).</p>
+  <section class="checkout" aria-labelledby="commander-h">
+<h2 id="commander-h">Commander</h2>
+<p>Vente réservée aux professionnels (entreprises immatriculées en France, SIREN obligatoire). Le fichier ZIP et la facture acquittée sont envoyés par e-mail dès le paiement confirmé.</p>
+<div class="checkout-price card"><span class="small muted">Prix</span><br><strong id="product-name" data-static="1">Kit Qualiopi V10</strong> — <span class="price-inline" id="product-price">79,00 € net (TVA non applicable, art. 293 B du CGI)</span></div>
+<form id="octave-pay" class="checkout-form card" novalidate>
+  <label class="field"><span>E-mail professionnel (réception du fichier et de la facture)</span>
+    <input type="email" name="email" autocomplete="email" required maxlength="254"></label>
+  <label class="field"><span>Raison sociale</span>
+    <input type="text" name="company" autocomplete="organization" required minlength="2" maxlength="200"></label>
+  <label class="field"><span>SIREN (9 chiffres)</span>
+    <input type="text" name="siren" inputmode="numeric" required pattern="\s*(\d\s*){9}" maxlength="11" aria-describedby="siren-help"></label>
+  <p id="siren-help" class="small muted">Le numéro est contrôlé (clé de Luhn) avant tout paiement.</p>
+  <fieldset class="field-group"><legend>Adresse de facturation (figure sur la facture)</legend>
+    <label class="field"><span>Adresse</span>
+      <input type="text" name="addressLine1" autocomplete="address-line1" required minlength="3" maxlength="200"></label>
+    <label class="field"><span>Complément d’adresse (facultatif)</span>
+      <input type="text" name="addressLine2" autocomplete="address-line2" maxlength="200"></label>
+    <label class="field"><span>Code postal</span>
+      <input type="text" name="postalCode" autocomplete="postal-code" inputmode="numeric" required pattern="\s*\d{5}\s*" maxlength="7"></label>
+    <label class="field"><span>Ville</span>
+      <input type="text" name="city" autocomplete="address-level2" required maxlength="100"></label>
+    <p class="small muted">Pays : France.</p>
+  </fieldset>
+  <label class="check"><input type="checkbox" name="terms" required>
+    <span>Je commande au nom et pour le compte de l’entreprise ci-dessus, pour un usage professionnel, et j’accepte les <a id="terms-link" href="cgv-pro.html" target="_blank" rel="noopener">conditions générales de vente aux professionnels</a> (version du 12 octobre 2026).</span></label>
+  <div id="payment-element"></div>
+  <p id="pay-error" class="status err" role="alert" hidden></p>
+  <button type="submit" id="pay-button" class="pay-button" disabled>Commander avec obligation de paiement</button>
+  <p class="small muted">Paiement sécurisé par carte bancaire avec Stripe : vos données de carte sont saisies dans un cadre Stripe et ne transitent pas par nos serveurs.</p>
+  <noscript><p class="status err">Le paiement nécessite JavaScript.</p></noscript>
+</form>
+</section>
+</section>
+</main>
+<footer class="foot">
+  <div class="wrap">
+    <p class="foot-brand"><strong>Kit Qualiopi V10</strong> — un produit de READ FRANCE SAS</p>
+    <p class="small">Produit indépendant : ni édité, ni validé par l'État, France compétences ou un organisme certificateur. Qualiopi est une marque de l'État. Information, pas un conseil juridique ; aucune garantie de certification.</p>
+    <nav aria-label="Liens légaux" class="foot-nav">
+      <a href="mentions-legales.html">Mentions légales</a>
+      <a href="confidentialite.html">Confidentialité</a>
+      <a href="cgv-pro.html">CGV professionnels</a>
+      <a href="https://github.com/VREAD-corp/kit-qualiopi-v10/issues">Contact</a>
+    </nav>
+  </div>
+</footer>
+<script src="checkout/checkout-config.js"></script>
+<script src="https://js.stripe.com/v3/"></script>
+<script src="checkout/pay.js"></script>
+</body>
+</html>
