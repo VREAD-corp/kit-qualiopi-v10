@@ -19,7 +19,7 @@ const REPO = 'https://github.com/VREAD-corp/kit-qualiopi-v10';
 const SAMPLE_TAG = `echantillon-v${DATA.version}`;
 const SAMPLE_FILE = `kit-qualiopi-v10-echantillon-${DATA.version}.zip`;
 const SAMPLE_URL = `${REPO}/releases/download/${SAMPLE_TAG}/${SAMPLE_FILE}`;
-const LASTMOD = '2026-10-12';
+const LASTMOD = '2026-10-13';
 const PUBLISHED = '2026-10-11';
 const BRAND = 'Kit Qualiopi V10';
 // « Commander » button ({prix} = the price, e.g. « Payer 129 € et recevoir le kit Qualiopi V10 »).
@@ -138,10 +138,10 @@ const templatesFree = DATA.templates.filter((t) => t.sample);
 
 // Aperçus : vraies premières pages des documents du kit (rendues depuis les DOCX/PDF du dépôt de contenu).
 const PREVIEWS = [
-  { file: 'apercu-d02-checklist-33-indicateurs.webp', id: 'D02', title: 'Check-list des preuves, 33 indicateurs', text: 'Pour chaque indicateur : à qui il s\'applique, ce qui change, les preuves possibles, les pièges fréquents et le modèle à utiliser.', alt: 'Première page de la check-list des preuves attendues pour les 33 indicateurs : indicateur 1, preuves possibles à cocher, pièges fréquents et grille de suivi.' },
-  { file: 'apercu-d04-plan-21-jours.webp', id: 'D04', title: 'Plan d\'action en 21 jours', text: 'Une action par jour, le livrable attendu et le modèle à utiliser, de l\'état des lieux à l\'audit à blanc.', alt: 'Première page du plan d\'action en 21 jours : tableaux jour par jour avec action, livrable et modèle, semaines 1 et 2.' },
-  { file: 'apercu-t01-fiche-programme.webp', id: 'T01', title: 'Fiche programme de formation', text: 'Les rubriques exigées par l\'indicateur 1 modifié, avec les zones « À compléter » surlignées.', alt: 'Première page du modèle T01 fiche programme de formation : public et prérequis, objectifs évaluables, contenu et déroulé, avec des zones à compléter surlignées en jaune.' },
-  { file: 'apercu-t07-procedure-violences.webp', id: 'T07', title: 'Procédure violences et ruptures', text: 'La procédure exigée par l\'indicateur 12 modifié : rôles, prévention, signalement, traitement.', alt: 'Première page du modèle T07 procédure de prévention des ruptures et des violences, harcèlement et discriminations : objet, rôles et prévention.', free: true },
+  { file: 'apercu-d02-checklist-33-indicateurs.webp', id: 'D02', title: 'Check-list des preuves, 33 indicateurs', text: 'Pour chaque indicateur : à qui il s\'applique, ce qui change, les preuves possibles, les pièges fréquents et le modèle à utiliser.', alt: 'Page 1 de la check-list D02 des preuves attendues pour les 33 indicateurs : l\'indicateur 1 avec ses preuves à cocher, ses pièges fréquents et une grille de suivi.' },
+  { file: 'apercu-d04-plan-21-jours.webp', id: 'D04', title: 'Plan d\'action en 21 jours', text: 'Une action par jour, le livrable attendu et le modèle à utiliser, de l\'état des lieux à l\'audit à blanc.', alt: 'Début du plan d\'action D04 en 21 jours : un tableau par semaine, avec pour chaque jour l\'action, le livrable et le modèle (semaines 1 et 2).' },
+  { file: 'apercu-t01-fiche-programme.webp', id: 'T01', title: 'Fiche programme de formation', text: 'Les rubriques exigées par l\'indicateur 1 modifié, avec les zones « À compléter » surlignées.', alt: 'Modèle T01, fiche programme de formation : rubriques public et prérequis, objectifs évaluables, contenu et déroulé, zones à compléter surlignées en jaune.' },
+  { file: 'apercu-t07-procedure-violences.webp', id: 'T07', title: 'Procédure violences et ruptures', text: 'La procédure que l\'indicateur 12 modifié demande désormais : qui fait quoi, comment prévenir, comment signaler, comment traiter.', alt: 'Modèle T07, procédure de prévention des ruptures, des violences, du harcèlement et des discriminations : page 1 avec l\'objet, les rôles et la prévention.', free: true },
 ];
 const img = (p, { cls = '', lazy = true, priority = false } = {}) => `<img${cls ? ` class="${cls}"` : ''} src="img/${p.file}" width="760" height="1075" alt="${esc(p.alt)}"${lazy ? ' loading="lazy"' : ''}${priority ? ' fetchpriority="high"' : ''} decoding="async">`;
 
@@ -165,7 +165,7 @@ const faq = [
   ['Le kit garantit-il la certification ?', 'Non. Seul un organisme certificateur décide, après audit. Le kit vous aide à organiser vos preuves ; il ne remplace ni le texte officiel, ni le guide de lecture, ni un conseil juridique ou un accompagnement.'],
 ];
 
-const priceNote = PRICE.std ? `TTC, soit ${PRICE.ht} HT + ${PRICE.vat} de TVA (20 %)` : 'Prix net — TVA non applicable, art. 293 B du CGI';
+const priceNote = PRICE.std ? `TTC, soit ${PRICE.ht} HT + ${PRICE.vat} de TVA (20 %)` : 'Prix net, TVA non applicable (art. 293 B du CGI)';
 
 const heroCta = OPEN
   ? `<div class="cta">
@@ -209,8 +209,8 @@ const indexBody = `
   <div class="wrap hero-in">
     <div class="hero-copy">
       <p class="countdown" id="countdown"><span class="countdown-d" id="jours" hidden></span><span>Nouveau référentiel en vigueur le <strong>1er novembre 2026</strong></span></p>
-      <h1>Nouveau référentiel Qualiopi au 1er novembre&nbsp;: préparez vos 33 indicateurs pour l'audit, sans consultant</h1>
-      <p class="lead">La check-list des preuves pour chaque indicateur, un plan d'action en 21 jours et ${DATA.templates.length} modèles Word et LibreOffice à adapter à votre organisme.</p>
+      <h1>Kit pour le nouveau référentiel Qualiopi 2026&nbsp;: les 33&nbsp;indicateurs, ${DATA.templates.length}&nbsp;modèles, ${PRICE_TAG}</h1>
+      <p class="lead">Pour les organismes de formation, CFA et centres de bilans audités après le 1er novembre 2026, sans consultant ni responsable qualité. La check-list des preuves indicateur par indicateur, un plan d'action en 21 jours et ${DATA.templates.length} modèles Word et LibreOffice à remplir avec vos informations.</p>
       ${heroCta}
     </div>
     <div class="hero-visual">
@@ -242,13 +242,13 @@ const indexBody = `
     </tbody>
   </table>
   </div>
-  <p class="small muted">Guide de lecture officiel du référentiel 2026 : ${GUIDE_STATUS}. Le kit sera mis à jour à sa parution. <a href="changements-v9-v10.html">Tableau détaillé : avant, après, ce qu'il faut faire →</a></p>
+  <p class="small muted">Guide de lecture officiel du référentiel 2026 : ${GUIDE_STATUS}. Le kit sera mis à jour à sa parution. <a href="changements-v9-v10.html">Le tableau détaillé, gratuit, donne pour chacun le texte de 2019, celui de 2026 et ce qu'il faut faire.</a></p>
 </section>
 
 <section class="band" id="contenu-kit" aria-labelledby="kit-h">
   <div class="wrap section">
     <p class="kicker">Ce que vous obtenez</p>
-    <h2 id="kit-h">Tout ce qu'il faut pour réunir vos preuves, prêt à adapter</h2>
+    <h2 id="kit-h">4 synthèses et ${DATA.templates.length} modèles, dont ${templatesFree.length} dans l'échantillon gratuit</h2>
     <ul class="gallery">
       ${PREVIEWS.map((p) => `<li>
         <figure>
@@ -276,24 +276,25 @@ const indexBody = `
 
 <section class="wrap section" aria-labelledby="who-h">
   <p class="kicker">Pour qui</p>
-  <h2 id="who-h">Conçu pour les petites structures sans responsable qualité</h2>
+  <h2 id="who-h">Pour les structures de 1 à 10 personnes sans responsable qualité</h2>
   <ul class="cards cards-3">
-    <li class="card"><h3>Organismes de formation</h3><p>Déjà certifiés et audités après le 1er novembre 2026, ou en préparation d'un audit initial. Particulièrement utile aux structures de 1 à 10 personnes.</p></li>
-    <li class="card"><h3>CFA</h3><p>Les indicateurs 14, 15 et 20 sont renforcés et l'indicateur 33 est créé : modèles dédiés (livret apprenti, gouvernance, évaluation des enseignements).</p></li>
+    <li class="card"><h3>Organismes de formation</h3><p>Déjà certifiés et audités après le 1er novembre 2026, ou en préparation d'un audit initial.</p></li>
+    <li class="card"><h3>CFA</h3><p>Les indicateurs 14, 15 et 20 sont renforcés et l'indicateur 33 est créé. Trois modèles leur sont propres : T08 livret de l'apprenti, T19 gouvernance et partenaires, T17 évaluation des enseignements.</p></li>
     <li class="card"><h3>Bilans de compétences et VAE</h3><p>Les indicateurs communs modifiés (1, 2, 12, 19, 27, 32) vous concernent aussi. La check-list indique ce qui ne s'applique pas à votre activité.</p></li>
   </ul>
+  <p class="small muted">Le kit vous servira peu si un responsable qualité ou un consultant a déjà mis vos procédures à jour du décret n° 2026-728 : le tableau des changements, gratuit, suffira pour vérifier son travail.</p>
 </section>
 
 <section class="band" id="offre" aria-labelledby="price-h">
   <div class="wrap section offer-grid">
     <div class="offer-copy">
       <p class="kicker">Tarif</p>
-      <h2 id="price-h">Tout le kit, en un seul achat</h2>
-      <p class="lead">Un prix fixe pour tout le kit, sans abonnement. Vous gardez la main : les modèles se remplissent avec vos propres informations, à votre rythme.</p>
+      <h2 id="price-h">${PRICE_TAG} une fois, pour tout le kit</h2>
+      <p class="lead">Pas d'abonnement ni de rendez-vous. Vous remplissez les modèles vous-même ; le plan d'action compte 1 à 2 heures par jour pendant 21 jours.</p>
     </div>
     ${offerCard}
     <div class="sample-box">
-        <p><strong>Pas encore décidé ?</strong> L'échantillon gratuit contient le tableau des changements et ${templatesFree.length} modèles complets (indicateurs 12, 27 et 32). Sans inscription, sans e-mail.</p>
+        <p>Avant d'acheter, l'échantillon gratuit contient le tableau des changements et ${templatesFree.length} modèles complets (indicateurs 12, 27 et 32). Sans inscription, sans e-mail.</p>
         <a class="btn btn-ghost" href="${SAMPLE_URL}" download data-mesure="free_download">Télécharger l'échantillon gratuit<span class="btn-sub">ZIP · DOCX, ODT, PDF</span></a>
     </div>
   </div>
@@ -313,7 +314,7 @@ const indexBody = `
     <div class="about-intro">
       <p class="kicker">Qui sommes-nous</p>
       <h2 id="qui-h">READ FRANCE SAS, Paris</h2>
-      <p>READ FRANCE conçoit des kits documentaires et des outils en ligne qui aident les professionnels à appliquer les nouvelles obligations réglementaires.</p>
+      <p>Nous avons écrit ce kit à partir du décret n° 2026-728 et de son annexe, comparés indicateur par indicateur au référentiel de 2019. Le tableau des changements qui en sort est en accès libre depuis le 11 octobre 2026.</p>
     </div>
     <ul class="founders" aria-label="Fondateurs">
       <li class="founder">
@@ -330,7 +331,7 @@ const indexBody = `
     <div class="about-foot">
       <p class="small muted">READ FRANCE SAS, SAS au capital de 1 000 € · 11 rue Rouvet, 75019 Paris · SIREN 988 741 773 · <a href="mentions-legales.html">mentions légales</a></p>
       <div class="contact-card">
-        <p><strong>Une question avant d'acheter ?</strong><br>Écrivez-nous, nous répondons par e-mail.</p>
+        <p>Une question avant d'acheter ? Écrivez-nous. Octave, l'assistant IA de READ FRANCE, répond ou transmet votre message à l'un des deux fondateurs.</p>
         <a class="btn btn-ghost" href="${MAILTO}">${CONTACT}</a>
       </div>
     </div>
@@ -393,11 +394,16 @@ const productLd = {
 const faqLd = { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: faq.map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: stripTags(a) } })) };
 
 // ---------------------------------------------------------------- Tableau des changements
+// Table row → detail: the indicator page once it exists (indicateurs/indicateur-N.html), else the section on this page.
+const indicatorLink = (i) => {
+  if (existsSync(join(OUT, 'indicateurs', `indicateur-${i.n}.html`))) return `<a href="indicateurs/indicateur-${i.n}.html">${esc(i.titre)}</a>`;
+  return changed.includes(i) ? `<a href="#indicateur-${i.n}">${esc(i.titre)}</a>` : esc(i.titre);
+};
 const changesBody = `
 <section class="wrap section">
   <p class="eyebrow"><a href="./">${BRAND}</a> › Ce qui change</p>
-  <h1>Qualiopi V10 : tableau des changements du référentiel au 1er novembre 2026</h1>
-  <p class="lead">Le décret n° 2026-728 du 1er août 2026 remplace la liste des indicateurs du référentiel national qualité. Les 7 critères sont inchangés ; on passe de 32 à 33 indicateurs. Voici, indicateur par indicateur, ce qui change et ce qu'il faut faire.</p>
+  <h1>Référentiel Qualiopi 2026&nbsp;: ce qui change au 1er novembre, indicateur par indicateur</h1>
+  <p class="lead">Le décret n° 2026-728 du 1er août 2026 remplace la liste des indicateurs du référentiel national qualité, souvent appelé « Qualiopi V10 ». Les 7 critères sont inchangés ; on passe de 32 à 33 indicateurs. Ce tableau V9 → V10 donne, pour chaque indicateur modifié, le texte de 2019, celui de 2026 et ce qu'il faut faire.</p>
   <div class="callout" role="note"><p><strong>À savoir.</strong> « V9 » et « V10 » sont des appellations courantes, pas des termes officiels. Les libellés ci-dessous sont des reformulations : le texte publié sur <a href="${esc(DATA.sources[0].url)}" rel="noopener">Légifrance</a> fait foi.</p></div>
   <h2>En bref</h2>
   <ul>
@@ -411,7 +417,7 @@ const changesBody = `
   <h2>Indicateurs modifiés ou nouveaux</h2>
   ${changed.map((i) => `
   <article class="change" id="indicateur-${i.n}">
-    <h3><span class="badge ${i.change}">${esc(i.changeLabel)}</span> Indicateur ${i.n} — ${esc(i.titre)}</h3>
+    <h3><span class="badge ${i.change}">${esc(i.changeLabel)}</span> Indicateur ${i.n}. ${esc(i.titre)}</h3>
     <p class="small muted">Concerne : ${esc(i.scope)}</p>
     <dl>
       <dt>Avant (référentiel 2019)</dt><dd>${esc(i.v9)}</dd>
@@ -423,16 +429,16 @@ const changesBody = `
   <h2>Les 33 indicateurs en un coup d'œil</h2>
   <div class="table-wrap" tabindex="0" role="region" aria-label="Tableau des 33 indicateurs">
   <table>
-    <caption class="sr">Statut de chaque indicateur au 1er novembre 2026</caption>
+    <caption class="sr">Statut de chaque indicateur au 1er novembre 2026 (référentiel V9 → V10)</caption>
     <thead><tr><th scope="col">N°</th><th scope="col">Critère</th><th scope="col">Intitulé (reformulé)</th><th scope="col">Concerne</th><th scope="col">Statut</th></tr></thead>
     <tbody>
-    ${DATA.indicators.map((i) => `<tr><td>${i.n}</td><td>${i.critere}</td><td>${esc(i.titre)}</td><td>${esc(i.scope)}</td><td><span class="badge ${i.change}">${esc(i.changeLabel)}</span></td></tr>`).join('\n    ')}
+    ${DATA.indicators.map((i) => `<tr><td>${i.n}</td><td>${i.critere}</td><td>${indicatorLink(i)}</td><td>${esc(i.scope)}</td><td><span class="badge ${i.change}">${esc(i.changeLabel)}</span></td></tr>`).join('\n    ')}
     </tbody>
   </table>
   </div>
 
   <h2>Les 7 critères (inchangés)</h2>
-  <ol>${DATA.criteria.map((c) => `<li>${esc(c.title)} — indicateurs ${c.range[0]} à ${c.range[1]}</li>`).join('')}</ol>
+  <ol>${DATA.criteria.map((c) => `<li>${esc(c.title)} (indicateurs ${c.range[0]} à ${c.range[1]})</li>`).join('')}</ol>
 
   <h2>Points encore en attente</h2>
   <ul>${DATA.pending.map((p) => `<li>${esc(p)}</li>`).join('')}</ul>
@@ -512,14 +518,14 @@ const commanderPage = `
 <section class="wrap section">
   <p class="eyebrow"><a href="./">${BRAND}</a> › Commander</p>
   <h1>Commander le ${BRAND}</h1>
-  <p class="lead">Kit complet : 4 synthèses et ${DATA.templates.length} modèles éditables. ${PRICE.sentence}.</p>
+  <p class="lead">4 synthèses (DOCX, ODT, PDF) et ${DATA.templates.length} modèles éditables (DOCX, ODT) pour le référentiel Qualiopi applicable au 1er novembre 2026. ${PRICE.sentence}.</p>
   ${orderFormHtml({ config: SALES, productName: BRAND, cgvUrl: 'cgv-pro.html', payLabel: PAY_LABEL })}
 </section>`;
 
 const orderPage = `
 <section class="wrap section">
   ${orderPageBody()}
-  <p class="small muted">Une question ? Répondez à l'e-mail de livraison. <a href="./">Retour à l'accueil du ${BRAND}</a></p>
+  <p class="small muted">Une question sur la commande : répondez à l'e-mail de livraison ou écrivez à ${mail}. <a href="./">Retour à l'accueil du ${BRAND}</a></p>
 </section>`;
 
 const notFoundBody = `<section class="wrap section"><h1>Page introuvable</h1><p><a href="./">Retour à l'accueil du ${BRAND}</a></p></section>`;
@@ -528,15 +534,15 @@ const notFoundBody = `<section class="wrap section"><h1>Page introuvable</h1><p>
 mkdirSync(OUT, { recursive: true });
 const pages = [
   { path: '', file: 'index.html', title: 'Kit Qualiopi V10 : modèles du nouveau référentiel Qualiopi 2026', description: `Nouveau référentiel Qualiopi 2026 : check-list des 33 indicateurs, tableau V9 → V10 et ${DATA.templates.length} modèles Word et LibreOffice prêts à adapter. Échantillon gratuit.`, body: indexBody, jsonld: OPEN ? [webPageLd, productLd, faqLd] : [webPageLd, faqLd], priority: '1.0' },
-  { path: 'changements-v9-v10.html', file: 'changements-v9-v10.html', title: 'Nouveau référentiel Qualiopi 2026 : ce qui change (V9 → V10)', description: `Nouveau référentiel Qualiopi 2026 : les ${modifiedNums.length} indicateurs modifiés et le nouvel indicateur 33, avant / après et actions à mener. Source : décret n° 2026-728.`, body: changesBody, jsonld: [{ '@context': 'https://schema.org', '@type': 'Article', headline: 'Qualiopi V10 : tableau des changements du référentiel au 1er novembre 2026', datePublished: PUBLISHED, dateModified: LASTMOD, inLanguage: 'fr', author: ORG_REF, publisher: ORG_REF }], priority: '0.9' },
+  { path: 'changements-v9-v10.html', file: 'changements-v9-v10.html', title: 'Nouveau référentiel Qualiopi 2026 : ce qui change au 1er novembre (V10)', description: `Nouveau référentiel Qualiopi 2026 : les ${modifiedNums.length} indicateurs modifiés et le nouvel indicateur 33, avant / après et actions à mener. Source : décret n° 2026-728.`, body: changesBody, jsonld: [{ '@context': 'https://schema.org', '@type': 'Article', headline: 'Référentiel Qualiopi 2026 : ce qui change au 1er novembre, indicateur par indicateur', datePublished: PUBLISHED, dateModified: LASTMOD, inLanguage: 'fr', author: ORG_REF, publisher: ORG_REF }], priority: '0.9' },
   { path: 'mentions-legales.html', file: 'mentions-legales.html', title: 'Mentions légales — Kit Qualiopi V10', description: 'Éditeur, hébergeur et propriété intellectuelle du site Kit Qualiopi V10 (READ FRANCE SAS).', body: mentionsBody, priority: '0.2' },
   { path: 'confidentialite.html', file: 'confidentialite.html', title: 'Confidentialité — Kit Qualiopi V10', description: 'Aucun cookie, aucune donnée personnelle collectée par le site Kit Qualiopi V10, mesure d\'audience anonyme uniquement.', body: privacyBody, priority: '0.2' },
   { path: 'cgv-pro.html', file: 'cgv-pro.html', title: 'Conditions générales de vente aux professionnels — Kit Qualiopi V10', description: 'CGV B2B du Kit Qualiopi V10 (READ FRANCE SAS), version du 12 octobre 2026 : vente aux professionnels, prix, paiement Stripe, livraison par e-mail, licence, facturation.', body: cgvProPage, priority: '0.2', noindex: !OPEN },
   { path: 'cgv.html', file: 'cgv.html', title: 'Conditions générales de vente — Kit Qualiopi V10', description: 'Le Kit Qualiopi V10 est vendu uniquement aux professionnels : voir les conditions générales de vente aux professionnels.', body: cgvBody, priority: '0.1', noindex: true },
   ...(OPEN
     ? [
-        { path: 'commander.html', file: 'commander.html', title: 'Commander le Kit Qualiopi V10 — professionnels', description: `Commande du Kit Qualiopi V10 par les entreprises (SIREN) : ${PRICE.sentence}, paiement par carte avec Stripe, fichier et facture par e-mail.`, body: commanderPage, noindex: true, head: `<meta http-equiv="Content-Security-Policy" content="${checkoutCsp(SALES)}">\n`, tail: `<script src="checkout/checkout-config.js"></script>\n<script src="https://js.stripe.com/v3/"></script>\n<script src="checkout/pay.js"></script>\n${QUOTES ? '<script src="checkout/devis.js"></script>\n' : ''}` },
-        { path: 'commande.html', file: 'commande.html', title: 'Votre commande — Kit Qualiopi V10', description: 'Confirmation de la commande du Kit Qualiopi V10 : envoi du fichier et de la facture par e-mail.', body: orderPage, noindex: true, head: `<meta http-equiv="Content-Security-Policy" content="${orderCsp(SALES)}">\n<meta name="referrer" content="no-referrer">\n`, tail: '<script src="checkout/checkout-config.js"></script>\n<script src="checkout/order.js"></script>\n' },
+        { path: 'commander.html', file: 'commander.html', title: 'Commander le Kit Qualiopi V10 (vente aux professionnels)', description: `Commande du Kit Qualiopi V10 par les entreprises (SIREN) : ${PRICE.sentence}, paiement par carte avec Stripe, fichier et facture par e-mail.`, body: commanderPage, noindex: true, head: `<meta http-equiv="Content-Security-Policy" content="${checkoutCsp(SALES)}">\n`, tail: `<script src="checkout/checkout-config.js"></script>\n<script src="https://js.stripe.com/v3/"></script>\n<script src="checkout/pay.js"></script>\n${QUOTES ? '<script src="checkout/devis.js"></script>\n' : ''}` },
+        { path: 'commande.html', file: 'commande.html', title: 'Votre commande du Kit Qualiopi V10', description: 'Confirmation de la commande du Kit Qualiopi V10 : envoi du fichier et de la facture par e-mail.', body: orderPage, noindex: true, head: `<meta http-equiv="Content-Security-Policy" content="${orderCsp(SALES)}">\n<meta name="referrer" content="no-referrer">\n`, tail: '<script src="checkout/checkout-config.js"></script>\n<script src="checkout/order.js"></script>\n' },
       ]
     : []),
 ];
