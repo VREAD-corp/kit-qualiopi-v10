@@ -20,6 +20,8 @@ const SAMPLE_URL = `${REPO}/releases/download/${SAMPLE_TAG}/${SAMPLE_FILE}`;
 const LASTMOD = '2026-10-12';
 const PUBLISHED = '2026-10-11';
 const BRAND = 'Kit Qualiopi V10';
+// « Commander » button ({prix} = the price, e.g. « Payer 79 € et recevoir le kit Qualiopi V10 »).
+const PAY_LABEL = 'Payer {prix} et recevoir le kit Qualiopi V10';
 
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const changed = DATA.indicators.filter((i) => i.change === 'modifie' || i.change === 'nouveau');
@@ -374,7 +376,7 @@ const commanderPage = `
   <p class="eyebrow"><a href="./">${BRAND}</a> › Commander</p>
   <h1>Commander le ${BRAND}</h1>
   <p class="lead">Kit complet : 4 synthèses et ${DATA.templates.length} modèles éditables. ${PRICE.sentence}.</p>
-  ${orderFormHtml({ config: SALES, productName: BRAND, cgvUrl: 'cgv-pro.html' })}
+  ${orderFormHtml({ config: SALES, productName: BRAND, cgvUrl: 'cgv-pro.html', payLabel: PAY_LABEL })}
 </section>`;
 
 const orderPage = `
@@ -407,7 +409,7 @@ for (const p of pages) writeFileSync(join(OUT, p.file), layout(p));
 if (OPEN) {
   mkdirSync(join(OUT, 'checkout'), { recursive: true });
   for (const f of ['pay.js', 'order.js']) copyFileSync(join(ROOT, 'src', 'checkout', f), join(OUT, 'checkout', f));
-  writeFileSync(join(OUT, 'checkout', 'checkout-config.js'), checkoutConfigJs(SALES, { termsUrl: `${SITE}cgv-pro.html`, orderPage: 'commande.html' }));
+  writeFileSync(join(OUT, 'checkout', 'checkout-config.js'), checkoutConfigJs(SALES, { termsUrl: `${SITE}cgv-pro.html`, orderPage: 'commande.html', payLabel: PAY_LABEL }));
 }
 writeFileSync(join(OUT, '404.html'), layout({ path: '404.html', title: 'Page introuvable — Kit Qualiopi V10', description: 'Page introuvable.', body: notFoundBody, noindex: true }));
 writeFileSync(join(OUT, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>

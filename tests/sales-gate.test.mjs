@@ -150,13 +150,15 @@ test('SALES_OPEN=true (test build): Commander page, order page, config, sitemap,
   assert.match(cmd, /<meta name="robots" content="noindex">/);
   assert.match(cmd, /Content-Security-Policy[^>]*js\.stripe\.com[^>]*script\.google\.com/);
   assert.match(cmd, /<script src="https:\/\/js\.stripe\.com\/v3\/"><\/script>/);
-  assert.match(cmd, /Commander avec obligation de paiement/);
+  assert.match(cmd, /<button type="submit" id="pay-button" class="pay-button" disabled>Payer 79\u00a0€ et recevoir le kit Qualiopi V10<\/button>/);
+  assert.match(cmd, /id="payment-loading"[^>]*>Chargement du paiement sécurisé…</);
   assert.match(read(openDir, 'commande.html'), /id="order-status"/);
   assert.match(read(openDir, 'commande.html'), /<meta name="robots" content="noindex">/);
   const conf = read(openDir, 'checkout/checkout-config.js');
   assert.match(conf, /"product":"kit-qualiopi-v10"/);
   assert.match(conf, /"orderPage":"commande\.html"/);
   assert.match(conf, /cgv-pro\.html/);
+  assert.match(conf, new RegExp(`"amount":${OPEN_CFG.amount},"currency":"eur","termsVersion":"cgv-pro-2026-10-12"`));
   for (const f of ['pay.js', 'order.js']) assert.equal(read(openDir, `checkout/${f}`), readFileSync(join(ROOT, 'src/checkout', f), 'utf8'));
   assert.doesNotMatch(read(openDir, 'sitemap.xml'), /commande|commander/);
   assert.match(read(openDir, 'sitemap.xml'), /cgv-pro\.html/);
@@ -169,6 +171,37 @@ test('SALES_OPEN=true (test build): Commander page, order page, config, sitemap,
 const FAKE_STRIPE = `window.Stripe = function () { return {
   elements: function () { return { create: function () { var h = {}; return { on: function (e, f) { h[e] = f; }, mount: function (sel) { document.querySelector(sel).textContent = '[carte]'; setTimeout(function () { h.ready && h.ready(); }, 10); } }; }, submit: function () { return Promise.resolve({}); } }; },
   confirmPayment: function () { return Promise.resolve({ error: { message: 'stub: no payment in tests' } }); } }; };`;
+
+test('browser: a stale displayed price (catalog or createIntent disagree) never reaches confirmPayment', async () => {
+  browser ??= await chromium.launch();
+  const fake = FAKE_STRIPE.replace('confirmPayment: function () {', 'confirmPayment: function () { window.__confirmed = (window.__confirmed || 0) + 1;');
+  for (const mode of ['catalog', 'intent']) {
+    const page = await browser.newPage();
+    await page.route('https://js.stripe.com/**', (r) => r.fulfill({ contentType: 'text/javascript', body: fake }));
+    await page.route('https://octave-test.invalid/**', async (r) => {
+      const stale = { amount: 9900, label: '99,00 € net' };
+      if (r.request().method() === 'GET') return r.fulfill({ contentType: 'application/json', body: JSON.stringify({ ok: true, currency: 'eur', termsVersion: 'cgv-pro-2026-10-12', ...(mode === 'catalog' ? stale : { amount: OPEN_CFG.amount, label: 'x' }) }) });
+      return r.fulfill({ contentType: 'application/json', body: JSON.stringify({ ok: true, client_secret: 'pi_test123456789_secret_x', order_id: 'ok_x', currency: 'eur', ...stale }) });
+    });
+    await page.goto(base + 'commander.html');
+    if (mode === 'intent') {
+      await page.waitForSelector('#octave-pay[data-ready="1"]');
+      await page.fill('input[name="email"]', 'achat@entreprise.example');
+      await page.fill('input[name="company"]', 'Organisme Exemple SAS');
+      await page.fill('input[name="siren"]', '732 829 320');
+      await page.fill('input[name="addressLine1"]', '1 place Exemple');
+      await page.fill('input[name="postalCode"]', '75011');
+      await page.fill('input[name="city"]', 'Paris');
+      await page.check('input[name="terms"]');
+      await page.click('#pay-button');
+    }
+    await page.waitForSelector('#pay-error:not([hidden])');
+    assert.match(await page.textContent('#pay-error'), mode === 'catalog' ? /n’est plus à jour \(prix actuel : 99,00 € net\)/ : /Le prix a changé \(prix actuel : 99,00 € net\) : aucun paiement/, mode);
+    assert.equal(await page.isEnabled('#pay-button'), false, mode);
+    assert.equal(await page.evaluate(() => window.__confirmed), undefined, mode);
+    await page.close();
+  }
+});
 
 test('browser: form validates SIREN (Luhn) and billing address, then posts createIntent with all B2B fields', async () => {
   browser ??= await chromium.launch(); // launched here only: the build-level checks above need no browser
@@ -190,7 +223,11 @@ test('browser: form validates SIREN (Luhn) and billing address, then posts creat
   await page.waitForSelector('#octave-pay[data-ready="1"]', { timeout: 10000 }).catch((e) => {
     throw new Error(`${e.message}\n${consoleLines.join('\n')}`);
   });
-  assert.equal(await page.textContent('#product-price'), 'catalogue: prix serveur');
+  // Static price: the page never waits for (nor rewrites from) the catalog.
+  assert.match(await page.textContent('#product-price'), /^79,00\s€ net \(TVA non applicable/);
+  assert.equal(await page.textContent('#pay-button'), 'Payer 79\u00a0€ et recevoir le kit Qualiopi V10');
+  assert.equal(await page.isEnabled('#pay-button'), true);
+  assert.equal(await page.isHidden('#payment-loading'), true);
   await page.fill('input[name="email"]', 'achat@entreprise.example');
   await page.fill('input[name="company"]', 'Organisme Exemple SAS');
   await page.fill('input[name="siren"]', '732 829 321'); // bad Luhn
@@ -208,7 +245,7 @@ test('browser: form validates SIREN (Luhn) and billing address, then posts creat
   await page.click('#pay-button');
   await page.waitForSelector('#pay-error:not([hidden])');
   assert.equal(posts.length, 1);
-  assert.deepEqual({ ...posts[0], attempt: 'x' }, { action: 'createIntent', product: PRODUCT, email: 'achat@entreprise.example', company: 'Organisme Exemple SAS', siren: '732829320', addressLine1: '1 place Exemple', addressLine2: '', postalCode: '75011', city: 'Paris', termsAccepted: true, termsVersion: 'cgv-pro-2026-10-12', attempt: 'x' });
+  assert.deepEqual({ ...posts[0], attempt: 'x' }, { action: 'createIntent', product: PRODUCT, email: 'achat@entreprise.example', company: 'Organisme Exemple SAS', siren: '732829320', addressLine1: '1 place Exemple', addressLine2: '', postalCode: '75011', city: 'Paris', termsAccepted: true, termsVersion: 'cgv-pro-2026-10-12', expectedAmount: OPEN_CFG.amount, attempt: 'x' });
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
   assert.ok(overflow <= 0, `horizontal scroll ${overflow}px`);
   assert.deepEqual(errors, []);
