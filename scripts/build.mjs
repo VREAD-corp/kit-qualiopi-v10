@@ -10,6 +10,8 @@ const OUT = process.env.OUT_DIR ? resolve(process.env.OUT_DIR) : join(ROOT, 'doc
 // Sales gate: with SALES_OPEN=false (sales.config.json) the build emits no buy UI at all.
 const SALES = loadSalesConfig(ROOT);
 const OPEN = SALES.SALES_OPEN === true;
+// Quote / bank-transfer form (sales.config.json quotesEnabled, off by default): block + devis.js script tag.
+const QUOTES = OPEN && SALES.quotesEnabled === true;
 const PRICE = prices(SALES);
 const DATA = JSON.parse(readFileSync(join(ROOT, 'src/data/changements.json'), 'utf8'));
 const SITE = 'https://outils.vread.fr/kit-qualiopi-v10/';
@@ -523,7 +525,7 @@ const pages = [
   { path: 'cgv.html', file: 'cgv.html', title: 'Conditions générales de vente — Kit Qualiopi V10', description: 'Le Kit Qualiopi V10 est vendu uniquement aux professionnels : voir les conditions générales de vente aux professionnels.', body: cgvBody, priority: '0.1', noindex: true },
   ...(OPEN
     ? [
-        { path: 'commander.html', file: 'commander.html', title: 'Commander le Kit Qualiopi V10 — professionnels', description: `Commande du Kit Qualiopi V10 par les entreprises (SIREN) : ${PRICE.sentence}, paiement par carte avec Stripe, fichier et facture par e-mail.`, body: commanderPage, noindex: true, head: `<meta http-equiv="Content-Security-Policy" content="${checkoutCsp(SALES)}">\n`, tail: '<script src="checkout/checkout-config.js"></script>\n<script src="https://js.stripe.com/v3/"></script>\n<script src="checkout/pay.js"></script>\n' },
+        { path: 'commander.html', file: 'commander.html', title: 'Commander le Kit Qualiopi V10 — professionnels', description: `Commande du Kit Qualiopi V10 par les entreprises (SIREN) : ${PRICE.sentence}, paiement par carte avec Stripe, fichier et facture par e-mail.`, body: commanderPage, noindex: true, head: `<meta http-equiv="Content-Security-Policy" content="${checkoutCsp(SALES)}">\n`, tail: `<script src="checkout/checkout-config.js"></script>\n<script src="https://js.stripe.com/v3/"></script>\n<script src="checkout/pay.js"></script>\n${QUOTES ? '<script src="checkout/devis.js"></script>\n' : ''}` },
         { path: 'commande.html', file: 'commande.html', title: 'Votre commande — Kit Qualiopi V10', description: 'Confirmation de la commande du Kit Qualiopi V10 : envoi du fichier et de la facture par e-mail.', body: orderPage, noindex: true, head: `<meta http-equiv="Content-Security-Policy" content="${orderCsp(SALES)}">\n<meta name="referrer" content="no-referrer">\n`, tail: '<script src="checkout/checkout-config.js"></script>\n<script src="checkout/order.js"></script>\n' },
       ]
     : []),
@@ -533,7 +535,7 @@ for (const f of ['commander.html', 'commande.html', 'checkout']) rmSync(join(OUT
 for (const p of pages) writeFileSync(join(OUT, p.file), layout(p));
 if (OPEN) {
   mkdirSync(join(OUT, 'checkout'), { recursive: true });
-  for (const f of ['pay.js', 'order.js']) copyFileSync(join(ROOT, 'src', 'checkout', f), join(OUT, 'checkout', f));
+  for (const f of ['pay.js', 'order.js', 'devis.js']) copyFileSync(join(ROOT, 'src', 'checkout', f), join(OUT, 'checkout', f));
   writeFileSync(join(OUT, 'checkout', 'checkout-config.js'), checkoutConfigJs(SALES, { termsUrl: `${SITE}cgv-pro.html`, orderPage: 'commande.html', payLabel: PAY_LABEL }));
 }
 writeFileSync(join(OUT, '404.html'), layout({ path: '404.html', title: 'Page introuvable — Kit Qualiopi V10', description: 'Page introuvable.', body: notFoundBody, noindex: true }));

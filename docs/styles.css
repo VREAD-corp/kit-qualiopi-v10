@@ -276,6 +276,11 @@ label.check input { margin-top: .3em; width: 20px; height: 20px; flex: none; }
 .pay-button { font: inherit; font-weight: 700; background: var(--accent); color: var(--accent-ink); border: 0; border-radius: 10px; padding: .85em 1.2em; cursor: pointer; width: 100%; min-height: 48px; }
 .pay-button:hover { background: var(--accent-hover); }
 .pay-button[disabled] { opacity: .6; cursor: progress; }
+.pay-button.secondary { background: var(--card); color: var(--accent); border: 2px solid var(--accent); }
+.pay-button.secondary:hover { background: var(--bg); }
+.devis-box { margin-top: 16px; }
+.devis-box[open] summary { margin-bottom: .4em; }
+.hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
 .status { font-weight: 700; }
 .status.ok { color: #137333; }
 .status.err { color: #b3261e; }
