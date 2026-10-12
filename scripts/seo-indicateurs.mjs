@@ -2,7 +2,7 @@
 // Texte 2019 / 2026 et colonnes d'application : src/data/referentiel-2026.json (Légifrance, relevé le 13/10/2026).
 // Règles d'audit : arrêté du 6 juin 2019 (articles 1er, 2 et 5) et préambule du guide de lecture V9.
 import { INDICATOR_PAGES_CONTENT } from './seo-indicateurs-data.mjs';
-import { SRC, STATUT, frDate, CHECKED, GUIDE_IS, refOf, catsLabel, indicatorHref, guideLinksHtml, INDICATOR_PAGES } from './seo-pages.mjs';
+import { SRC, STATUT, frDate, CHECKED, GUIDE_IS, refOf, catsLabel, indicatorHref, guideLinksHtml, INDICATOR_PAGES, kitInventory, docLink } from './seo-pages.mjs';
 import { MAJ_ONLY, SURV_FIXED, NEW_ENTRANTS, GRADED_V9 } from './seo-page-audit.mjs';
 
 const COND = { certifiant: 'lorsque la prestation conduit à une certification professionnelle', alternance: 'pour les formations en alternance', 'sous-traitance': 'lorsque le prestataire fait appel à la sous-traitance ou au portage salarial', travail: 'lorsque la prestation comprend des périodes de formation en situation de travail' };
@@ -32,6 +32,8 @@ export function pagesIndicateurs(ctx, kit) {
   const { DATA, esc } = ctx;
   const nums = Object.keys(INDICATOR_PAGES_CONTENT).map(Number).sort((a, b) => a - b);
   const titleOf = (n) => DATA.indicators.find((i) => i.n === n).titre;
+  const inv = kitInventory(DATA);
+  const andJoin = (a) => (a.length < 2 ? a.join('') : `${a.slice(0, -1).join(', ')} et ${a[a.length - 1]}`);
   const relHref = (n) => (INDICATOR_PAGES.has(n) ? indicatorHref(n) : `preparer-audit-qualiopi-2026.html#q-${n}`);
   return nums.map((n) => {
     const c = INDICATOR_PAGES_CONTENT[n];
@@ -40,7 +42,9 @@ export function pagesIndicateurs(ctx, kit) {
     const crit = DATA.criteria.find((k) => k.n === d.critere);
     const path = `indicateurs/indicateur-${n}.html`;
     const ops = wordDiff(r.texte2019, r.texte2026);
-    const tpls = DATA.templates.filter((t) => t.indicators.includes(n));
+    const tpls = inv.forIndicator(n);
+    const hasSheet = tpls.some((t) => t.id.startsWith('X'));
+    const ctaTitle = tpls.length === 1 ? `Le modèle ${tpls[0].id} pour l'indicateur ${n}` : `Les ${hasSheet ? 'documents' : 'modèles'} ${andJoin(tpls.map((t) => t.id))} pour l'indicateur ${n}`;
     const arrete = c.arrete ? STATUT.arretes.find((a) => a.indicator === c.arrete) : null;
     const surv = SURV_FIXED.includes(n) || MAJ_ONLY.includes(n);
     const facts = [
@@ -81,7 +85,7 @@ export function pagesIndicateurs(ctx, kit) {
   <h2 id="pieges">Pièges fréquents</h2>
   <ul>${c.pieges.map((p) => `<li>${esc(p)}</li>`).join('')}</ul>
 
-  ${kit.kitCta({ title: `Le modèle ${tpls.map((t) => t.id).join(' et ')} pour l'indicateur ${n}`, text: `${tpls.map((t) => `${t.id} « ${esc(t.title)} »`).join(' ; ')}, en Word et LibreOffice, à compléter avec vos informations.${c.freeTemplate ? ` ${c.freeTemplate} fait partie des <a href="modeles-qualiopi-gratuits.html">modèles gratuits</a>.` : ''} Le kit complet couvre les 33 indicateurs : ${DATA.templates.length} modèles, la check-list des preuves et un plan d'action en 21 jours.` })}
+  ${kit.kitCta({ title: ctaTitle, text: `${tpls.map((t) => docLink(inv, t.id, esc)).join(' ; ')}. ${hasSheet ? 'Modèles en Word et LibreOffice, tableurs en Excel et LibreOffice' : 'En Word et LibreOffice'}, à compléter avec vos informations.${c.freeTemplate ? ` ${c.freeTemplate} fait partie des <a href="modeles-qualiopi-gratuits.html">modèles gratuits</a>.` : ''} Le kit complet couvre les 33 indicateurs : ${inv.nbModels} modèles, ${inv.nbSheets} tableurs, la check-list des preuves et un plan d'action en 21 jours.` })}
 
   <h2 id="lies">Indicateurs liés</h2>
   <ul class="related">

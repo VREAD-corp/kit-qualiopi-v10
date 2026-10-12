@@ -1,9 +1,10 @@
 // P1 : indicateur 33 (nouveau). Faits : texte officiel (referentiel-2026.json), colonnes de l'annexe relevées sur Légifrance,
 // arrêté du 6 juin 2019 (version en vigueur), guide de lecture V9. Ce qui relève de notre lecture est signalé comme tel.
-import { REF, SRC, frDate, CHECKED, GUIDE_IS, GUIDE_PUBLISHED, refOf, countByCat, guideLinksHtml, indicatorHref, INDICATOR_PAGES } from './seo-pages.mjs';
+import { REF, SRC, frDate, CHECKED, GUIDE_IS, GUIDE_PUBLISHED, refOf, countByCat, guideLinksHtml, indicatorHref, INDICATOR_PAGES, kitInventory, docLink } from './seo-pages.mjs';
 
 export function page33(ctx, kit) {
   const { DATA, esc } = ctx;
+  const inv = kitInventory(DATA);
   const path = 'indicateurs/indicateur-33.html';
   const i33 = refOf(33);
   const t17 = DATA.templates.find((t) => t.id === 'T17');
@@ -140,7 +141,7 @@ export function page33(ctx, kit) {
   <h2 id="faq">Questions fréquentes</h2>
   ${kit.faqHtml(faq)}
 
-  ${kit.kitCta({ title: 'Le modèle T17 complet, prêt à adapter', text: `Le kit contient le modèle ${t17.id} en Word et LibreOffice : organisation du dispositif, questionnaire par module, synthèse, tableau de restitution aux équipes et suivi de l'efficacité des actions. Avec les ${DATA.templates.length - 1} autres modèles et la check-list des preuves des 33 indicateurs.` })}
+  ${kit.kitCta({ title: 'Le modèle T17 complet, prêt à adapter', text: `Le kit contient le modèle ${t17.id} en Word et LibreOffice : organisation du dispositif, questionnaire par module, synthèse, tableau de restitution aux équipes et suivi de l'efficacité des actions. Le tableur ${docLink(inv, 'X02', esc)} suit les actions décidées et leur efficacité. Avec les ${inv.nbModels - 1} autres modèles, ${inv.nbSheets} tableurs au total et la check-list des preuves des 33 indicateurs.` })}
 
   <h2>À lire aussi</h2>
   <ul class="related">

@@ -1,9 +1,9 @@
 // P4 : modèles Qualiopi gratuits. Les fichiers de l'échantillon (dépôt qualiopi-kit-content, dist/, identiques à la Release
-// GitHub echantillon-v1.0.0) sont servis depuis outils.vread.fr/kit-qualiopi-v10/telechargements/.
+// GitHub echantillon-v1.1.0) sont servis depuis outils.vread.fr/kit-qualiopi-v10/telechargements/.
 // Les PDF des modèles T07, T13 et T16 sont convertis des DOCX par LibreOffice (voir README).
 import { statSync } from 'node:fs';
 import { join } from 'node:path';
-import { SRC, frDate, CHECKED, GUIDE_IS, indicatorHref, guideLinksHtml } from './seo-pages.mjs';
+import { SRC, frDate, CHECKED, GUIDE_IS, indicatorHref, guideLinksHtml, kitInventory, docLink } from './seo-pages.mjs';
 
 const DL = 'telechargements/';
 const ROOT = join(import.meta.dirname, '..');
@@ -19,7 +19,11 @@ export function pageModeles(ctx, kit) {
   const { DATA, SAMPLE_URL, esc } = ctx;
   const path = 'modeles-qualiopi-gratuits.html';
   const links = (base, order = ['docx', 'odt', 'pdf']) => `<p class="dl-links">${order.map((e) => `<a href="${DL}${base}.${e}" download data-mesure="free_download">${FORMATS[e]} <small>.${e} · ${size(`${base}.${e}`)}</small></a>`).join('')}</p>`;
-  const paid = DATA.templates.filter((t) => !t.sample);
+  const inv = kitInventory(DATA);
+  const paidQuality = DATA.templates.filter((t) => !t.sample);
+  const pack = DATA.pack ?? [];
+  const nbPaid = inv.models.filter((t) => !t.sample).length;
+  const lc = (t) => `${t.id} ${esc(t.title.charAt(0).toLowerCase() + t.title.slice(1))}`;
   const img = (file, alt, w, h) => `<figure><a href="img/${file}"><img src="img/${file}" width="${w}" height="${h}" alt="${esc(alt)}" loading="lazy" decoding="async"></a></figure>`;
 
   const body = `
@@ -28,13 +32,13 @@ export function pageModeles(ctx, kit) {
   <h1>Modèles Qualiopi gratuits, à jour du référentiel 2026</h1>
   ${kit.byline()}
   <p class="answer">Trois modèles complets et notre tableau des changements du référentiel 2026, en Word, LibreOffice et PDF, à télécharger ici sans inscription ni adresse e-mail. Les trois modèles couvrent des indicateurs réécrits par le décret du 1er août 2026 : <a href="${indicatorHref(12)}">12</a> (violences, harcèlement, discriminations), <a href="${indicatorHref(27)}">27</a> (sous-traitance et portage) et <a href="${indicatorHref(32)}">32</a> (amélioration continue et analyse des risques).</p>
-  <p>Ce sont les fichiers de l'échantillon publié depuis le 11 octobre 2026, version 1.0.0. Vous pouvez les utiliser et les adapter librement pour votre organisme ; merci de ne pas les revendre.</p>
+  <p>Ce sont les fichiers de l'échantillon gratuit, version 1.1.0 du 13 octobre 2026. Vous pouvez les utiliser et les adapter librement pour votre organisme ; merci de ne pas les revendre.</p>
 
   <h2 id="tableau">Le tableau des changements 2019 → 2026</h2>
   <div class="dl">
     ${img('apercu-d01-tableau-changements.webp', 'Tableau des changements D01, page 1 : encadré « À lire d\'abord », synthèse en 5 points, puis le tableau avant / après de l\'indicateur 1.', 760, 538)}
     <div>
-      <p>9 pages au format paysage. Pour chacun des 12 indicateurs qui évoluent : l'avant (2019), l'après (2026), ce qu'il faut faire et à qui l'indicateur s'applique. Suivent la vue d'ensemble des 33 indicateurs, les 7 critères et les points encore en attente au 11 octobre 2026, date de la version 1.0.0.</p>
+      <p>9 pages au format paysage. Pour chacun des 12 indicateurs qui évoluent : l'avant (2019), l'après (2026), ce qu'il faut faire et à qui l'indicateur s'applique. Suivent la vue d'ensemble des 33 indicateurs, les 7 critères et les points encore en attente au 11 octobre 2026.</p>
       ${links('D01-tableau-changements-v9-v10', ['pdf', 'docx', 'odt'])}
       <p class="small muted">Ce tableau est notre lecture, avec des libellés reformulés. Il ne remplace pas le texte officiel : le <a href="${SRC.decret.url}" rel="noopener">décret n° 2026-728 sur Légifrance</a>, ou <a href="${SRC.decretPdf.url}" rel="noopener">sa version PDF sur le site du ministère du Travail</a>, fait foi. La même analyse se lit en ligne : <a href="changements-v9-v10.html">ce qui change au 1er novembre</a>.</p>
     </div>
@@ -94,15 +98,18 @@ export function pageModeles(ctx, kit) {
     <tbody>
       <tr><td>Tableau des changements 2019 → 2026 (D01)</td><td>inclus</td><td>inclus</td></tr>
       <tr><td>Modèles T07, T13, T16 (indicateurs 12, 27, 32)</td><td>inclus</td><td>inclus</td></tr>
-      <tr><td>${paid.length} autres modèles, dont T17 pour l'<a href="${indicatorHref(33)}">indicateur 33</a></td><td>–</td><td>inclus</td></tr>
+      <tr><td>${paidQuality.length} autres procédures et outils qualité, dont T17 pour l'<a href="${indicatorHref(33)}">indicateur 33</a></td><td>–</td><td>inclus</td></tr>
+      <tr><td>${pack.length} documents administratifs et variantes : convention, ${docLink(inv, 'T24', esc).replace(/>T24 /, '>')}, ${docLink(inv, 'T26', esc).replace(/>T26 /, '>')}, bilans de compétences, VAE, CFA</td><td>–</td><td>inclus</td></tr>
+      <tr><td>${inv.nbSheets} tableurs avec formules, Excel et LibreOffice (${inv.sheets[0].id} à ${inv.sheets.at(-1).id})</td><td>–</td><td>inclus</td></tr>
       <tr><td>Check-list des preuves des 33 indicateurs (D02)</td><td>–</td><td>inclus</td></tr>
       <tr><td>Check-list de préparation de l'audit (D03)</td><td>–</td><td>inclus</td></tr>
       <tr><td>Plan d'action en 21 jours (D04)</td><td>–</td><td>inclus</td></tr>
+      <tr><td>Index des documents par indicateur (D05)</td><td>–</td><td>inclus</td></tr>
       <tr><td>Mise à jour après la publication du guide de lecture 2026 (si elle paraît dans les 12 mois)</td><td>–</td><td>inclus</td></tr>
     </tbody>
   </table>
   </div>
-  <p class="small muted">Les ${paid.length} autres modèles : ${paid.map((t) => `${t.id} ${esc(t.title.charAt(0).toLowerCase() + t.title.slice(1))}`).join(' ; ')}.</p>
+  <p class="small muted">Les ${nbPaid} autres modèles et les ${inv.nbSheets} tableurs. Procédures et outils qualité : ${paidQuality.map(lc).join(' ; ')}. Documents administratifs et variantes : ${pack.map(lc).join(' ; ')}. Tableurs : ${inv.sheets.map(lc).join(' ; ')}. <a href="./#contenu-kit">Le contenu complet du kit</a>.</p>
 
   <h2 id="adapter">Adapter un modèle : ce que l'auditeur vérifiera</h2>
   <p>Un modèle recopié n'est pas une preuve. L'auditeur regarde la mise en œuvre : le registre des signalements tenu à jour, le contrat de sous-traitance signé avec son annexe, le plan d'amélioration dont la colonne « efficacité vérifiée » est remplie. Quatre réglages suffisent pour partir du bon pied :</p>
@@ -114,7 +121,7 @@ export function pageModeles(ctx, kit) {
   </ol>
   <p>Pour savoir quels indicateurs travailler en premier, faites l'<a href="preparer-audit-qualiopi-2026.html#auto-diagnostic">auto-diagnostic des 33 indicateurs</a> (gratuit, sans inscription).</p>
 
-  ${kit.kitCta({ title: `Les ${DATA.templates.length} modèles et la check-list des 33 indicateurs`, text: `L'échantillon couvre 3 indicateurs. Le kit complet couvre les 33 : ${DATA.templates.length} modèles Word et LibreOffice, la check-list des preuves indicateur par indicateur, la check-list d'audit et un plan d'action en 21 jours.` })}
+  ${kit.kitCta({ title: `Les ${inv.nbModels} modèles, ${inv.nbSheets} tableurs et la check-list des 33 indicateurs`, text: `L'échantillon couvre 3 indicateurs. Le kit complet couvre les 33 : ${inv.nbModels} modèles Word et LibreOffice, ${inv.nbSheets} tableurs Excel et LibreOffice, la check-list des preuves indicateur par indicateur, la check-list d'audit et un plan d'action en 21 jours.` })}
 
   <h2>À lire aussi</h2>
   ${guideLinksHtml(path)}

@@ -73,6 +73,28 @@ export const GUIDE_LINKS = [
 ];
 export const guideLinksHtml = (exclude = '') => `<ul class="related">${GUIDE_LINKS.filter((l) => l.href !== exclude).map((l) => `<li><a href="${l.href}">${l.title}<span>${l.text}</span></a></li>`).join('')}</ul>`;
 
+// ------------------------------------------------------------------ Contenu du kit (v1.1.0)
+// Modèles qualité T01–T19 (DATA.templates), documents administratifs T20–T39 (DATA.pack), tableurs X01–X06
+// (DATA.sheets), synthèses D01–D05 (DATA.docs sans le lisez-moi D00). Mêmes comptes que l'accueil (build.mjs).
+export function kitInventory(DATA) {
+  const models = [...DATA.templates, ...(DATA.pack ?? [])];
+  const sheets = DATA.sheets ?? [];
+  const syntheses = DATA.docs.filter((d) => d.id !== 'D00');
+  const docHref = (id) => `./#doc-${id.toLowerCase()}`;
+  return {
+    models, sheets, syntheses, docHref,
+    nbModels: models.length, nbSheets: sheets.length, nbSyntheses: syntheses.length,
+    byId: (id) => [...models, ...sheets, ...syntheses].find((d) => d.id === id),
+    forIndicator: (n) => [...models, ...sheets].filter((t) => t.indicators.includes(n)),
+  };
+}
+// « T26 certificat de réalisation » lié à sa ligne dans le contenu du kit (accueil).
+export const docLink = (inv, id, esc, { lower = true } = {}) => {
+  const d = inv.byId(id);
+  const title = lower ? d.title.charAt(0).toLowerCase() + d.title.slice(1) : d.title;
+  return `<a href="${inv.docHref(id)}">${d.id} ${esc(title)}</a>`;
+};
+
 // ------------------------------------------------------------------ Gabarit commun
 export function makeKit(ctx) {
   const { OPEN, PRICE_TAG, PRICE_NOTE, SITE, ORG_ID, MAILTO, CONTACT, esc } = ctx;

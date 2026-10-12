@@ -1,11 +1,12 @@
 // P5 : Qualiopi au 1er novembre 2026 (date d'application, certificats en cours, guide de lecture).
 // L'état des textes vient de src/data/statut-textes.json : le jour où le guide paraît, on met ce fichier à jour,
 // la page bascule seule (encadré d'état, chronologie, section guide). Procédure : README.md.
-import { SRC, STATUT, frDate, CHECKED, GUIDE_PUBLISHED, GUIDE_STATUS, indicatorHref, guideLinksHtml } from './seo-pages.mjs';
+import { SRC, STATUT, frDate, CHECKED, GUIDE_PUBLISHED, GUIDE_STATUS, indicatorHref, guideLinksHtml, kitInventory, docLink } from './seo-pages.mjs';
 
 const addMonths = (iso, m) => { const d = new Date(`${iso}T12:00:00Z`); d.setUTCMonth(d.getUTCMonth() + m); return d.toISOString().slice(0, 10); };
 
 export function pageNovembre(ctx, kit) {
+  const inv = kitInventory(ctx.DATA);
   const { esc, DATA } = ctx;
   const path = 'qualiopi-1er-novembre-2026.html';
   const count = (c) => DATA.indicators.filter((i) => i.change === c).length;
@@ -110,7 +111,7 @@ Merci d'avance,
   <h2 id="faq">Questions fréquentes</h2>
   ${kit.faqHtml(faq)}
 
-  ${kit.kitCta({ title: 'Le kit, mis à jour quand le guide paraît', text: `Le kit couvre les 33 indicateurs du référentiel 2026 : check-list des preuves, plan d'action en 21 jours et ${ctx.DATA.templates.length} modèles. Une mise à jour établie après la publication du guide de lecture officiel vous est envoyée sans frais si elle paraît dans les 12 mois suivant l'achat (article 10 des <a href="cgv-pro.html">CGV professionnels</a>).` })}
+  ${kit.kitCta({ title: 'Le kit, mis à jour quand le guide paraît', text: `Le kit couvre les 33 indicateurs du référentiel 2026 : check-list des preuves, plan d'action en 21 jours, ${inv.nbModels} modèles Word et LibreOffice, dont ${docLink(inv, 'T20', ctx.esc)}, ${docLink(inv, 'T24', ctx.esc)} et ${docLink(inv, 'T26', ctx.esc)}, et ${inv.nbSheets} tableurs. Une mise à jour établie après la publication du guide de lecture officiel vous est envoyée sans frais si elle paraît dans les 12 mois suivant l'achat (article 10 des <a href="cgv-pro.html">CGV professionnels</a>).` })}
 
   <h2>À lire aussi</h2>
   ${guideLinksHtml(path)}

@@ -275,22 +275,22 @@ const indexBody = `
       <div>
         <h3>${NB_SYNTHESES} synthèses (DOCX, ODT, PDF)</h3>
         <ul class="checks">
-          ${DATA.docs.filter((d) => d.id !== 'D00').map((d) => `<li><span class="tid">${d.id}</span> ${esc(d.title)}</li>`).join('\n          ')}
+          ${DATA.docs.filter((d) => d.id !== 'D00').map((d) => `<li id="doc-${d.id.toLowerCase()}"><span class="tid">${d.id}</span> ${esc(d.title)}</li>`).join('\n          ')}
         </ul>
         <h3>${SHEETS.length} tableurs avec formules (Excel et LibreOffice)</h3>
         <ul class="tpl">
-          ${SHEETS.map((t) => `<li><span class="tid">${t.id}</span> ${esc(t.title)} <span class="small muted">· ${t.indicators.length ? `ind. ${t.indicators.join(', ')}` : 'les 33 indicateurs'}</span></li>`).join('\n          ')}
+          ${SHEETS.map((t) => `<li id="doc-${t.id.toLowerCase()}"><span class="tid">${t.id}</span> ${esc(t.title)} <span class="small muted">· ${t.indicators.length ? `ind. ${t.indicators.join(', ')}` : 'les 33 indicateurs'}</span></li>`).join('\n          ')}
         </ul>
       </div>
       <div>
         <h3>${NB_MODELES} modèles éditables (Word et LibreOffice)</h3>
         <p class="small muted">Procédures et outils qualité</p>
         <ul class="tpl">
-          ${DATA.templates.map((t) => `<li><span class="tid">${t.id}</span> ${esc(t.title)} <span class="small muted">· ind. ${t.indicators.join(', ')}</span>${t.sample ? ' <span class="tag">gratuit</span>' : ''}</li>`).join('\n          ')}
+          ${DATA.templates.map((t) => `<li id="doc-${t.id.toLowerCase()}"><span class="tid">${t.id}</span> ${esc(t.title)} <span class="small muted">· ind. ${t.indicators.join(', ')}</span>${t.sample ? ' <span class="tag">gratuit</span>' : ''}</li>`).join('\n          ')}
         </ul>
         <p class="small muted">Documents administratifs, bilans de compétences, VAE et CFA</p>
         <ul class="tpl">
-          ${PACK.map((t) => `<li><span class="tid">${t.id}</span> ${esc(t.title)} <span class="small muted">· ind. ${t.indicators.join(', ')}</span></li>`).join('\n          ')}
+          ${PACK.map((t) => `<li id="doc-${t.id.toLowerCase()}"><span class="tid">${t.id}</span> ${esc(t.title)} <span class="small muted">· ind. ${t.indicators.join(', ')}</span></li>`).join('\n          ')}
         </ul>
       </div>
     </div>

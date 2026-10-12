@@ -1,7 +1,7 @@
 // P3 : préparer un audit Qualiopi après le 1er novembre 2026, avec l'auto-diagnostic des 33 indicateurs (P12).
 // Règles d'audit : arrêté du 6 juin 2019 modifié (version en vigueur relevée sur Légifrance le 13/10/2026).
 // Gradation mineure / majeure : guide de lecture V9 (préambule). Les questions de l'auto-diagnostic sont nos reformulations.
-import { REF, SRC, frDate, CHECKED, GUIDE_STATUS, GUIDE_IS, GUIDE_PUBLISHED, indicatorHref, guideLinksHtml, catsLabel } from './seo-pages.mjs';
+import { REF, SRC, frDate, CHECKED, GUIDE_STATUS, GUIDE_IS, GUIDE_PUBLISHED, indicatorHref, guideLinksHtml, catsLabel, kitInventory, docLink } from './seo-pages.mjs';
 
 // Listes de l'arrêté du 6 juin 2019 (numéros de l'annexe, inchangés de 1 à 32 en 2026).
 export const MAJ_ONLY = [4, 5, 6, 7, 10, 11, 14, 15, 16, 20, 21, 22, 26, 27, 29, 31, 32]; // art. 5
@@ -20,7 +20,7 @@ export const QUESTIONS = {
   7: ['Pour chaque certification préparée, les contenus correspondent au référentiel de la certification, et vous pouvez prouver votre capacité à l\'assurer.', 'Tableau de correspondance contenus / compétences, convention ou habilitation du certificateur.'],
   8: ['Vous avez une procédure de positionnement et d\'évaluation des acquis à l\'entrée.', 'Test ou entretien de positionnement, résultats dans les dossiers.'],
   9: ['Les bénéficiaires sont informés des conditions de déroulement de la prestation.', 'Convocation, livret d\'accueil, règlement intérieur.'],
-  10: ['La prestation, l\'accompagnement et le suivi sont adaptés à chaque public, avec des traces.', 'Fiches de suivi individuel, adaptations notées.'],
+  10: ['La prestation, l\'accompagnement et le suivi sont adaptés à chaque public, avec des traces.', 'Fiches de suivi individuel, adaptations notées, feuilles d\'émargement et certificats de réalisation.'],
   11: ['L\'atteinte des objectifs est évaluée pour chaque bénéficiaire.', 'Évaluations de fin de prestation, grilles, résultats.'],
   12: ['Vous avez des mesures contre les abandons, et une procédure de prévention et de traitement des violences (dont sexistes et sexuelles), du harcèlement et des discriminations.', 'Procédure écrite et diffusée, référent nommé, canal de signalement, registre confidentiel.'],
   13: ['En alternance, les missions confiées sont anticipées avec l\'entreprise et l\'apprenant, et la coordination centre / entreprise est suivie.', 'Livret ou fiche de liaison, comptes rendus d\'entretiens tripartites.'],
@@ -55,12 +55,13 @@ export function pageAudit(ctx, kit) {
   const changedSet = new Set(DATA.indicators.filter((i) => i.change === 'modifie' || i.change === 'nouveau').map((i) => i.n));
   const surv = [...new Set([...SURV_FIXED, ...MAJ_ONLY])];
   const modInSurv = modified.filter((n) => surv.includes(n));
-  const tplFor = (n) => DATA.templates.filter((t) => t.indicators.includes(n)).map((t) => t.id);
+  const inv = kitInventory(DATA);
+  const tplFor = (n) => inv.forIndicator(n);
   const ilink = (n) => (changedSet.has(n) ? `<a href="${indicatorHref(n)}">${n}</a>` : String(n));
 
   const howto = [
     ['J-60 à J-30 : cadrer avec le certificateur', ['Demandez par écrit quel référentiel et quelle version du guide de lecture serviront à l\'audit.', 'Confirmez les catégories d\'actions certifiées (formation, bilans, VAE, apprentissage) et les sites.', 'Listez les indicateurs non applicables et la raison de chacun (pas de formation certifiante, pas de sous-traitance…).', 'Vérifiez que chaque écart du dernier audit est soldé, preuve à l\'appui.']],
-    ['J-30 à J-10 : réunir les preuves', ['Un dossier par indicateur, numéroté de 01 à 33, et un index « indicateur, document, emplacement ».', 'Deux ou trois parcours complets de bénéficiaires récents, de l\'analyse du besoin à l\'appréciation : l\'audit analyse « une ou plusieurs actions » conduites depuis le précédent audit (arrêté du 6 juin 2019, article 2).', 'Les pages publiques comparées à la réalité (indicateurs 1 et 2) : délais, tarifs, taux, financements.', 'Les accès prêts : plateforme à distance, logiciel de gestion, registres.']],
+    ['J-30 à J-10 : réunir les preuves', ['Un dossier par indicateur, numéroté de 01 à 33, et un index « indicateur, document, emplacement ».', 'Deux ou trois parcours complets de bénéficiaires récents, de l\'analyse du besoin à l\'appréciation, convention, feuilles d\'émargement et certificat de réalisation compris : l\'audit analyse « une ou plusieurs actions » conduites depuis le précédent audit (arrêté du 6 juin 2019, article 2).', 'Les pages publiques comparées à la réalité (indicateurs 1 et 2) : délais, tarifs, taux, financements.', 'Les accès prêts : plateforme à distance, logiciel de gestion, registres.']],
     ['J-10 à J-1 : répéter', ['Confirmez le plan d\'audit envoyé par le certificateur : horaires, personnes rencontrées, indicateurs visés.', 'Prévenez les formateurs, référents et, si besoin, les sous-traitants.', 'Faites un audit à blanc : un collègue tire 5 indicateurs et vous demande la preuve de chacun (voir plus bas).', 'Préparez une présentation de 5 minutes de votre organisme : activité, publics, chiffres, organisation.']],
     ['Le jour de l\'audit', ['Répondez à la question posée et montrez la preuve, sans noyer l\'auditeur sous les documents.', 'S\'il manque une pièce, dites-le, expliquez ce qui se fait en pratique et notez le point.', 'À la réunion de clôture, faites préciser chaque écart : indicateur, constat, mineure ou majeure.']],
     ['Après l\'audit', ['Relisez le rapport dès réception et signalez toute erreur de fait.', 'Pour chaque non-conformité : cause, action corrective, preuve, envoi dans le délai fixé.', 'Reportez écarts et observations dans le plan d\'amélioration (indicateur 32), puis revoyez l\'analyse des risques.', 'Fixez la date de la prochaine revue interne, avant l\'audit suivant.']],
@@ -89,7 +90,7 @@ export function pageAudit(ctx, kit) {
         <label><input type="radio" name="i${r.n}" value="non"> Non</label>
       </div>
       <p class="ad-na" hidden>Non applicable à l'activité cochée (annexe : ${esc(catsLabel(r))}${r.cond ? ` ; seulement en cas de ${COND_LABEL[r.cond]}` : ''}).</p>
-      <p class="ad-meta">${tpl.length ? `Modèle du kit : ${tpl.join(', ')}` : 'Pas de modèle dédié dans le kit'}${changedSet.has(r.n) ? ` · <a href="${indicatorHref(r.n)}">ce qui change</a>` : ''}</p>
+      <p class="ad-meta">${tpl.length ? `Dans le kit : ${tpl.map((t) => `<a href="${inv.docHref(t.id)}" title="${esc(t.title)}">${t.id}</a>`).join(', ')}` : 'Pas de modèle dédié dans le kit'}${changedSet.has(r.n) ? ` · <a href="${indicatorHref(r.n)}">ce qui change</a>` : ''}</p>
       <details><summary>Texte officiel de l'indicateur ${r.n}</summary><p>« ${esc(r.texte2026)} »</p></details>
     </fieldset>`;
     }).join('')}`).join('');
@@ -221,7 +222,7 @@ export function pageAudit(ctx, kit) {
   <h2 id="faq">Questions fréquentes</h2>
   ${kit.faqHtml(faq)}
 
-  ${kit.kitCta({ title: 'La check-list complète des preuves, indicateur par indicateur', text: `L'auto-diagnostic dit où vous en êtes ; le kit donne quoi produire. Pour chacun des 33 indicateurs, la check-list D02 liste les preuves possibles, les pièges fréquents et le modèle à utiliser. S'y ajoutent la check-list de préparation de l'audit (D03), un plan d'action en 21 jours (D04) et ${DATA.templates.length} modèles Word et LibreOffice.` })}
+  ${kit.kitCta({ title: 'La check-list complète des preuves, indicateur par indicateur', text: `L'auto-diagnostic dit où vous en êtes ; le kit donne quoi produire. Pour chacun des 33 indicateurs, la check-list D02 liste les preuves possibles, les pièges fréquents et le modèle à utiliser. S'y ajoutent la check-list de préparation de l'audit (D03), un plan d'action en 21 jours (D04), l'<a href="${inv.docHref('D05')}">index des documents par indicateur (D05)</a>, ${inv.nbModels} modèles Word et LibreOffice (dont ${docLink(inv, 'T24', esc)} et ${docLink(inv, 'T26', esc)}) et ${inv.nbSheets} tableurs avec formules.` })}
 
   <h2>À lire aussi</h2>
   ${guideLinksHtml(path)}
