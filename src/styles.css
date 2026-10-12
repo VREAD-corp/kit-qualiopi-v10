@@ -285,3 +285,7 @@ label.check input { margin-top: .3em; width: 20px; height: 20px; flex: none; }
 .status.ok { color: #137333; }
 .status.err { color: #b3261e; }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .status.ok { color: #81c995; } :root:not([data-theme="light"]) .status.err { color: #f28b82; } }
+.rf-network { margin: .75rem 0; font-size: .9rem; }
+.rf-network-title { margin: 0 0 .3rem; font-weight: 600; }
+.rf-network ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: .3rem 1.1rem; }
+.rf-network a { display: inline-block; padding: .2rem 0; }

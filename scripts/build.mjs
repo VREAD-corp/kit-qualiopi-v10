@@ -59,6 +59,16 @@ ${body}
 </main>
 <footer class="foot">
   <div class="wrap foot-in">
+    <nav class="rf-network" aria-label="Autres outils READ FRANCE">
+      <p class="rf-network-title">Autres outils READ FRANCE</p>
+      <ul>
+        <li><a href="https://outils.vread.fr/">Tous les outils</a></li>
+        <li><a href="https://outils.vread.fr/kit-qualiopi-v10/">Kit Qualiopi V10</a></li>
+        <li><a href="https://outils.vread.fr/kit-gpsr-vendeurs/pack.html">Pack documentation GPSR</a></li>
+        <li><a href="https://outils.vread.fr/veille-ao-formation/alertes/">Alertes appels d’offres formation</a></li>
+        <li><a href="https://outils.vread.fr/declaration-accessibilite/audit/">Audit d’accessibilité</a></li>
+      </ul>
+    </nav>
     <div>
       <p class="foot-brand"><strong>${BRAND}</strong> — un produit de READ FRANCE SAS, Paris · SIREN 988 741 773</p>
       <p class="small muted">Produit indépendant : ni édité ni validé par l'État, France compétences ou un organisme certificateur. Qualiopi est une marque de l'État. Information, pas un conseil juridique ; aucune garantie de certification.</p>
@@ -295,6 +305,7 @@ const indexBody = `
   <div class="faq">
     ${faq.map(([q, a]) => `<details><summary>${esc(q)}</summary><p>${a}</p></details>`).join('\n    ')}
   </div>
+  <p>Vous répondez aussi à des marchés publics de formation ? <a href="https://outils.vread.fr/veille-ao-formation/">Liste gratuite des appels d’offres de formation ouverts</a> (BOAMP et TED).</p>
 </section>
 
 <section class="band" id="qui" aria-labelledby="qui-h">
@@ -346,18 +357,17 @@ const indexBody = `
 </script>
 `;
 
-// Organisation : même @id que le site vitrine (https://outils.vread.fr/) pour que les moteurs fusionnent les entités.
+// Organisation : définie une seule fois sur le site vitrine (https://outils.vread.fr/), référencée ici par son @id.
 const ORG_ID = 'https://outils.vread.fr/#org';
-const orgLd = {
+const ORG_REF = { '@type': 'Organization', '@id': ORG_ID, name: 'READ FRANCE SAS' };
+const webPageLd = {
   '@context': 'https://schema.org',
-  '@type': 'Organization',
-  '@id': ORG_ID,
-  name: 'READ FRANCE SAS',
-  legalName: 'READ FRANCE',
-  url: 'https://outils.vread.fr/',
-  address: { '@type': 'PostalAddress', streetAddress: '11 rue Rouvet', postalCode: '75019', addressLocality: 'Paris', addressCountry: 'FR' },
-  identifier: { '@type': 'PropertyValue', propertyID: 'SIREN', value: '988741773' },
-  email: CONTACT,
+  '@type': 'WebPage',
+  '@id': `${SITE}#webpage`,
+  url: SITE,
+  name: 'Kit Qualiopi V10 : modèles du nouveau référentiel Qualiopi 2026',
+  inLanguage: 'fr',
+  publisher: ORG_REF,
 };
 // Product + Offer seulement quand la vente est ouverte (pas de prix « disponible » dans les résultats de recherche sinon).
 // Prix dérivé de sales.config.json (montant en centimes) ; franchise en base : prix net, pas de valueAddedTaxIncluded.
@@ -517,8 +527,8 @@ const notFoundBody = `<section class="wrap section"><h1>Page introuvable</h1><p>
 // ---------------------------------------------------------------- Écriture
 mkdirSync(OUT, { recursive: true });
 const pages = [
-  { path: '', file: 'index.html', title: 'Kit Qualiopi V10 : modèles du nouveau référentiel Qualiopi 2026', description: `Nouveau référentiel Qualiopi 2026 : check-list des 33 indicateurs, tableau V9 → V10 et ${DATA.templates.length} modèles Word et LibreOffice prêts à adapter. Échantillon gratuit.`, body: indexBody, jsonld: OPEN ? [orgLd, productLd, faqLd] : [orgLd, faqLd], priority: '1.0' },
-  { path: 'changements-v9-v10.html', file: 'changements-v9-v10.html', title: 'Nouveau référentiel Qualiopi 2026 : ce qui change (V9 → V10)', description: `Nouveau référentiel Qualiopi 2026 : les ${modifiedNums.length} indicateurs modifiés et le nouvel indicateur 33, avant / après et actions à mener. Source : décret n° 2026-728.`, body: changesBody, jsonld: [{ '@context': 'https://schema.org', '@type': 'Article', headline: 'Qualiopi V10 : tableau des changements du référentiel au 1er novembre 2026', datePublished: PUBLISHED, dateModified: LASTMOD, inLanguage: 'fr', author: { '@type': 'Organization', name: 'READ FRANCE SAS' }, publisher: { '@type': 'Organization', name: 'READ FRANCE SAS' } }], priority: '0.9' },
+  { path: '', file: 'index.html', title: 'Kit Qualiopi V10 : modèles du nouveau référentiel Qualiopi 2026', description: `Nouveau référentiel Qualiopi 2026 : check-list des 33 indicateurs, tableau V9 → V10 et ${DATA.templates.length} modèles Word et LibreOffice prêts à adapter. Échantillon gratuit.`, body: indexBody, jsonld: OPEN ? [webPageLd, productLd, faqLd] : [webPageLd, faqLd], priority: '1.0' },
+  { path: 'changements-v9-v10.html', file: 'changements-v9-v10.html', title: 'Nouveau référentiel Qualiopi 2026 : ce qui change (V9 → V10)', description: `Nouveau référentiel Qualiopi 2026 : les ${modifiedNums.length} indicateurs modifiés et le nouvel indicateur 33, avant / après et actions à mener. Source : décret n° 2026-728.`, body: changesBody, jsonld: [{ '@context': 'https://schema.org', '@type': 'Article', headline: 'Qualiopi V10 : tableau des changements du référentiel au 1er novembre 2026', datePublished: PUBLISHED, dateModified: LASTMOD, inLanguage: 'fr', author: ORG_REF, publisher: ORG_REF }], priority: '0.9' },
   { path: 'mentions-legales.html', file: 'mentions-legales.html', title: 'Mentions légales — Kit Qualiopi V10', description: 'Éditeur, hébergeur et propriété intellectuelle du site Kit Qualiopi V10 (READ FRANCE SAS).', body: mentionsBody, priority: '0.2' },
   { path: 'confidentialite.html', file: 'confidentialite.html', title: 'Confidentialité — Kit Qualiopi V10', description: 'Aucun cookie, aucune donnée personnelle collectée par le site Kit Qualiopi V10, mesure d\'audience anonyme uniquement.', body: privacyBody, priority: '0.2' },
   { path: 'cgv-pro.html', file: 'cgv-pro.html', title: 'Conditions générales de vente aux professionnels — Kit Qualiopi V10', description: 'CGV B2B du Kit Qualiopi V10 (READ FRANCE SAS), version du 12 octobre 2026 : vente aux professionnels, prix, paiement Stripe, livraison par e-mail, licence, facturation.', body: cgvProPage, priority: '0.2', noindex: !OPEN },
