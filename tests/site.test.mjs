@@ -43,14 +43,15 @@ for (const path of PAGES) {
     page.on('console', (m) => { if (m.type() === 'error') errors.push(m.text()); });
     page.on('pageerror', (e) => errors.push(String(e)));
     const tracked = [];
-    page.on('request', (r) => { if (r.url().includes('script.google.com')) tracked.push(r.url()); });
+    // mesure.js still sends its hit flagged excluded:'notrack' (counted apart); cro.js must send nothing.
+    page.on('request', (r) => { if (r.url().includes('script.google.com') && (r.postData() || '').includes('"kind":"cro"')) tracked.push(r.url()); });
     const res = await page.goto(base + path + '?octave_notrack=1', { waitUntil: 'load' });
     assert.equal(res.status(), 200);
     assert.deepEqual(errors, []);
     // cro.js (behaviour counters / A/B) is loaded and has run; octave_notrack=1: nothing is sent.
     assert.equal(await page.evaluate(() => typeof (window.octaveCro && window.octaveCro.goal)), 'function');
     assert.equal(await page.getAttribute('script[src$="cro.js"]', 'data-site'), 'kit-qualiopi-v10');
-    await page.evaluate(() => document.dispatchEvent(new Event('visibilitychange')));
+    await page.evaluate(() => { window.dispatchEvent(new Event('pagehide')); document.dispatchEvent(new Event('visibilitychange')); });
     const t = await page.title();
     const d = await page.getAttribute('meta[name="description"]', 'content');
     assert.ok(t.length > 10 && !seen.titles.has(t), `titre unique : ${t}`);
@@ -70,7 +71,7 @@ for (const path of PAGES) {
     if (!SALES_OPEN) assert.ok(!hrefs.some((h) => /commander\.html|commande\.html/.test(h)), 'aucun lien vers la commande');
     hrefs.forEach((h) => links.add(h));
     await page.close();
-    assert.deepEqual(tracked, [], 'aucun envoi de mesure pendant les tests (octave_notrack=1)');
+    assert.deepEqual(tracked, [], 'cro.js : aucun envoi pendant les tests (octave_notrack=1)');
   });
 }
 
