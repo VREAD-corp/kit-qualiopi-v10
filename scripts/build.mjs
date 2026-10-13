@@ -93,6 +93,11 @@ ${sticky ? `<div class="sticky-cta" role="region" aria-label="Commander le kit">
 ` : ''}`;
 }
 
+// Mesure du comportement (cro.js, copie exacte de octave-checkout/gas/web/cro.js) : compteurs journaliers agrégés,
+// sans cookie ni identifiant. Même backend que mesure.js. CTA principal : les liens « Commander » et le bouton de paiement.
+const CRO_API = 'https://script.google.com/macros/s/AKfycbzD1IRL8QALluKGZxgGiORFP6-DkC_qFJYR9aOxZiimxa06nbCqpzUI-9iLblp6V2VY/exec';
+const CRO_CTA = "a[href*='commander'],#pay-button";
+
 function layout({ path, title, description, body, jsonld = [], noindex = false, head = '', tail = '' }) {
   const url = SITE + path;
   return `<!doctype html>
@@ -117,6 +122,8 @@ ${noindex ? '<meta name="robots" content="noindex">' : `<link rel="canonical" hr
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="styles.css">
 ${head}<script src="mesure.js" defer></script>
+<script src="cro.js" data-site="kit-qualiopi-v10" data-api="${CRO_API}" data-hosts="outils.vread.fr" data-cta="${CRO_CTA}" defer></script>
+<script src="cro-goals.js" defer></script>
 ${jsonld.map((j) => `<script type="application/ld+json">${JSON.stringify(j)}</script>`).join('\n')}
 </head>
 <body${OPEN && STICKY_PAGES.has(path) ? ' class="has-sticky"' : ''}>
@@ -219,7 +226,7 @@ const offerCard = OPEN
       </div>`;
 
 const indexBody = `
-<section class="hero">
+<section class="hero" id="hero">
   <div class="wrap hero-in">
     <div class="hero-copy">
       <p class="countdown" id="countdown"><span class="countdown-d" id="jours" hidden></span><span>Nouveau référentiel en vigueur le <strong>1er novembre 2026</strong></span></p>
@@ -238,7 +245,7 @@ const indexBody = `
   </div>
 </section>
 
-<section class="wrap section" aria-labelledby="changes-h">
+<section class="wrap section" id="changements" aria-labelledby="changes-h">
   <p class="kicker">Ce qui change</p>
   <h2 id="changes-h">Au 1er novembre 2026, ${modifiedNums.length + 1} indicateurs évoluent</h2>
   <ul class="stats">
@@ -297,7 +304,7 @@ const indexBody = `
   </div>
 </section>
 
-<section class="wrap section" aria-labelledby="who-h">
+<section class="wrap section" id="pour-qui" aria-labelledby="who-h">
   <p class="kicker">Pour qui</p>
   <h2 id="who-h">Pour les structures de 1 à 10 personnes sans responsable qualité</h2>
   <ul class="cards cards-3">
@@ -327,7 +334,7 @@ const indexBody = `
   <p class="kicker">Questions fréquentes</p>
   <h2 id="faq-h">Avant d'acheter</h2>
   <div class="faq">
-    ${faq.map(([q, a]) => `<details><summary>${esc(q)}</summary><p>${a}</p></details>`).join('\n    ')}
+    ${faq.map(([q, a], i) => `<details id="faq-${i + 1}"><summary>${esc(q)}</summary><p>${a}</p></details>`).join('\n    ')}
   </div>
   <p>Vous répondez aussi à des marchés publics de formation ? <a href="https://outils.vread.fr/veille-ao-formation/">Liste gratuite des appels d’offres de formation ouverts</a> (BOAMP et TED).</p>
 </section>
@@ -361,7 +368,7 @@ const indexBody = `
   </div>
 </section>
 
-<section class="wrap section" aria-labelledby="src-h">
+<section class="wrap section" id="sources" aria-labelledby="src-h">
   <h2 id="src-h">Sources officielles</h2>
   ${sourcesList()}
   <p class="small muted">Contenu vérifié le 11 octobre 2026 ; statut du guide de lecture vérifié le 12 octobre 2026.</p>
@@ -499,10 +506,15 @@ const mentionsBody = `
 const privacyBody = `
 <section class="wrap section prose">
   <h1>Politique de confidentialité</h1>
-  <p><strong>En résumé : ce site ne collecte aucune donnée personnelle.</strong> Il n'utilise ni cookie, ni traceur tiers, ni formulaire ; la seule mesure d'audience est anonyme et sans cookie (voir ci-dessous). C'est pourquoi aucun bandeau de consentement n'est affiché.</p>
+  <p><strong>En résumé : ce site ne collecte aucune donnée personnelle.</strong> Il n'utilise ni cookie, ni traceur tiers, ni formulaire ; la seule mesure, de l'audience et de l'utilisation du site, est anonyme, agrégée et sans cookie (voir ci-dessous). C'est pourquoi aucun bandeau de consentement n'est affiché.</p>
   <h2>Ce que fait l'éditeur</h2>
-  <p>READ FRANCE SAS ne dépose aucun cookie et ne reçoit aucune donnée personnelle vous concernant lorsque vous consultez ce site ou téléchargez l'échantillon. Nous consultons le <strong>nombre total de téléchargements</strong> du fichier, fourni par GitHub de manière agrégée et anonyme, et la mesure d'audience anonyme décrite ci-dessous.</p>
-  <p><strong>Mesure d'audience.</strong> Nous comptons la fréquentation de ce site de façon anonyme : pages vues, clics vers la page de commande et étapes de la commande, totalisés par jour, avec le domaine du site d'origine et les paramètres de campagne (utm) éventuels. Cette mesure ne dépose aucun cookie, n'utilise aucun identifiant et n'enregistre ni adresse IP ni donnée personnelle ; seuls ces totaux journaliers sont conservés, dans un tableur de READ FRANCE hébergé par Google. Elle respecte le réglage « Do Not Track » de votre navigateur. Les robots d'indexation et les navigateurs automatisés (reconnus dans votre navigateur, sans que sa signature soit transmise) sont comptés à part, et une page préchargée n'est comptée que si vous l'ouvrez. Strictement limitée à la mesure d'audience, anonyme et non recoupée avec d'autres données, elle remplit les critères d'exemption de consentement de la CNIL.</p>
+  <p>READ FRANCE SAS ne dépose aucun cookie et ne reçoit aucune donnée personnelle vous concernant lorsque vous consultez ce site ou téléchargez l'échantillon. Nous consultons le <strong>nombre total de téléchargements</strong> du fichier, fourni par GitHub de manière agrégée et anonyme, et la mesure d'audience et du comportement, anonyme et agrégée, décrite ci-dessous.</p>
+  <h2>Mesure d'audience et du comportement sur le site</h2>
+  <p>Nous mesurons la fréquentation de ce site et la façon dont il est utilisé, de façon agrégée, pour l'améliorer : pages vues, clics vers la page de commande et étapes de la commande, avec le domaine du site d'origine et les paramètres de campagne (utm) éventuels ; profondeur de défilement, sections de la page atteintes, temps écoulé avant le premier clic sur un bouton, formulaires commencés ou envoyés et le <strong>nom</strong> du dernier champ utilisé (jamais son contenu), questions de la FAQ ouvertes, liens sortants (seulement le nom de domaine du site visé), erreurs techniques (une empreinte anonyme du message d'erreur), vitesse d'affichage (Core Web Vitals) et clics répétés au même endroit. Seuls des <strong>totaux journaliers</strong> sont conservés, dans un tableur de READ FRANCE hébergé par Google.</p>
+  <p>Cette mesure ne dépose aucun cookie, n'utilise aucun identifiant, ne conserve pas votre adresse IP et ne collecte aucune donnée personnelle. Elle ne vous suit pas d'un site à l'autre, n'est ni partagée ni vendue, et ne sert qu'aux statistiques propres à ce site. Les robots d'indexation et les navigateurs automatisés (reconnus dans votre navigateur, sans que sa signature soit transmise) sont comptés à part ou pas du tout, et une page préchargée n'est comptée que si vous l'ouvrez.</p>
+  <p><strong>Tests A/B.</strong> Il peut arriver que des visiteurs voient une version différente d'un titre, d'un bouton ou d'un prix, pour comparer les versions. La lettre de la version affichée est gardée dans le stockage de session de l'onglet (<em>sessionStorage</em>, effacé à la fermeture de l'onglet) ou choisie selon la date (sans rien stocker) ; elle n'est jamais rattachée à une personne. Le prix facturé est toujours celui qui est affiché.</p>
+  <p><strong>Vous opposer à la mesure.</strong> Si votre navigateur envoie le signal « Do Not Track » ou « Global Privacy Control », aucune mesure n'est faite.</p>
+  <p><strong>Exemption de consentement.</strong> Strictement limitée à des statistiques agrégées propres à ce site, sans suivi d'un site à l'autre, sans recoupement avec d'autres traitements et sans transmission à des tiers, cette mesure entre dans l'exemption prévue pour la mesure d'audience par l'article 82 de la loi Informatique et Libertés, telle que précisée par les lignes directrices et la recommandation de la CNIL du 17 septembre 2020 relatives aux cookies et autres traceurs. C'est pourquoi aucun bandeau de consentement n'est affiché.</p>
   <h2>Ce que fait l'hébergeur</h2>
   <p>Le site est hébergé par GitHub Pages et le fichier est distribué par GitHub Releases (GitHub, Inc.). Comme tout hébergeur, GitHub traite des données techniques de connexion (dont l'adresse IP) pour fournir le service et en assurer la sécurité, selon sa propre <a href="https://docs.github.com/fr/site-policy/privacy-policies/github-general-privacy-statement">déclaration de confidentialité</a>.</p>
   <h2>Contact par e-mail</h2>
@@ -510,7 +522,7 @@ const privacyBody = `
   ${OPEN ? `<h2>Commandes du kit complet</h2>
   <p>La page <a href="commander.html">Commander</a> est la seule à collecter des données : adresse e-mail, raison sociale, SIREN et adresse de facturation de l'entreprise acheteuse, pour exécuter la commande et établir la facture. Le paiement par carte est traité par Stripe, qui charge son module de paiement (et ses cookies de sécurité anti-fraude) sur cette page uniquement. Destinataires, durées de conservation et droits : voir l'article 13 des <a href="cgv-pro.html">CGV professionnels</a>.</p>` : `<h2>Ventes futures</h2>
   <p>La vente du kit complet n'est pas ouverte. Les traitements prévus pour les commandes (données de commande et de facturation, prestataire de paiement Stripe, durées de conservation, droits d'accès, de rectification et d'effacement, réclamation auprès de la CNIL) sont décrits à l'article 13 des <a href="cgv-pro.html">CGV professionnels</a>.</p>`}
-  <p class="small muted">Dernière mise à jour : 12 octobre 2026.</p>
+  <p class="small muted">Dernière mise à jour : 13 octobre 2026.</p>
 </section>`;
 
 // Ancien projet de CGV grand public (11 octobre 2026) : remplacé par les CGV professionnels (vente B2B uniquement).
@@ -541,7 +553,7 @@ ${cgvProBody({
 </section>`;
 
 const commanderPage = `
-<section class="wrap section">
+<section class="wrap section" id="commande">
   <p class="eyebrow"><a href="./">${BRAND}</a> › Commander</p>
   <h1>Commander le ${BRAND}</h1>
   <p class="lead">${NB_SYNTHESES} synthèses (DOCX, ODT, PDF), ${NB_MODELES} modèles éditables (DOCX, ODT) et ${SHEETS.length} tableurs (XLSX, ODS) pour le référentiel Qualiopi applicable au 1er novembre 2026. ${PRICE.sentence}.</p>
@@ -549,7 +561,7 @@ const commanderPage = `
 </section>`;
 
 const orderPage = `
-<section class="wrap section">
+<section class="wrap section" id="confirmation">
   ${orderPageBody()}
   <p class="small muted">Une question sur la commande : répondez à l'e-mail de livraison ou écrivez à ${mail}. <a href="./">Retour à l'accueil du ${BRAND}</a></p>
 </section>`;
@@ -593,7 +605,7 @@ ${pages.filter((p) => !p.noindex).map((p) => `  <url><loc>${SITE}${p.path}</loc>
 `);
 writeFileSync(join(OUT, 'robots.txt'), `User-agent: *\nAllow: /\nSitemap: ${SITE}sitemap.xml\n`);
 writeFileSync(join(OUT, '.nojekyll'), '');
-for (const f of ['styles.css', 'favicon.svg', 'mesure.js', 'guides.css', 'guides.js']) copyFileSync(join(ROOT, 'src', f), join(OUT, f));
+for (const f of ['styles.css', 'favicon.svg', 'mesure.js', 'cro.js', 'cro-goals.js', 'guides.css', 'guides.js']) copyFileSync(join(ROOT, 'src', f), join(OUT, f));
 // Échantillon gratuit servi depuis le site (page modeles-qualiopi-gratuits.html), en plus de la Release GitHub.
 rmSync(join(OUT, 'telechargements'), { recursive: true, force: true });
 mkdirSync(join(OUT, 'telechargements'), { recursive: true });

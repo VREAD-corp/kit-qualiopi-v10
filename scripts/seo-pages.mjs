@@ -99,7 +99,7 @@ export const docLink = (inv, id, esc, { lower = true } = {}) => {
 export function makeKit(ctx) {
   const { OPEN, PRICE_TAG, PRICE_NOTE, SITE, ORG_ID, MAILTO, CONTACT, esc } = ctx;
   const kitCta = ({ title, text }) => `
-<aside class="kit-cta" aria-labelledby="kit-cta-h">
+<aside class="kit-cta" data-section="kit-cta" aria-labelledby="kit-cta-h">
   <h2 id="kit-cta-h">${title}</h2>
   <p>${text}</p>
   ${OPEN ? `<a class="btn btn-primary" href="commander.html">Commander le kit complet, ${PRICE_TAG} net</a>` : `<a class="btn btn-primary" href="./#offre">Voir le kit complet (${PRICE_TAG})</a>`}
@@ -121,7 +121,7 @@ export function makeKit(ctx) {
     about, ...(citation.length ? { citation: citation.map((s) => ({ '@type': 'CreativeWork', name: s.label, url: s.url })) } : {}),
   });
   const faqLd = (qas) => ({ '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: qas.map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a.replace(/<[^>]+>/g, '') } })) });
-  const faqHtml = (qas) => `<div class="faq">${qas.map(([q, a]) => `<details><summary>${q}</summary><p>${a}</p></details>`).join('')}</div>`;
+  const faqHtml = (qas) => `<div class="faq" data-section="faq">${qas.map(([q, a], i) => `<details id="faq-${i + 1}"><summary>${q}</summary><p>${a}</p></details>`).join('')}</div>`;
   return { kitCta, sources, about, byline, crumbs, breadcrumbLd, articleLd, faqLd, faqHtml };
 }
 

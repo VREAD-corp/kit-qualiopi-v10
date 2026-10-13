@@ -42,9 +42,15 @@ for (const path of PAGES) {
     const errors = [];
     page.on('console', (m) => { if (m.type() === 'error') errors.push(m.text()); });
     page.on('pageerror', (e) => errors.push(String(e)));
-    const res = await page.goto(base + path, { waitUntil: 'load' });
+    const tracked = [];
+    page.on('request', (r) => { if (r.url().includes('script.google.com')) tracked.push(r.url()); });
+    const res = await page.goto(base + path + '?octave_notrack=1', { waitUntil: 'load' });
     assert.equal(res.status(), 200);
     assert.deepEqual(errors, []);
+    // cro.js (behaviour counters / A/B) is loaded and has run; octave_notrack=1: nothing is sent.
+    assert.equal(await page.evaluate(() => typeof (window.octaveCro && window.octaveCro.goal)), 'function');
+    assert.equal(await page.getAttribute('script[src$="cro.js"]', 'data-site'), 'kit-qualiopi-v10');
+    await page.evaluate(() => document.dispatchEvent(new Event('visibilitychange')));
     const t = await page.title();
     const d = await page.getAttribute('meta[name="description"]', 'content');
     assert.ok(t.length > 10 && !seen.titles.has(t), `titre unique : ${t}`);
@@ -64,12 +70,13 @@ for (const path of PAGES) {
     if (!SALES_OPEN) assert.ok(!hrefs.some((h) => /commander\.html|commande\.html/.test(h)), 'aucun lien vers la commande');
     hrefs.forEach((h) => links.add(h));
     await page.close();
+    assert.deepEqual(tracked, [], 'aucun envoi de mesure pendant les tests (octave_notrack=1)');
   });
 }
 
 test('liens internes et ressources : 200', async () => {
   const internal = [...links].filter((h) => h.startsWith(base)).map((h) => h.split('#')[0]);
-  for (const extra of ['sitemap.xml', 'robots.txt', 'styles.css', 'og.png', 'favicon.svg', 'img/apercu-d02-checklist-33-indicateurs.webp', 'img/apercu-d04-plan-21-jours.webp', 'img/apercu-t01-fiche-programme.webp', 'img/apercu-t07-procedure-violences.webp', 'img/apercu-t20-convention-formation.webp', 'img/apercu-t22-reglement-interieur.webp', 'img/apercu-t30-questionnaire-chaud.webp']) internal.push(base + extra);
+  for (const extra of ['sitemap.xml', 'robots.txt', 'styles.css', 'mesure.js', 'cro.js', 'cro-goals.js', 'og.png', 'favicon.svg', 'img/apercu-d02-checklist-33-indicateurs.webp', 'img/apercu-d04-plan-21-jours.webp', 'img/apercu-t01-fiche-programme.webp', 'img/apercu-t07-procedure-violences.webp', 'img/apercu-t20-convention-formation.webp', 'img/apercu-t22-reglement-interieur.webp', 'img/apercu-t30-questionnaire-chaud.webp']) internal.push(base + extra);
   for (const h of new Set(internal)) {
     const r = await fetch(h);
     assert.equal(r.status, 200, h);

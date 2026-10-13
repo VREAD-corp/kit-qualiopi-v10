@@ -92,7 +92,7 @@ test('auto-diagnostic : applicabilité selon l\'annexe, résultat, sauvegarde lo
   const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
   const errors = [];
   page.on('pageerror', (e) => errors.push(String(e)));
-  await page.goto(base + 'preparer-audit-qualiopi-2026.html', { waitUntil: 'load' });
+  await page.goto(base + 'preparer-audit-qualiopi-2026.html?octave_notrack=1', { waitUntil: 'load' });
   assert.equal(await page.locator('.ad-q').count(), 33, '33 questions rendues côté serveur');
   // Actions de formation seules, sans condition : 28 indicateurs cochés moins 3, 7, 13, 16, 27, 28 (conditions) = 22.
   assert.match(await page.textContent('#ad-summary'), /^22 indicateurs/);
@@ -123,7 +123,7 @@ test('auto-diagnostic : fonctionne sans stockage local (navigation privée stric
   const page = await ctx.newPage();
   const errors = [];
   page.on('pageerror', (e) => errors.push(String(e)));
-  await page.goto(base + 'preparer-audit-qualiopi-2026.html', { waitUntil: 'load' });
+  await page.goto(base + 'preparer-audit-qualiopi-2026.html?octave_notrack=1', { waitUntil: 'load' });
   await page.check('input[name=i1][value=oui]');
   assert.match(await page.textContent('#ad-summary'), /^1 réponse sur 22 /);
   assert.deepEqual(errors, []);

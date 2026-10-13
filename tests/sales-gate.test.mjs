@@ -42,9 +42,11 @@ const read = (dir, f) => readFileSync(join(dir, SITE_PREFIX, f), 'utf8');
 
 function assertClosed(dir) {
   for (const f of ['commander.html', 'commande.html', 'checkout/pay.js', 'checkout/order.js', 'checkout/checkout-config.js']) assert.ok(!existsSync(join(dir, SITE_PREFIX, f)), `${f} must not exist while SALES_OPEN=false`);
-  // mesure.js (anonymous audience snippet, posts to the Apps Script endpoint) is not buy UI.
-  for (const f of files(dir).filter((x) => /\.(html|js|xml|txt|json)$/.test(x) && x !== join(SITE_PREFIX, 'mesure.js'))) {
-    const body = readFileSync(join(dir, f), 'utf8');
+  // mesure.js / cro.js / cro-goals.js (anonymous audience and behaviour measurement, posting to the Apps Script
+  // endpoint; goals named after the order form) and the cro.js tag (data-api = that endpoint) are not buy UI.
+  const MEASURE = ['mesure.js', 'cro.js', 'cro-goals.js'].map((m) => join(SITE_PREFIX, m));
+  for (const f of files(dir).filter((x) => /\.(html|js|xml|txt|json)$/.test(x) && !MEASURE.includes(x))) {
+    const body = readFileSync(join(dir, f), 'utf8').replace(/<script src="(?:\.\.\/)?cro\.js"[^>]*><\/script>/g, '');
     for (const re of BUY_MARKERS) assert.doesNotMatch(body, re, `${f} contains buy UI marker ${re}`);
     assert.doesNotMatch(body, /<form/i, `${f} contains a form`);
   }
@@ -192,7 +194,7 @@ test('browser: a stale displayed price (catalog or createIntent disagree) never 
       if (r.request().method() === 'GET') return r.fulfill({ contentType: 'application/json', body: JSON.stringify({ ok: true, currency: 'eur', termsVersion: 'cgv-pro-2026-10-12', ...(mode === 'catalog' ? stale : { amount: OPEN_CFG.amount, label: 'x' }) }) });
       return r.fulfill({ contentType: 'application/json', body: JSON.stringify({ ok: true, client_secret: 'pi_test123456789_secret_x', order_id: 'ok_x', currency: 'eur', ...stale }) });
     });
-    await page.goto(base + 'commander.html');
+    await page.goto(base + 'commander.html?octave_notrack=1');
     if (mode === 'intent') {
       await page.waitForSelector('#octave-pay[data-ready="1"]');
       await page.fill('input[name="email"]', 'achat@entreprise.example');
@@ -228,7 +230,7 @@ test('browser: form validates SIREN (Luhn) and billing address, then posts creat
     posts.push(JSON.parse(req.postData()));
     return r.fulfill({ contentType: 'application/json', body: JSON.stringify({ ok: false, error: 'stub', message: 'stub: arrêt avant paiement' }) });
   });
-  await page.goto(base + 'commander.html');
+  await page.goto(base + 'commander.html?octave_notrack=1');
   await page.waitForSelector('#octave-pay[data-ready="1"]', { timeout: 10000 }).catch((e) => {
     throw new Error(`${e.message}\n${consoleLines.join('\n')}`);
   });
@@ -259,7 +261,7 @@ test('browser: form validates SIREN (Luhn) and billing address, then posts creat
   assert.ok(overflow <= 0, `horizontal scroll ${overflow}px`);
   assert.deepEqual(errors, []);
   // Order page without Stripe parameters: explicit message, no call.
-  await page.goto(base + 'commande.html');
+  await page.goto(base + 'commande.html?octave_notrack=1');
   assert.match(await page.textContent('#order-status'), /Lien de commande incomplet/);
   await page.close();
 });
@@ -327,7 +329,7 @@ test('browser: quote box hidden when quotesEnabled=false, shown when true, posts
   // Off: the markup is not even there.
   let page = await browser.newPage();
   await route(page, []);
-  await page.goto(base + 'commander.html');
+  await page.goto(base + 'commander.html?octave_notrack=1');
   assert.equal(await page.$('#octave-devis-box'), null);
   await page.close();
   // On.
@@ -336,7 +338,7 @@ test('browser: quote box hidden when quotesEnabled=false, shown when true, posts
   page.on('pageerror', (e) => errors.push(String(e)));
   const posts = [];
   await route(page, posts);
-  await page.goto(base + 'quotes/commander.html');
+  await page.goto(base + 'quotes/commander.html?octave_notrack=1');
   await page.waitForSelector('#octave-devis-box', { state: 'visible' });
   await page.click('#octave-devis-box summary');
   const f = (n, v) => page.fill(`#octave-devis input[name="${n}"]`, v);
