@@ -1,4 +1,4 @@
-/* Pages guides du Kit Qualiopi V10 (READ FRANCE SAS) : bouton « copier » et auto-diagnostic des 33 indicateurs.
+/* Pages guides du Kit Qualiopi V10 (Jalonel) : bouton « copier » et auto-diagnostic des 33 indicateurs.
    Aucune donnée n'est envoyée : les réponses restent dans le stockage local du navigateur. */
 (function () {
   'use strict';
@@ -115,7 +115,7 @@
       '<p>' + document.getElementById('ad-summary').textContent + '</p>' +
       '<p>' + Object.keys(res.per).sort().map(function (c) { var p = res.per[c]; return 'Critère ' + c + ' : ' + Math.round(100 * p.pts / p.app) + ' %'; }).join(' · ') + '</p>' +
       '<table><thead><tr><th>N°</th><th>Indicateur (reformulé)</th><th>Réponse</th></tr></thead><tbody>' + rows + '</tbody></table>' +
-      '<p>Outil gratuit de READ FRANCE SAS : outils.vread.fr/kit-qualiopi-v10/preparer-audit-qualiopi-2026.html. Information, pas un conseil juridique ; le texte du décret n° 2026-728 fait foi.</p>';
+      '<p>Outil gratuit Jalonel : qualiopi.jalonel.com/preparer-audit-qualiopi-2026.html. Information, pas un conseil juridique ; le texte du décret n° 2026-728 fait foi.</p>';
     document.body.classList.add('print-ad');
     var clear = function () { document.body.classList.remove('print-ad'); window.removeEventListener('afterprint', clear); };
     window.addEventListener('afterprint', clear);

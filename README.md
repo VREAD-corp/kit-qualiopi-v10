@@ -1,10 +1,12 @@
 # Kit Qualiopi V10 — site public
 
-Site : https://outils.vread.fr/kit-qualiopi-v10/ (GitHub Pages, branche `main`, dossier `/docs`).
+Site : https://qualiopi.jalonel.com/ (GitHub Pages, branche `main`, dossier `/docs`, domaine personnalisé : `docs/CNAME` écrit par le build).
+
+2026-10-16: moved to https://qualiopi.jalonel.com/ (brand Jalonel, a brand of READ FRANCE SAS). L'ancienne adresse https://outils.vread.fr/kit-qualiopi-v10/ redirige (301) vers la nouvelle.
 
 Préparation au référentiel national qualité applicable au **1er novembre 2026** (décret n° 2026-728 du 1er août 2026, 33 indicateurs) : tableau des changements V9 → V10, échantillon gratuit (Release), présentation du kit complet (129 €, TVA non applicable, art. 293 B du CGI ; vente aux professionnels sur la page « Commander » quand `SALES_OPEN=true` dans `sales.config.json`).
 
-Un produit de READ FRANCE SAS. Produit indépendant : ni édité ni validé par l'État, France compétences ou un organisme certificateur. Information, pas un conseil juridique.
+Une marque Jalonel (https://jalonel.com/), marque de READ FRANCE SAS. Produit indépendant : ni édité ni validé par l'État, France compétences ou un organisme certificateur. Information, pas un conseil juridique.
 
 ## Développement
 
@@ -49,4 +51,4 @@ Sources de faits : `src/data/referentiel-2026.json` (texte officiel des 33 indic
 2. Dans `src/data/statut-textes.json` : `checked` = la date du jour ; `guide.published` = `true` ; `guide.label` (ex. « Guide de lecture V10 du 2 décembre 2026 »), `guide.date` (AAAA-MM-JJ), `guide.url` (PDF) ; `guide.notes` = 3 à 6 phrases sourcées sur ce que le guide précise (HTML autorisé). Même chose pour `arretes[]` si un arrêté (indicateurs 19 et 20) paraît : `published`, `title`, `url`, `value`.
 3. `npm test`. L'encadré d'état, la chronologie et la section « guide » de `qualiopi-1er-novembre-2026.html` basculent seuls, ainsi que la phrase d'état reprise sur l'accueil, la page « Ce qui change » et les guides.
 4. À relire à la main (texte non piloté par le JSON) : la FAQ de l'accueil « Le guide de lecture officiel est-il publié ? » et la liste « Points encore en attente » (`src/data/changements.json`, `pending`), la FAQ et la section « Ce que l'auditeur peut demander » de l'indicateur 33, le tableau « Indicateurs réécrits et règles d'audit » de la page audit (liste des indicateurs gradués du guide V9).
-5. Pousser sur `main`, puis signaler les URL modifiées à IndexNow (clé à la racine de outils.vread.fr) et demander l'indexation dans la Search Console (propriété `https://outils.vread.fr/`), page `qualiopi-1er-novembre-2026.html` en premier.
+5. Pousser sur `main`, puis signaler les URL modifiées à IndexNow (clé `5be19f56d46ca3d2553bee28ebfa8edd.txt` à la racine de qualiopi.jalonel.com, écrite par le build) et demander l'indexation dans la Search Console (propriété `sc-domain:jalonel.com`), page `qualiopi-1er-novembre-2026.html` en premier.

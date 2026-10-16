@@ -10,7 +10,7 @@ import { chromium } from 'playwright';
 import { FREE_FILES } from '../scripts/seo-page-modeles.mjs';
 
 const DOCS = resolve(import.meta.dirname, '..', 'docs');
-const SITE = 'https://outils.vread.fr/kit-qualiopi-v10/';
+const SITE = 'https://qualiopi.jalonel.com/';
 const GUIDES = ['indicateurs/indicateur-33.html', 'preparer-audit-qualiopi-2026.html', 'modeles-qualiopi-gratuits.html', 'qualiopi-1er-novembre-2026.html'];
 const P2 = [1, 2, 3, 7, 12, 14, 15, 19, 20, 27, 30, 32].map((n) => `indicateurs/indicateur-${n}.html`);
 const html = (p) => readFileSync(join(DOCS, p), 'utf8');
@@ -24,7 +24,7 @@ for (const p of [...GUIDES, ...P2]) {
     const items = ld(h);
     const art = items.find((o) => /Article/.test(o['@type']));
     assert.ok(art && art.datePublished && art.dateModified && art.mainEntityOfPage === SITE + p, 'Article daté');
-    assert.equal(art.publisher['@id'], 'https://outils.vread.fr/#org');
+    assert.equal(art.publisher['@id'], 'https://jalonel.com/#org');
     assert.ok(items.some((o) => o['@type'] === 'BreadcrumbList'), 'BreadcrumbList');
     assert.match(h, /href="https:\/\/www\.legifrance\.gouv\.fr\/jorf\/id\/JORFTEXT000054608509"/, 'lien vers le décret');
     assert.equal((h.match(/class="kit-cta"/g) || []).length, 1, 'un seul bloc CTA vers le kit');

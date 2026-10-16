@@ -368,7 +368,7 @@ test('browser: quote box hidden when quotesEnabled=false, shown when true, posts
   const quotes = posts.filter((p) => p.action === 'quote');
   assert.equal(quotes.length, 1);
   assert.deepEqual({ ...quotes[0], attempt: 'x' }, { action: 'quote', product: PRODUCT, email: 'achat@entreprise.example', company: 'Organisme Exemple SAS', siren: '732829320', addressLine1: '1 place Exemple', addressLine2: '', postalCode: '75011', city: 'Paris', buyerRef: 'BC-42', website: '', termsAccepted: true, termsVersion: 'cgv-pro-2026-10-13', expectedAmount: OPEN_CFG.amount, attempt: 'x' });
-  assert.equal(await page.getAttribute('#octave-devis .terms-link', 'href'), 'https://outils.vread.fr/kit-qualiopi-v10/cgv-pro.html');
+  assert.equal(await page.getAttribute('#octave-devis .terms-link', 'href'), 'https://qualiopi.jalonel.com/cgv-pro.html');
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
   assert.ok(overflow <= 0, `horizontal scroll ${overflow}px`);
   assert.deepEqual(errors, []);

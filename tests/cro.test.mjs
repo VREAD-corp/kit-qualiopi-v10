@@ -22,7 +22,7 @@ test('every published page loads cro.js (site, backend, hosts, CTA) after mesure
   for (const f of pages) {
     const html = readFileSync(join(DOCS, f), 'utf8');
     const pre = f.includes('/') ? '../' : '';
-    const tag = `<script src="${pre}cro.js" data-site="kit-qualiopi-v10" data-api="${API}" data-hosts="outils.vread.fr" data-cta="a[href*='commander'],#pay-button" defer></script>`;
+    const tag = `<script src="${pre}cro.js" data-site="kit-qualiopi-v10" data-api="${API}" data-hosts="qualiopi.jalonel.com outils.vread.fr" data-cta="a[href*='commander'],#pay-button" defer></script>`;
     const i = html.indexOf(tag);
     assert.ok(i > 0, `${f}: cro.js tag`);
     assert.ok(html.indexOf(`<script src="${pre}mesure.js" defer>`) < i, `${f}: after mesure.js`);

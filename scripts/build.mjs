@@ -17,7 +17,7 @@ const OPEN = SALES.SALES_OPEN === true;
 const QUOTES = OPEN && SALES.quotesEnabled === true;
 const PRICE = prices(SALES);
 const DATA = JSON.parse(readFileSync(join(ROOT, 'src/data/changements.json'), 'utf8'));
-const SITE = 'https://outils.vread.fr/kit-qualiopi-v10/';
+const SITE = 'https://qualiopi.jalonel.com/';
 const REPO = 'https://github.com/VREAD-corp/kit-qualiopi-v10';
 const SAMPLE_TAG = `echantillon-v${DATA.version}`;
 const SAMPLE_FILE = `kit-qualiopi-v10-echantillon-${DATA.version}.zip`;
@@ -46,7 +46,7 @@ function siteChrome(body, path) {
   return `<a class="skip" href="#contenu">Aller au contenu</a>
 <header class="top">
   <div class="wrap top-in">
-    <a class="logo" href="./"><span class="logo-mark" aria-hidden="true">33</span><span class="logo-txt">${BRAND}<small>par READ FRANCE SAS</small></span></a>
+    <a class="logo" href="./"><span class="logo-mark" aria-hidden="true">33</span><span class="logo-txt">${BRAND}<small>une marque Jalonel</small></span></a>
     <nav class="top-nav" aria-label="Navigation principale">
       <a href="./#contenu-kit">Le kit</a>
       <a href="changements-v9-v10.html">Ce qui change</a>
@@ -63,18 +63,18 @@ ${body}
 </main>
 <footer class="foot">
   <div class="wrap foot-in">
-    <nav class="rf-network" aria-label="Autres outils READ FRANCE">
-      <p class="rf-network-title">Autres outils READ FRANCE</p>
+    <nav class="rf-network" aria-label="Autres outils Jalonel">
+      <p class="rf-network-title">Autres outils Jalonel</p>
       <ul>
-        <li><a href="https://outils.vread.fr/">Tous les outils</a></li>
-        <li><a href="https://outils.vread.fr/kit-qualiopi-v10/">Kit Qualiopi V10</a></li>
-        <li><a href="https://outils.vread.fr/kit-gpsr-vendeurs/pack.html">Pack documentation GPSR</a></li>
-        <li><a href="https://outils.vread.fr/veille-ao-formation/alertes/">Alertes appels d’offres formation</a></li>
-        <li><a href="https://outils.vread.fr/declaration-accessibilite/audit/">Audit d’accessibilité</a></li>
+        <li><a href="https://jalonel.com/">Tous les outils</a></li>
+        <li><a href="https://qualiopi.jalonel.com/">Kit Qualiopi V10</a></li>
+        <li><a href="https://gpsr.jalonel.com/pack.html">Pack documentation GPSR</a></li>
+        <li><a href="https://ao-formation.jalonel.com/alertes/">Alertes appels d’offres formation</a></li>
+        <li><a href="https://accessibilite.jalonel.com/audit/">Audit d’accessibilité</a></li>
       </ul>
     </nav>
     <div>
-      <p class="foot-brand"><strong>${BRAND}</strong> — un produit de READ FRANCE SAS, Paris · SIREN 988 741 773</p>
+      <p class="foot-brand"><strong>${BRAND}</strong> — <a href="https://jalonel.com/">Une marque Jalonel</a></p>
       <p class="small muted">Produit indépendant : ni édité ni validé par l'État, France compétences ou un organisme certificateur. Qualiopi est une marque de l'État. Information, pas un conseil juridique ; aucune garantie de certification.</p>
     </div>
     <nav aria-label="Liens légaux" class="foot-nav">
@@ -122,7 +122,7 @@ ${noindex ? '<meta name="robots" content="noindex">' : `<link rel="canonical" hr
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="styles.css">
 ${head}<script src="mesure.js" defer></script>
-<script src="cro.js" data-site="kit-qualiopi-v10" data-api="${CRO_API}" data-hosts="outils.vread.fr" data-cta="${CRO_CTA}" defer></script>
+<script src="cro.js" data-site="kit-qualiopi-v10" data-api="${CRO_API}" data-hosts="qualiopi.jalonel.com outils.vread.fr" data-cta="${CRO_CTA}" defer></script>
 <script src="cro-goals.js" defer></script>
 ${jsonld.map((j) => `<script type="application/ld+json">${JSON.stringify(j)}</script>`).join('\n')}
 </head>
@@ -175,7 +175,7 @@ const faq = [
     : ['Puis-je payer sur devis ou par virement ?', `À l'ouverture des ventes, le kit pourra être réglé en une fois par carte bancaire (Stripe) ou par virement sur devis (article 5 des ${CGV_LINK}). La facture acquittée, établie au nom et au SIREN de votre organisme, sera envoyée par e-mail avec les fichiers. Une question : ${mail}.`],
   ['Et si le guide de lecture officiel change les attendus ?', `Le guide de lecture du référentiel 2026 est ${GUIDE_STATUS}. Une mise à jour du kit établie après sa publication vous est envoyée sans frais, à l'adresse e-mail de commande, si elle paraît dans les 12 mois suivant votre achat (article 10 des ${CGV_LINK}).`],
   ['Puis-je être remboursé ?', `La vente est conclue entre professionnels : le droit de rétractation des consommateurs ne s'applique pas et la commande est ferme dès le paiement (article 7 des ${CGV_LINK}). Si le fichier livré est illisible, incomplet ou ne correspond pas à la description, signalez-le dans les 30 jours : nous fournissons un fichier conforme ou, à défaut, remboursons le prix (article 10). Pour juger la qualité avant d'acheter, téléchargez l'échantillon gratuit.`],
-  ['Qui a rédigé le kit ?', `READ FRANCE SAS, société basée à Paris (SIREN 988 741 773), à partir des textes officiels cités en bas de page : décret n° 2026-728, annexe du code du travail, délibération de France compétences. La rédaction est originale ; les libellés des indicateurs sont des reformulations et le texte officiel fait foi. READ FRANCE n'est pas un organisme certificateur. Une question sur le contenu : ${mail}.`],
+  ['Qui a rédigé le kit ?', `Jalonel, marque de READ FRANCE SAS, société basée à Paris (SIREN 988 741 773), à partir des textes officiels cités en bas de page : décret n° 2026-728, annexe du code du travail, délibération de France compétences. La rédaction est originale ; les libellés des indicateurs sont des reformulations et le texte officiel fait foi. Jalonel n'est pas un organisme certificateur. Une question sur le contenu : ${mail}.`],
   OPEN
     ? ['Comment se passe la commande ?', `Le kit est vendu aux professionnels (SIREN obligatoire), ${PRICE_TAG} en achat unique. Sur la page <a href="commander.html">Commander</a>, vous payez par carte${QUOTES ? ' ou demandez un devis à régler par virement' : ''} ; le fichier ZIP et la facture acquittée arrivent par e-mail dès le paiement confirmé, au plus tard sous 24 heures.`]
     : ['Puis-je acheter le kit complet maintenant ?', `Pas encore : l'ouverture des ventes est en préparation. L'échantillon gratuit est disponible dès maintenant. Pour être prévenu, écrivez à ${mail}.`],
@@ -348,14 +348,14 @@ const indexBody = `
   <div class="faq">
     ${faq.map(([q, a], i) => `<details id="faq-${i + 1}"><summary>${esc(q)}</summary><p>${a}</p></details>`).join('\n    ')}
   </div>
-  <p>Vous répondez aussi à des marchés publics de formation ? <a href="https://outils.vread.fr/veille-ao-formation/">Liste gratuite des appels d’offres de formation ouverts</a> (BOAMP et TED).</p>
+  <p>Vous répondez aussi à des marchés publics de formation ? <a href="https://ao-formation.jalonel.com/">Liste gratuite des appels d’offres de formation ouverts</a> (BOAMP et TED).</p>
 </section>
 
 <section class="band" id="qui" aria-labelledby="qui-h">
   <div class="wrap section about">
     <div class="about-intro">
       <p class="kicker">Qui sommes-nous</p>
-      <h2 id="qui-h">READ FRANCE SAS, Paris</h2>
+      <h2 id="qui-h">Jalonel, Paris</h2>
       <p>Nous avons écrit ce kit à partir du décret n° 2026-728 et de son annexe, comparés indicateur par indicateur au référentiel de 2019. Le tableau des changements qui en sort est en accès libre depuis le 11 octobre 2026.</p>
     </div>
     <ul class="founders" aria-label="Fondateurs">
@@ -371,9 +371,9 @@ const indexBody = `
       </li>
     </ul>
     <div class="about-foot">
-      <p class="small muted">READ FRANCE SAS, SAS au capital de 1 000 € · 11 rue Rouvet, 75019 Paris · SIREN 988 741 773 · <a href="mentions-legales.html">mentions légales</a></p>
+      <p class="small muted">Jalonel est une marque de READ FRANCE SAS, SAS au capital de 1 000 € · 11 rue Rouvet, 75019 Paris · SIREN 988 741 773 · <a href="mentions-legales.html">mentions légales</a></p>
       <div class="contact-card">
-        <p>Une question avant d'acheter ? Écrivez-nous. Octave, l'assistant IA de READ FRANCE, répond ou transmet votre message à l'un des deux fondateurs.</p>
+        <p>Une question avant d'acheter ? Écrivez-nous. Octave, l'assistant IA de Jalonel, répond ou transmet votre message à l'un des deux fondateurs.</p>
         <a class="btn btn-ghost" href="${MAILTO}">${CONTACT}</a>
       </div>
     </div>
@@ -400,9 +400,9 @@ const indexBody = `
 </script>
 `;
 
-// Organisation : définie une seule fois sur le site vitrine (https://outils.vread.fr/), référencée ici par son @id.
-const ORG_ID = 'https://outils.vread.fr/#org';
-const ORG_REF = { '@type': 'Organization', '@id': ORG_ID, name: 'READ FRANCE SAS' };
+// Organisation : la marque Jalonel (hub https://jalonel.com/), marque de READ FRANCE SAS, référencée par son @id.
+const ORG_ID = 'https://jalonel.com/#org';
+const ORG_REF = { '@type': 'Organization', '@id': ORG_ID, name: 'Jalonel', url: 'https://jalonel.com/', parentOrganization: { '@type': 'Organization', name: 'READ FRANCE SAS', identifier: 'SIREN 988741773' } };
 const webPageLd = {
   '@context': 'https://schema.org',
   '@type': 'WebPage',
@@ -490,7 +490,7 @@ const changesBody = `
 
   <h2>Sources officielles</h2>
   ${sourcesList()}
-  <p class="small muted">Analyse établie le 11 octobre 2026 par READ FRANCE SAS. Information, pas un conseil juridique.</p>
+  <p class="small muted">Analyse établie le 11 octobre 2026 par Jalonel (READ FRANCE SAS). Information, pas un conseil juridique.</p>
 </section>`;
 
 // ---------------------------------------------------------------- Pages légales
@@ -505,6 +505,7 @@ const mentionsBody = `
   ${PRICE.std ? 'N° TVA intracommunautaire : FR57988741773' : 'TVA non applicable, art. 293 B du CGI (franchise en base)'}<br>
   Directeur de la publication : Tanguy Warsmann, président<br>
   Contact : <a href="${MAILTO}">${CONTACT}</a><!-- TODO phone --></p>
+  <p>Jalonel est une marque de READ FRANCE SAS.</p>
   <p class="small muted">Données d'identification issues de l'annuaire des entreprises (recherche-entreprises.api.gouv.fr), consultées le 11 octobre 2026.</p>
   <h2>Hébergeur</h2>
   <p>GitHub, Inc. (GitHub Pages et GitHub Releases), 88 Colin P. Kelly Jr. Street, San Francisco, CA 94107, États-Unis — <a href="https://github.com">github.com</a>.</p>
@@ -600,7 +601,7 @@ const pages = [
 ];
 // Clean previous buy-UI output so that closing the sales removes it from docs/.
 for (const f of ['commander.html', 'commande.html', 'checkout']) rmSync(join(OUT, f), { recursive: true, force: true });
-pages.push(...seoPages({ DATA, SITE, OPEN, PRICE_TAG, PRICE_NOTE: priceNote, ORG_ID, MAILTO, CONTACT, SAMPLE_URL, esc }));
+pages.push(...seoPages({ DATA, SITE, OPEN, PRICE_TAG, PRICE_NOTE: priceNote, ORG_ID, ORG_REF, MAILTO, CONTACT, SAMPLE_URL, esc }));
 rmSync(join(OUT, 'indicateurs'), { recursive: true, force: true });
 for (const p of pages) {
   if (p.file.includes('/')) mkdirSync(join(OUT, p.file, '..'), { recursive: true });
@@ -619,6 +620,10 @@ ${pages.filter((p) => !p.noindex).map((p) => `  <url><loc>${SITE}${p.path}</loc>
 `);
 writeFileSync(join(OUT, 'robots.txt'), `User-agent: *\nAllow: /\nSitemap: ${SITE}sitemap.xml\n`);
 writeFileSync(join(OUT, '.nojekyll'), '');
+// Domaine personnalisé GitHub Pages (build legacy, dossier /docs) et clé IndexNow servie à la racine.
+writeFileSync(join(OUT, 'CNAME'), `${new URL(SITE).host}\n`);
+const INDEXNOW_KEY = '5be19f56d46ca3d2553bee28ebfa8edd';
+writeFileSync(join(OUT, `${INDEXNOW_KEY}.txt`), INDEXNOW_KEY);
 for (const f of ['styles.css', 'favicon.svg', 'mesure.js', 'cro.js', 'cro-goals.js', 'guides.css', 'guides.js']) copyFileSync(join(ROOT, 'src', f), join(OUT, f));
 // Échantillon gratuit servi depuis le site (page modeles-qualiopi-gratuits.html), en plus de la Release GitHub.
 rmSync(join(OUT, 'telechargements'), { recursive: true, force: true });

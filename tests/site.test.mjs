@@ -63,7 +63,7 @@ for (const path of PAGES) {
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
     assert.ok(overflow <= 0, `défilement horizontal de ${overflow}px`);
     const body = await page.locator('body').innerText();
-    assert.match(body, /READ FRANCE SAS/);
+    assert.match(body, /Une marque Jalonel/);
     const actions = (await page.$$eval('a, button, input[type=submit]', (els) => els.map((e) => e.innerText || e.value || ''))).join(' | ');
     if (!SALES_OPEN) assert.doesNotMatch(actions, /acheter|commander|panier|payer/i, 'aucun bouton d\'achat tant que la vente est fermée');
     const hrefs = await page.$$eval('a[href]', (as) => as.map((a) => a.href));

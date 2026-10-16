@@ -2,14 +2,14 @@
   "name": "kit-qualiopi-v10",
   "version": "1.0.0",
   "private": true,
-  "description": "Site public du Kit Qualiopi V10 (READ FRANCE SAS) — GitHub Pages",
+  "description": "Site public du Kit Qualiopi V10 (Jalonel, marque de READ FRANCE SAS) — GitHub Pages",
   "type": "module",
   "license": "SEE LICENSE IN LICENSE",
   "scripts": {
     "build": "node scripts/build.mjs",
     "og": "node scripts/og.mjs",
     "test": "node scripts/build.mjs && node --test tests/*.test.mjs",
-    "check:live": "SITE_URL=https://outils.vread.fr/kit-qualiopi-v10/ node --test tests/*.test.mjs"
+    "check:live": "SITE_URL=https://qualiopi.jalonel.com/ node --test tests/*.test.mjs"
   },
   "devDependencies": {
     "playwright": "1.64.0"

@@ -20,7 +20,7 @@ p{font-size:34px;margin:0;color:#e6ecff}
 <div><div class="k">Référentiel national qualité · 1er novembre 2026</div><h1>Kit Qualiopi V10</h1></div>
 <p>Ce qui change, les preuves à préparer pour les 33 indicateurs, ${NB_MODELES}&nbsp;modèles Word et LibreOffice, ${NB_TABLEURS}&nbsp;tableurs.</p>
 <div class="b"><span>Tableau V9 → V10</span><span>Check-list d'audit</span><span>Échantillon gratuit</span></div>
-<div class="f">Un produit de READ FRANCE SAS · produit indépendant, sans lien avec l'État ou un certificateur</div>
+<div class="f">Une marque Jalonel · produit indépendant, sans lien avec l'État ou un certificateur</div>
 </div></body></html>`;
 const browser = await chromium.launch();
 const page = await browser.newPage({ viewport: { width: 1200, height: 630 } });

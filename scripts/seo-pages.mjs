@@ -97,7 +97,7 @@ export const docLink = (inv, id, esc, { lower = true } = {}) => {
 
 // ------------------------------------------------------------------ Gabarit commun
 export function makeKit(ctx) {
-  const { OPEN, PRICE_TAG, PRICE_NOTE, SITE, ORG_ID, MAILTO, CONTACT, esc } = ctx;
+  const { OPEN, PRICE_TAG, PRICE_NOTE, SITE, ORG_REF, MAILTO, CONTACT, esc } = ctx;
   const kitCta = ({ title, text }) => `
 <aside class="kit-cta" data-section="kit-cta" aria-labelledby="kit-cta-h">
   <h2 id="kit-cta-h">${title}</h2>
@@ -109,15 +109,15 @@ export function makeKit(ctx) {
   <ul class="sources">${list.map((s) => `<li><a href="${esc(s.url)}" rel="noopener">${esc(s.label)}</a></li>`).join('')}</ul>
   <p class="small muted">Textes consultés le ${frDate(CHECKED)}.</p>`;
   const about = () => `<div class="about-page small muted">
-  <p>Page rédigée par READ FRANCE SAS avec l'aide d'Octave, notre assistant IA, à partir des textes officiels cités ci-dessus, relus sur Légifrance et sur le site du ministère du Travail le ${frDate(CHECKED)}. Les reformulations n'engagent que nous : le texte publié au Journal officiel fait foi. Information, pas un conseil juridique. Directeur de la publication : Tanguy Warsmann. Une erreur, ou un texte paru depuis ? Écrivez à <a href="${MAILTO}">${CONTACT}</a>.</p>
+  <p>Page rédigée par Jalonel (READ FRANCE SAS) avec l'aide d'Octave, notre assistant IA, à partir des textes officiels cités ci-dessus, relus sur Légifrance et sur le site du ministère du Travail le ${frDate(CHECKED)}. Les reformulations n'engagent que nous : le texte publié au Journal officiel fait foi. Information, pas un conseil juridique. Directeur de la publication : Tanguy Warsmann. Une erreur, ou un texte paru depuis ? Écrivez à <a href="${MAILTO}">${CONTACT}</a>.</p>
 </div>`;
-  const byline = (modified = PUBLISHED) => `<p class="byline">Par READ FRANCE SAS · publié le ${frDate(PUBLISHED)}${modified !== PUBLISHED ? ` · mis à jour le ${frDate(modified)}` : ''} · textes officiels vérifiés le ${frDate(CHECKED)}</p>`;
+  const byline = (modified = PUBLISHED) => `<p class="byline">Par Jalonel · publié le ${frDate(PUBLISHED)}${modified !== PUBLISHED ? ` · mis à jour le ${frDate(modified)}` : ''} · textes officiels vérifiés le ${frDate(CHECKED)}</p>`;
   const crumbs = (items) => `<p class="eyebrow">${items.map(([label, href]) => (href ? `<a href="${href}">${label}</a>` : label)).join(' › ')}</p>`;
   const breadcrumbLd = (items) => ({ '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: items.map(([name, path], i) => ({ '@type': 'ListItem', position: i + 1, name, item: SITE + path })) });
   const articleLd = ({ path, headline, description, modified = PUBLISHED, about = [DECRET_LD], citation = [], type = 'Article' }) => ({
     '@context': 'https://schema.org', '@type': type, headline, description, inLanguage: 'fr',
     datePublished: PUBLISHED, dateModified: modified, mainEntityOfPage: SITE + path, url: SITE + path, image: `${SITE}og.png`,
-    author: { '@id': ORG_ID, '@type': 'Organization', name: 'READ FRANCE SAS' }, publisher: { '@id': ORG_ID, '@type': 'Organization', name: 'READ FRANCE SAS' },
+    author: ORG_REF, publisher: ORG_REF,
     about, ...(citation.length ? { citation: citation.map((s) => ({ '@type': 'CreativeWork', name: s.label, url: s.url })) } : {}),
   });
   const faqLd = (qas) => ({ '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: qas.map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a.replace(/<[^>]+>/g, '') } })) });

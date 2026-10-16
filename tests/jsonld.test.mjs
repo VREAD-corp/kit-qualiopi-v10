@@ -10,8 +10,8 @@ import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 
 const ROOT = resolve(import.meta.dirname, '..');
-const SITE = 'https://outils.vread.fr/kit-qualiopi-v10/';
-const ORG_ID = 'https://outils.vread.fr/#org';
+const SITE = 'https://qualiopi.jalonel.com/';
+const ORG_ID = 'https://jalonel.com/#org';
 const config = JSON.parse(readFileSync(join(ROOT, 'sales.config.json'), 'utf8'));
 
 function jsonld(html) {
@@ -25,11 +25,11 @@ function jsonld(html) {
 }
 const byType = (items, type) => items.filter((o) => o['@type'] === type);
 
-// L'Organization complète n'est définie que sur le site vitrine ; ici, seulement des références par @id.
-const ORG_REF = { '@type': 'Organization', '@id': ORG_ID, name: 'READ FRANCE SAS' };
+// La marque Jalonel (hub https://jalonel.com/), marque de READ FRANCE SAS : référencée par son @id, sans nœud autonome.
+const ORG_REF = { '@type': 'Organization', '@id': ORG_ID, name: 'Jalonel', url: 'https://jalonel.com/', parentOrganization: { '@type': 'Organization', name: 'READ FRANCE SAS', identifier: 'SIREN 988741773' } };
 const noDuplicateOrg = (items) => {
   const text = JSON.stringify(items);
-  for (const key of ['legalName', 'PostalAddress', 'identifier']) assert.ok(!text.includes(`"${key}"`), `pas de nœud Organization dupliqué (${key})`);
+  for (const key of ['legalName', 'PostalAddress']) assert.ok(!text.includes(`"${key}"`), `pas de nœud Organization dupliqué (${key})`);
   assert.equal(byType(items, 'Organization').length, 0, 'pas de nœud Organization autonome');
 };
 

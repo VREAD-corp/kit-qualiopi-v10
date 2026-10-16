@@ -1,5 +1,5 @@
 // P4 : modèles Qualiopi gratuits. Les fichiers de l'échantillon (dépôt qualiopi-kit-content, dist/, identiques à la Release
-// GitHub echantillon-v1.1.0) sont servis depuis outils.vread.fr/kit-qualiopi-v10/telechargements/.
+// GitHub echantillon-v1.1.0) sont servis depuis qualiopi.jalonel.com/telechargements/.
 // Les PDF des modèles T07, T13 et T16 sont convertis des DOCX par LibreOffice (voir README).
 import { statSync } from 'node:fs';
 import { join } from 'node:path';
