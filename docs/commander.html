@@ -4,13 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Commander le Kit Qualiopi V10 (vente aux professionnels)</title>
-<meta name="description" content="Commande du Kit Qualiopi V10 par les entreprises (SIREN) : 129,00 € net de taxe (TVA non applicable, art. 293 B du CGI), paiement par carte avec Stripe, fichier et facture par e-mail.">
+<meta name="description" content="Commande du Kit Qualiopi V10 par les entreprises (SIREN) : 129,00 € net de taxe (TVA non applicable, art. 293 B du CGI), paiement par carte avec Stripe ou par virement sur devis, fichier et facture par e-mail.">
 <meta name="robots" content="noindex">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="fr_FR">
 <meta property="og:site_name" content="Kit Qualiopi V10">
 <meta property="og:title" content="Commander le Kit Qualiopi V10 (vente aux professionnels)">
-<meta property="og:description" content="Commande du Kit Qualiopi V10 par les entreprises (SIREN) : 129,00 € net de taxe (TVA non applicable, art. 293 B du CGI), paiement par carte avec Stripe, fichier et facture par e-mail.">
+<meta property="og:description" content="Commande du Kit Qualiopi V10 par les entreprises (SIREN) : 129,00 € net de taxe (TVA non applicable, art. 293 B du CGI), paiement par carte avec Stripe ou par virement sur devis, fichier et facture par e-mail.">
 <meta property="og:url" content="https://qualiopi.jalonel.com/commander.html">
 <meta property="og:image" content="https://qualiopi.jalonel.com/og.png">
 <meta property="og:image:width" content="1200">
@@ -79,6 +79,39 @@
   <p class="small muted">Paiement sécurisé par carte bancaire avec Stripe : vos données de carte sont saisies dans un cadre Stripe et ne transitent pas par nos serveurs.</p>
   <noscript><p class="status err">Le paiement nécessite JavaScript.</p></noscript>
 </form>
+<details id="octave-devis-box" class="card devis-box" hidden>
+  <summary><strong>Besoin d’un devis ou paiement par virement ?</strong></summary>
+  <p class="small muted">Recevez immédiatement par e-mail un devis PDF (valable 30 jours) avec les coordonnées bancaires à utiliser et la référence de virement propre à ce devis. La livraison et la facture partent automatiquement dès réception du virement. Pour un bon de commande ou une demande particulière, répondez à l’e-mail du devis.</p>
+  <form id="octave-devis" class="checkout-form" novalidate>
+    <label class="field"><span>E-mail professionnel (réception du devis, puis du produit et de la facture)</span>
+      <input type="email" name="email" autocomplete="email" required maxlength="254"></label>
+    <label class="field"><span>Raison sociale</span>
+      <input type="text" name="company" autocomplete="organization" required minlength="2" maxlength="200"></label>
+    <label class="field"><span>SIREN (9 chiffres)</span>
+      <input type="text" name="siren" inputmode="numeric" required pattern="\s*(\d\s*){9}" maxlength="11"></label>
+    <fieldset class="field-group"><legend>Adresse de facturation (figure sur le devis et la facture)</legend>
+      <label class="field"><span>Adresse</span>
+        <input type="text" name="addressLine1" autocomplete="address-line1" required minlength="3" maxlength="200"></label>
+      <label class="field"><span>Complément d’adresse (facultatif)</span>
+        <input type="text" name="addressLine2" autocomplete="address-line2" maxlength="200"></label>
+      <label class="field"><span>Code postal</span>
+        <input type="text" name="postalCode" autocomplete="postal-code" inputmode="numeric" required pattern="\s*\d{5}\s*" maxlength="7"></label>
+      <label class="field"><span>Ville</span>
+        <input type="text" name="city" autocomplete="address-level2" required maxlength="100"></label>
+      <p class="small muted">Pays : France.</p>
+    </fieldset>
+    <label class="field"><span>Votre référence interne / n° de bon de commande (facultatif, reporté sur le devis et la facture)</span>
+      <input type="text" name="buyerRef" maxlength="60"></label>
+    <!-- Honeypot: hidden from humans, bots fill it; the server drops the request silently. -->
+    <div class="hp" aria-hidden="true"><label>Site web <input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
+    <label class="check"><input type="checkbox" name="terms" required>
+      <span>Je demande ce devis au nom et pour le compte de l’entreprise ci-dessus, pour un usage professionnel, et j’accepte les <a class="terms-link" href="cgv-pro.html" target="_blank" rel="noopener">conditions générales de vente aux professionnels</a> (version du 13 octobre 2026). La commande devient ferme au paiement du devis.</span></label>
+    <p id="devis-error" class="status err" role="alert" hidden></p>
+    <p id="devis-ok" class="status ok" role="status" hidden></p>
+    <button type="submit" id="devis-button" class="pay-button secondary">Recevoir mon devis par e-mail</button>
+    <p class="small muted">Paiement par virement SEPA sur un numéro de compte bancaire virtuel attribué par notre prestataire de paiement Stripe (bénéficiaire READ FRANCE SAS), propre à votre entreprise et identique pour tous vos devis ; la référence propre à chaque devis permet d’affecter votre virement. Aucun paiement n’est demandé à cette étape.</p>
+  </form>
+</details>
 </section>
 </section>
 </main>
@@ -110,5 +143,6 @@
 <script src="checkout/checkout-config.js"></script>
 <script src="https://js.stripe.com/v3/"></script>
 <script src="checkout/pay.js"></script>
+<script src="checkout/devis.js"></script>
 </body>
 </html>

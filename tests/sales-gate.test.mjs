@@ -5,7 +5,7 @@
 //  - A test build with SALES_OPEN=true (SALES_ALLOW_TEST=1, fake endpoint, pk_test_) emits the form
 //    (e-mail, raison sociale, SIREN + Luhn, adresse de facturation, case CGV pro), the order page, and
 //    the B2B terms; a browser run with a stubbed Stripe.js and endpoint checks the form behaviour.
-//  - Quote / bank-transfer form (quotesEnabled, false in the committed config): no #octave-devis block and no
+//  - Quote / bank-transfer form (quotesEnabled, true in the committed config since 2026-10-16): no #octave-devis block and no
 //    devis.js script tag while it is false; a test build with quotesEnabled=true has the block once, right
 //    after #octave-pay, devis.js after pay.js, unique ids, and devis.js posts { action: 'quote', ... }.
 import { test, before, after } from 'node:test';
@@ -316,6 +316,14 @@ test('quotesEnabled=true (test build): one quote block right after #octave-pay, 
   assert.match(read(quotesDir, 'checkout/checkout-config.js'), /"quotesEnabled":true\}/);
   assert.equal(read(quotesDir, 'checkout/devis.js'), readFileSync(join(ROOT, 'src/checkout/devis.js'), 'utf8'));
   assert.match(read(quotesDir, 'styles.css'), /\.hp\{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden\}/);
+  // Committed quotesEnabled=true (2026-10-16): the published docs/ has the same single block and the FAQ offers the quote.
+  if (repoConfig.SALES_OPEN && repoConfig.quotesEnabled === true) {
+    const pub = read(join(ROOT, PUBLISHED), 'commander.html');
+    assert.equal(pub.match(/id="octave-devis-box"/g)?.length, 1);
+    assert.equal(pub.match(/checkout\/devis\.js/g)?.length, 1);
+    assert.match(read(join(ROOT, PUBLISHED), 'checkout/checkout-config.js'), /"quotesEnabled":true\}/);
+    assert.match(read(join(ROOT, PUBLISHED), 'index.html'), /Oui\. Sur la page <a href="commander\.html">Commander<\/a>, vous payez par carte bancaire \(Stripe\) ou vous demandez un devis/);
+  }
 });
 
 // The vendored scripts must stay byte-identical to VREAD-corp/octave-checkout gas/web/ (its go-live check runs cmp).

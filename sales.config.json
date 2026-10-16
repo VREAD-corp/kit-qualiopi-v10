@@ -1,6 +1,6 @@
 {
   "SALES_OPEN": true,
-  "quotesEnabled": false,
+  "quotesEnabled": true,
   "product": "kit-qualiopi-v10",
   "amount": 12900,
   "VAT": "franchise293B",
