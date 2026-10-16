@@ -377,10 +377,15 @@ test('browser: quote box hidden when quotesEnabled=false, shown when true, posts
 
 test('bank transfer on quote: FAQ and privacy page match the B2B terms (articles 5 and 13)', () => {
   const plain = (h) => h.replace(/<!--[\s\S]*?-->/g, '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ');
+  // quotesEnabled=true: the FAQ offers the quote; quotesEnabled=false (committed): card today, transfer announced
+  // (CGV art. 5), never « not offered » and never a quote form that does not exist yet.
+  const faqQ = read(quotesDir, 'index.html');
+  assert.match(faqQ, /Puis-je payer sur devis ou par virement \?/);
+  assert.match(plain(faqQ), /Oui\. Sur la page Commander , vous payez par carte bancaire \(Stripe\) ou vous demandez un devis/);
+  assert.match(plain(faqQ), /Paiement par carte \(Stripe\) ou virement sur devis/);
   const faq = read(openDir, 'index.html');
-  assert.match(faq, /Puis-je payer sur devis ou par virement \?/);
-  assert.match(plain(faq), /Oui\. Sur la page Commander , vous payez par carte bancaire \(Stripe\) ou vous demandez un devis/);
-  assert.doesNotMatch(plain(faq), /ne sont pas proposés en ligne/);
+  assert.match(plain(faq), /se règle aujourd'hui par carte bancaire \(Stripe\), en une fois\. Le paiement par virement sur devis prévu à l'article 5/);
+  assert.doesNotMatch(plain(faq), /Oui\. Sur la page Commander|ne sont pas proposés en ligne|ou virement sur devis/);
   const privacy = plain(read(openDir, 'confidentialite.html'));
   for (const re of [/demande de devis/, /nom du titulaire du compte émetteur, BIC, quatre derniers chiffres de l'IBAN/, /devis non suivis de commande, 1 an après leur expiration/, /Dernière mise à jour : 13 octobre 2026/]) assert.match(privacy, re, String(re));
 });
