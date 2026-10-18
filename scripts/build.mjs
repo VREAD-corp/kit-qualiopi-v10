@@ -33,7 +33,7 @@ const changed = DATA.indicators.filter((i) => i.change === 'modifie' || i.change
 const modifiedNums = DATA.indicators.filter((i) => i.change === 'modifie').map((i) => i.n);
 
 // Contact (remplace les tickets GitHub) et chrome du site (en-tête, pied de page, barre d'achat mobile).
-const CONTACT = 'octave@vread.fr';
+const CONTACT = 'contact@jalonel.com';
 const MAILTO = `mailto:${CONTACT}`;
 // Prix affiché compact (« 129 € »), dérivé de sales.config.json (montant en centimes).
 const PRICE_TAG = `${SALES.amount % 100 === 0 ? SALES.amount / 100 : (SALES.amount / 100).toFixed(2).replace('.', ',')} €`;
@@ -83,7 +83,7 @@ ${sticky ? `<div class="sticky-cta" role="region" aria-label="Commander le kit">
 ` : ''}`;
 }
 
-// Mesure du comportement (cro.js, copie exacte de octave-checkout/gas/web/cro.js) : compteurs journaliers agrégés,
+// Mesure du comportement (cro.js, copie exacte de octave-checkout/gas/web/jalonel/cro.js) : compteurs journaliers agrégés,
 // sans cookie ni identifiant. Même backend que mesure.js. CTA principal : les liens « Commander » et le bouton de paiement.
 const CRO_API = 'https://script.google.com/macros/s/AKfycbzD1IRL8QALluKGZxgGiORFP6-DkC_qFJYR9aOxZiimxa06nbCqpzUI-9iLblp6V2VY/exec';
 const CRO_CTA = "a[href*='commander'],#pay-button";
@@ -113,7 +113,7 @@ ${noindex ? '<meta name="robots" content="noindex">' : `<link rel="canonical" hr
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="styles.css">
 ${head}<script src="mesure.js" defer></script>
-<script src="cro.js" data-site="kit-qualiopi-v10" data-api="${CRO_API}" data-hosts="qualiopi.jalonel.com outils.vread.fr" data-cta="${CRO_CTA}" defer></script>
+<script src="cro.js" data-site="kit-qualiopi-v10" data-api="${CRO_API}" data-hosts="qualiopi.jalonel.com" data-cta="${CRO_CTA}" defer></script>
 <script src="cro-goals.js" defer></script>
 ${jsonld.map((j) => `<script type="application/ld+json">${JSON.stringify(j)}</script>`).join('\n')}
 </head>

@@ -17,11 +17,11 @@ npm test             # build + tests Playwright (rendu, console, 390 px, liens)
 npm run check:live   # mêmes tests contre le site en ligne
 ```
 
-`src/data/changements.json` est exporté depuis le dépôt privé du contenu (seules les données déjà présentes dans l'échantillon gratuit). Aucun cookie, aucune donnée personnelle collectée ; mesure d'audience anonyme sans cookie (`src/mesure.js`, copie exacte de `octave-checkout/gas/web/mesure.js`) et mesure agrégée du comportement / tests A/B (`src/cro.js`, copie exacte de `octave-checkout/gas/web/cro.js`, testée par `tests/cro.check.mjs` ; objectifs `download` et `checkout` dans `src/cro-goals.js`). Aucune expérience A/B en cours (`window.OCTAVE_XP` non défini).
+`src/data/changements.json` est exporté depuis le dépôt privé du contenu (seules les données déjà présentes dans l'échantillon gratuit). Aucun cookie, aucune donnée personnelle collectée ; mesure d'audience anonyme sans cookie (`src/mesure.js`, copie exacte de `octave-checkout/gas/web/jalonel/mesure.js`) et mesure agrégée du comportement / tests A/B (`src/cro.js`, copie exacte de `octave-checkout/gas/web/jalonel/cro.js`, testée par `tests/cro.check.mjs` ; objectifs `download` et `checkout` dans `src/cro-goals.js`). Aucune expérience A/B en cours (`window.OCTAVE_XP` non défini).
 
 ## Contact
 
-Par e-mail : octave@vread.fr.
+Par e-mail : contact@jalonel.com.
 
 ## Vente (B2B) : interrupteur `SALES_OPEN`
 

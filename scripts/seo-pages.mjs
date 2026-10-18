@@ -1,4 +1,4 @@
-// Pages guides du site (SEO, plan vread-revenue-lab/seo/qualiopi.md, §4) :
+// Pages guides du site (SEO, plan interne seo/qualiopi.md, §4) :
 //   P1 indicateurs/indicateur-33.html · P3 preparer-audit-qualiopi-2026.html (+ auto-diagnostic)
 //   P4 modeles-qualiopi-gratuits.html · P5 qualiopi-1er-novembre-2026.html · P2 indicateurs/indicateur-N.html
 // Faits réglementaires : src/data/referentiel-2026.json (texte officiel relevé sur Légifrance) et
