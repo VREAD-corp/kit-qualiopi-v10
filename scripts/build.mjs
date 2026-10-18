@@ -18,10 +18,9 @@ const QUOTES = OPEN && SALES.quotesEnabled === true;
 const PRICE = prices(SALES);
 const DATA = JSON.parse(readFileSync(join(ROOT, 'src/data/changements.json'), 'utf8'));
 const SITE = 'https://qualiopi.jalonel.com/';
-const REPO = 'https://github.com/VREAD-corp/kit-qualiopi-v10';
-const SAMPLE_TAG = `echantillon-v${DATA.version}`;
+// Free sample ZIP, served by the site itself (src/telechargements/, built by qualiopi-kit-content `npm run build`).
 const SAMPLE_FILE = `kit-qualiopi-v10-echantillon-${DATA.version}.zip`;
-const SAMPLE_URL = `${REPO}/releases/download/${SAMPLE_TAG}/${SAMPLE_FILE}`;
+const SAMPLE_URL = `telechargements/${SAMPLE_FILE}`;
 const LASTMOD = '2026-10-13';
 const PUBLISHED = '2026-10-11';
 const BRAND = 'Kit Qualiopi V10';
@@ -32,7 +31,7 @@ const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replac
 const changed = DATA.indicators.filter((i) => i.change === 'modifie' || i.change === 'nouveau');
 const modifiedNums = DATA.indicators.filter((i) => i.change === 'modifie').map((i) => i.n);
 
-// Contact (remplace les tickets GitHub) et chrome du site (en-tête, pied de page, barre d'achat mobile).
+// Contact et chrome du site (en-tête, pied de page, barre d'achat mobile).
 const CONTACT = 'contact@jalonel.com';
 const MAILTO = `mailto:${CONTACT}`;
 // Prix affiché compact (« 129 € »), dérivé de sales.config.json (montant en centimes).
@@ -72,7 +71,6 @@ ${body}
       <a href="confidentialite.html">Confidentialité</a>
       <a href="cgv-pro.html">CGV professionnels</a>
       <a href="${MAILTO}">Contact : ${CONTACT}</a>
-      <a href="${REPO}">Code source du site</a>
     </nav>
   </div>
 </footer>
@@ -491,7 +489,7 @@ const mentionsBody = `
   <p>Jalonel est une marque de READ FRANCE SAS.</p>
   <p class="small muted">Données d'identification issues de l'annuaire des entreprises (recherche-entreprises.api.gouv.fr), consultées le 11 octobre 2026.</p>
   <h2>Hébergeur</h2>
-  <p>GitHub, Inc. (GitHub Pages et GitHub Releases), 88 Colin P. Kelly Jr. Street, San Francisco, CA 94107, États-Unis — <a href="https://github.com">github.com</a>.</p>
+  <p>GitHub, Inc. (GitHub Pages), 88 Colin P. Kelly Jr. Street, San Francisco, CA 94107, États-Unis — <a href="https://github.com">github.com</a>.</p>
   <h2>Propriété intellectuelle</h2>
   <p>Les textes, tableaux et modèles de ce site et du kit sont des créations originales de READ FRANCE SAS. Les textes officiels cités (décret, code du travail) sont accessibles sur Légifrance ; les reformulations proposées ne s'y substituent pas.</p>
   <p>« Qualiopi » est une marque de l'État (ministère chargé de la formation professionnelle). Ce site et ce kit sont indépendants : ils ne sont ni édités, ni validés, ni approuvés par l'État, France compétences, le COFRAC ou un organisme certificateur, et n'utilisent pas le logo Qualiopi.</p>
@@ -504,7 +502,7 @@ const privacyBody = `
   <h1>Politique de confidentialité</h1>
   <p><strong>En résumé : ce site ne collecte aucune donnée personnelle.</strong> Il n'utilise ni cookie, ni traceur tiers, ni formulaire ; la seule mesure, de l'audience et de l'utilisation du site, est anonyme, agrégée et sans cookie (voir ci-dessous). C'est pourquoi aucun bandeau de consentement n'est affiché.</p>
   <h2>Ce que fait l'éditeur</h2>
-  <p>READ FRANCE SAS ne dépose aucun cookie et ne reçoit aucune donnée personnelle vous concernant lorsque vous consultez ce site ou téléchargez l'échantillon. Nous consultons le <strong>nombre total de téléchargements</strong> du fichier, fourni par GitHub de manière agrégée et anonyme, et la mesure d'audience et du comportement, anonyme et agrégée, décrite ci-dessous.</p>
+  <p>READ FRANCE SAS ne dépose aucun cookie et ne reçoit aucune donnée personnelle vous concernant lorsque vous consultez ce site ou téléchargez l'échantillon. Nous consultons le <strong>nombre total de téléchargements</strong> de l'échantillon et la mesure d'audience et du comportement, anonymes et agrégés, décrits ci-dessous.</p>
   <h2>Mesure d'audience et du comportement sur le site</h2>
   <p>Nous mesurons la fréquentation de ce site et la façon dont il est utilisé, de façon agrégée, pour l'améliorer : pages vues, clics vers la page de commande et étapes de la commande, avec le domaine du site d'origine et les paramètres de campagne (utm) éventuels ; profondeur de défilement, sections de la page atteintes, temps écoulé avant le premier clic sur un bouton, formulaires commencés ou envoyés et le <strong>nom</strong> du dernier champ utilisé (jamais son contenu), questions de la FAQ ouvertes, liens sortants (seulement le nom de domaine du site visé), erreurs techniques (une empreinte anonyme du message d'erreur), vitesse d'affichage (Core Web Vitals) et clics répétés au même endroit. Seuls des <strong>totaux journaliers</strong> sont conservés, dans un tableur de READ FRANCE hébergé par Google.</p>
   <p>Cette mesure ne dépose aucun cookie, n'utilise aucun identifiant, ne conserve pas votre adresse IP et ne collecte aucune donnée personnelle. Elle ne vous suit pas d'un site à l'autre, n'est ni partagée ni vendue, et ne sert qu'aux statistiques propres à ce site. Les robots d'indexation et les navigateurs automatisés (reconnus dans votre navigateur, sans que sa signature soit transmise) sont comptés à part ou pas du tout, et une page préchargée n'est comptée que si vous l'ouvrez.</p>
@@ -512,7 +510,7 @@ const privacyBody = `
   <p><strong>Vous opposer à la mesure.</strong> Si votre navigateur envoie le signal « Do Not Track » ou « Global Privacy Control », aucune mesure n'est faite.</p>
   <p><strong>Exemption de consentement.</strong> Strictement limitée à des statistiques agrégées propres à ce site, sans suivi d'un site à l'autre, sans recoupement avec d'autres traitements et sans transmission à des tiers, cette mesure entre dans l'exemption prévue pour la mesure d'audience par l'article 82 de la loi Informatique et Libertés, telle que précisée par les lignes directrices et la recommandation de la CNIL du 17 septembre 2020 relatives aux cookies et autres traceurs. C'est pourquoi aucun bandeau de consentement n'est affiché.</p>
   <h2>Ce que fait l'hébergeur</h2>
-  <p>Le site est hébergé par GitHub Pages et le fichier est distribué par GitHub Releases (GitHub, Inc.). Comme tout hébergeur, GitHub traite des données techniques de connexion (dont l'adresse IP) pour fournir le service et en assurer la sécurité, selon sa propre <a href="https://docs.github.com/fr/site-policy/privacy-policies/github-general-privacy-statement">déclaration de confidentialité</a>.</p>
+  <p>Le site et l'échantillon gratuit sont hébergés par GitHub Pages (GitHub, Inc.). Comme tout hébergeur, GitHub traite des données techniques de connexion (dont l'adresse IP) pour fournir le service et en assurer la sécurité, selon sa propre <a href="https://docs.github.com/fr/site-policy/privacy-policies/github-general-privacy-statement">déclaration de confidentialité</a>.</p>
   <h2>Contact par e-mail</h2>
   <p>Si vous nous écrivez à <a href="${MAILTO}">${CONTACT}</a>, votre adresse et votre message servent uniquement à vous répondre. Vous pouvez demander leur suppression à la même adresse.</p>
   ${OPEN ? `<h2>Commandes du kit complet</h2>
@@ -632,10 +630,10 @@ writeFileSync(join(OUT, 'CNAME'), `${new URL(SITE).host}\n`);
 const INDEXNOW_KEY = '5be19f56d46ca3d2553bee28ebfa8edd';
 writeFileSync(join(OUT, `${INDEXNOW_KEY}.txt`), INDEXNOW_KEY);
 for (const f of ['styles.css', 'favicon.svg', 'mesure.js', 'cro.js', 'cro-goals.js', 'guides.css', 'guides.js']) copyFileSync(join(ROOT, 'src', f), join(OUT, f));
-// Échantillon gratuit servi depuis le site (page modeles-qualiopi-gratuits.html), en plus de la Release GitHub.
+// Échantillon gratuit servi depuis le site : fichiers à l'unité (page modeles-qualiopi-gratuits.html) et archive ZIP complète.
 rmSync(join(OUT, 'telechargements'), { recursive: true, force: true });
 mkdirSync(join(OUT, 'telechargements'), { recursive: true });
-for (const f of FREE_FILES) copyFileSync(join(ROOT, 'src/telechargements', f), join(OUT, 'telechargements', f));
+for (const f of [...FREE_FILES, SAMPLE_FILE]) copyFileSync(join(ROOT, 'src/telechargements', f), join(OUT, 'telechargements', f));
 if (existsSync(join(ROOT, 'src/og.png'))) copyFileSync(join(ROOT, 'src/og.png'), join(OUT, 'og.png'));
 // Aperçus du kit (WebP rendus depuis les vrais documents du dépôt de contenu).
 cpSync(join(ROOT, 'src/img'), join(OUT, 'img'), { recursive: true });

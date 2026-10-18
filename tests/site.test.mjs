@@ -84,20 +84,18 @@ test('liens internes et ressources : 200', async () => {
   }
 });
 
-test('lien de téléchargement de l\'échantillon joignable', { skip: process.env.SKIP_RELEASE === '1' }, async () => {
-  const sample = [...links].find((h) => h.includes('/releases/download/'));
-  assert.ok(sample, 'lien de l\'échantillon présent');
-  // Vérification par l'API publique (sans télécharger le fichier, pour ne pas fausser le KPI download_count).
-  const m = sample.match(/github\.com\/([^/]+\/[^/]+)\/releases\/download\/([^/]+)\/(.+)$/);
-  assert.ok(m, sample);
-  const r = await fetch(`https://api.github.com/repos/${m[1]}/releases/tags/${m[2]}`, { headers: { accept: 'application/vnd.github+json' } });
+test('échantillon ZIP servi par le site (pas de GitHub Releases)', async () => {
+  const sample = [...links].find((h) => /\/telechargements\/kit-qualiopi-v10-echantillon-[\d.]+\.zip$/.test(h));
+  assert.ok(sample && sample.startsWith(base), 'lien de l\'échantillon présent, sur le site');
+  assert.ok(![...links].some((h) => /github\.com\/VREAD-corp|\/releases\/download\//i.test(h)), 'aucun lien GitHub');
+  const r = await fetch(sample);
   assert.equal(r.status, 200);
-  const rel = await r.json();
-  assert.ok(rel.assets.some((a) => a.name === m[3] && a.state === 'uploaded' && a.size > 100000), `asset ${m[3]} présent`);
+  const buf = Buffer.from(await r.arrayBuffer());
+  assert.ok(buf.length > 100000 && buf.subarray(0, 4).equals(Buffer.from('PK\x03\x04', 'latin1')), 'archive ZIP complète');
 });
 
-test('liens externes (sources officielles, GitHub) : pas de 404', async () => {
-  const external = [...links].filter((h) => /^https?:/.test(h) && !h.startsWith(base) && !h.includes('/releases/download/') && !h.includes('legifrance.gouv.fr') && !h.includes('travail-emploi.gouv.fr')); // both sit behind bot protection
+test('liens externes (sources officielles) : pas de 404', async () => {
+  const external = [...links].filter((h) => /^https?:/.test(h) && !h.startsWith(base) && !h.includes('legifrance.gouv.fr') && !h.includes('travail-emploi.gouv.fr')); // both sit behind bot protection
   for (const h of new Set(external)) {
     const r = await fetch(h, { method: 'GET', redirect: 'follow' });
     assert.ok(r.status < 400, `${h} → ${r.status}`);

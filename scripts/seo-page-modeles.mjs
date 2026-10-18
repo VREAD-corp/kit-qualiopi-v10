@@ -1,5 +1,5 @@
-// P4 : modèles Qualiopi gratuits. Les fichiers de l'échantillon (dépôt qualiopi-kit-content, dist/, identiques à la Release
-// GitHub echantillon-v1.1.0) sont servis depuis qualiopi.jalonel.com/telechargements/.
+// P4 : modèles Qualiopi gratuits. Les fichiers de l'échantillon (dépôt qualiopi-kit-content, dist/) et son archive ZIP
+// sont servis depuis qualiopi.jalonel.com/telechargements/.
 // Les PDF des modèles T07, T13 et T16 sont convertis des DOCX par LibreOffice (voir README).
 import { statSync } from 'node:fs';
 import { join } from 'node:path';
@@ -79,7 +79,7 @@ export function pageModeles(ctx, kit) {
       ${links('T16-amelioration-continue-risques')}
     </div>
   </div>
-  <p>Tout l'échantillon en un fichier, avec un lisez-moi : <a href="${SAMPLE_URL}" download data-mesure="free_download">archive ZIP de l'échantillon</a> (hébergée sur GitHub).</p>
+  <p>Tout l'échantillon en un fichier, avec un lisez-moi : <a href="${SAMPLE_URL}" download data-mesure="free_download">archive ZIP de l'échantillon</a>.</p>
 
   <h2 id="officiel">Les ressources officielles, gratuites elles aussi</h2>
   <p>Avant tout modèle, ces textes font référence. Tous sont publics.</p>

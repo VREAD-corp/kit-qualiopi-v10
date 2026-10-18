@@ -4,7 +4,7 @@ Site : https://qualiopi.jalonel.com/ (GitHub Pages, branche `main`, dossier `/do
 
 2026-10-16: moved to https://qualiopi.jalonel.com/ (brand Jalonel, a brand of READ FRANCE SAS). L'ancienne adresse https://outils.vread.fr/kit-qualiopi-v10/ redirige (301) vers la nouvelle.
 
-Préparation au référentiel national qualité applicable au **1er novembre 2026** (décret n° 2026-728 du 1er août 2026, 33 indicateurs) : tableau des changements V9 → V10, échantillon gratuit (Release), présentation du kit complet (129 €, TVA non applicable, art. 293 B du CGI ; vente aux professionnels sur la page « Commander » quand `SALES_OPEN=true` dans `sales.config.json`).
+Préparation au référentiel national qualité applicable au **1er novembre 2026** (décret n° 2026-728 du 1er août 2026, 33 indicateurs) : tableau des changements V9 → V10, échantillon gratuit (servi par le site, `telechargements/`), présentation du kit complet (129 €, TVA non applicable, art. 293 B du CGI ; vente aux professionnels sur la page « Commander » quand `SALES_OPEN=true` dans `sales.config.json`).
 
 Une marque Jalonel (https://jalonel.com/), marque de READ FRANCE SAS. Produit indépendant : ni édité ni validé par l'État, France compétences ou un organisme certificateur. Information, pas un conseil juridique.
 
@@ -39,7 +39,7 @@ Générées par `scripts/seo-pages.mjs` (un module par page : `seo-page-33.mjs`,
 |---|---|
 | `indicateurs/indicateur-33.html` | Le nouvel indicateur 33 : texte officiel, champ d'application (colonnes de l'annexe), différence avec 30 et 32, grille d'exemple |
 | `preparer-audit-qualiopi-2026.html` | Règles d'audit (arrêté du 6 juin 2019), calendrier J-60, auto-diagnostic des 33 indicateurs (`src/guides.js`, stockage local, impression), audit à blanc |
-| `modeles-qualiopi-gratuits.html` | L'échantillon gratuit servi depuis le site (`src/telechargements/`, copie de `qualiopi-kit-content/dist/kit-qualiopi-v10-echantillon-1.1.0/` ; PDF de T07, T13, T16 convertis des DOCX par `soffice --headless --convert-to pdf`) |
+| `modeles-qualiopi-gratuits.html` | L'échantillon gratuit servi depuis le site (`src/telechargements/`, copie de `qualiopi-kit-content/dist/kit-qualiopi-v10-echantillon-1.1.0/` et de son archive `kit-qualiopi-v10-echantillon-1.1.0.zip`, liée depuis toutes les pages ; PDF de T07, T13, T16 convertis des DOCX par `soffice --headless --convert-to pdf`) |
 | `indicateurs/indicateur-N.html` (N = 1, 2, 3, 7, 12, 14, 15, 19, 20, 27, 30, 32) | Une page par indicateur réécrit : texte 2019 et 2026 avec les ajouts surlignés (diff calculé), champ d'application, règles d'audit, pratique, exemple, preuves et pièges. Contenu propre dans `scripts/seo-indicateurs-data.mjs`, rendu par `scripts/seo-indicateurs.mjs` |
 | `qualiopi-1er-novembre-2026.html` | Date d'application, certificats en cours, état du guide de lecture et des arrêtés, e-mail à copier pour le certificateur |
 
