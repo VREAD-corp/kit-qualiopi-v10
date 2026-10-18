@@ -296,3 +296,6 @@ label.check input { margin-top: .3em; width: 20px; height: 20px; flex: none; }
 .order-seller { margin-top: 1rem; }
 #questions-commande details { margin: .4rem 0; }
 #questions-commande summary { cursor: pointer; font-weight: 600; padding: .5rem 0; min-height: 44px; }
+
+/* Cible tactile ≥ 44 px pour la barre d’achat mobile */
+.sticky-cta .btn { min-height: 44px; display: inline-flex; align-items: center; }
