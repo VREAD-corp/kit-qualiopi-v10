@@ -184,7 +184,8 @@ test('SALES_OPEN=true (test build): Commander page, order page, config, sitemap,
   assert.match(conf, new RegExp(`"amount":${OPEN_CFG.amount},"currency":"eur","termsVersion":"cgv-pro-2026-10-13"`));
   for (const f of ['pay.js', 'order.js', 'devis.js']) assert.equal(read(openDir, `checkout/${f}`), readFileSync(join(ROOT, 'src/checkout', f), 'utf8'));
   assert.doesNotMatch(read(openDir, 'sitemap.xml'), /commande|commander/);
-  assert.match(read(openDir, 'sitemap.xml'), /cgv-pro\.html/);
+  // cgv-pro.html stays noindex when sales are open: near-identical to the other Jalonel kits' CGV (2026-10-18).
+  assert.doesNotMatch(read(openDir, 'sitemap.xml'), /cgv-pro\.html|mentions-legales|confidentialite/);
   assert.match(read(openDir, 'index.html'), /href="commander\.html"/);
   assert.doesNotMatch(read(openDir, 'index.html'), SOON_RE);
   assert.doesNotMatch(read(openDir, 'cgv-pro.html'), /Les ventes ne sont pas encore ouvertes/);

@@ -88,6 +88,7 @@ ${sticky ? `<div class="sticky-cta" role="region" aria-label="Commander le kit">
 const CRO_API = 'https://script.google.com/macros/s/AKfycbzD1IRL8QALluKGZxgGiORFP6-DkC_qFJYR9aOxZiimxa06nbCqpzUI-9iLblp6V2VY/exec';
 const CRO_CTA = "a[href*='commander'],#pay-button";
 
+// Legal notice, privacy and CGV pages are near-identical across the Jalonel subdomains: noindex (2026-10-18).
 function layout({ path, title, description, body, jsonld = [], noindex = false, head = '', tail = '' }) {
   const url = SITE + path;
   return `<!doctype html>
@@ -594,9 +595,9 @@ mkdirSync(OUT, { recursive: true });
 const pages = [
   { path: '', file: 'index.html', title: 'Kit Qualiopi V10 : modèles du nouveau référentiel Qualiopi 2026', description: `Nouveau référentiel Qualiopi 2026 : check-list des 33 indicateurs, tableau V9 → V10, ${NB_MODELES} modèles Word et LibreOffice et ${SHEETS.length} tableurs prêts à adapter. Échantillon gratuit.`, body: indexBody, jsonld: OPEN ? [webPageLd, productLd, faqLd] : [webPageLd, faqLd], priority: '1.0' },
   { path: 'changements-v9-v10.html', file: 'changements-v9-v10.html', title: 'Nouveau référentiel Qualiopi 2026 : ce qui change au 1er novembre (V10)', description: `Nouveau référentiel Qualiopi 2026 : les ${modifiedNums.length} indicateurs modifiés et le nouvel indicateur 33, avant / après et actions à mener. Source : décret n° 2026-728.`, body: changesBody, jsonld: [{ '@context': 'https://schema.org', '@type': 'Article', headline: 'Référentiel Qualiopi 2026 : ce qui change au 1er novembre, indicateur par indicateur', datePublished: PUBLISHED, dateModified: LASTMOD, inLanguage: 'fr', author: ORG_REF, publisher: ORG_REF }], priority: '0.9' },
-  { path: 'mentions-legales.html', file: 'mentions-legales.html', title: 'Mentions légales — Kit Qualiopi V10', description: 'Éditeur, hébergeur et propriété intellectuelle du site Kit Qualiopi V10 (READ FRANCE SAS).', body: mentionsBody, priority: '0.2' },
-  { path: 'confidentialite.html', file: 'confidentialite.html', title: 'Confidentialité — Kit Qualiopi V10', description: 'Aucun cookie, aucune donnée personnelle collectée par le site Kit Qualiopi V10, mesure d\'audience anonyme uniquement.', body: privacyBody, priority: '0.2' },
-  { path: 'cgv-pro.html', file: 'cgv-pro.html', title: 'Conditions générales de vente aux professionnels — Kit Qualiopi V10', description: 'CGV B2B du Kit Qualiopi V10 (READ FRANCE SAS), version du 13 octobre 2026 : vente aux professionnels, prix, paiement par carte ou par virement sur devis (Stripe), livraison par e-mail, licence, facturation.', body: cgvProPage, priority: '0.2', noindex: !OPEN },
+  { path: 'mentions-legales.html', file: 'mentions-legales.html', title: 'Mentions légales — Kit Qualiopi V10', description: 'Éditeur, hébergeur et propriété intellectuelle du site Kit Qualiopi V10 (READ FRANCE SAS).', body: mentionsBody, priority: '0.2', noindex: true },
+  { path: 'confidentialite.html', file: 'confidentialite.html', title: 'Confidentialité — Kit Qualiopi V10', description: 'Aucun cookie, aucune donnée personnelle collectée par le site Kit Qualiopi V10, mesure d\'audience anonyme uniquement.', body: privacyBody, priority: '0.2', noindex: true },
+  { path: 'cgv-pro.html', file: 'cgv-pro.html', title: 'Conditions générales de vente aux professionnels — Kit Qualiopi V10', description: 'CGV B2B du Kit Qualiopi V10 (READ FRANCE SAS), version du 13 octobre 2026 : vente aux professionnels, prix, paiement par carte ou par virement sur devis (Stripe), livraison par e-mail, licence, facturation.', body: cgvProPage, priority: '0.2', noindex: true },
   { path: 'cgv.html', file: 'cgv.html', title: 'Conditions générales de vente — Kit Qualiopi V10', description: 'Le Kit Qualiopi V10 est vendu uniquement aux professionnels : voir les conditions générales de vente aux professionnels.', body: cgvBody, priority: '0.1', noindex: true },
   ...(OPEN
     ? [
