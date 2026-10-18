@@ -47,14 +47,14 @@ function siteChrome(body, path) {
 <header class="top">
   <div class="wrap top-in">
     <a class="logo" href="./"><span class="logo-mark" aria-hidden="true">33</span><span class="logo-txt">${BRAND}<small>une marque Jalonel</small></span></a>
-    <nav class="top-nav" aria-label="Navigation principale">
+    ${CHECKOUT_PAGES.has(path) ? '' : `<nav class="top-nav" aria-label="Navigation principale">
       <a href="./#contenu-kit">Le kit</a>
       <a href="changements-v9-v10.html">Ce qui change</a>
       <a href="preparer-audit-qualiopi-2026.html">Préparer l'audit</a>
       <a href="./#offre">Tarif</a>
       <a href="./#faq">FAQ</a>
       <a href="./#qui">Contact</a>
-    </nav>
+    </nav>`}
     ${OPEN && !CHECKOUT_PAGES.has(path) ? `<a class="btn btn-primary btn-sm top-cta" href="commander.html">Commander · ${PRICE_TAG}</a>` : ''}
   </div>
 </header>
@@ -63,16 +63,6 @@ ${body}
 </main>
 <footer class="foot">
   <div class="wrap foot-in">
-    <nav class="rf-network" aria-label="Autres outils Jalonel">
-      <p class="rf-network-title">Autres outils Jalonel</p>
-      <ul>
-        <li><a href="https://jalonel.com/">Tous les outils</a></li>
-        <li><a href="https://qualiopi.jalonel.com/">Kit Qualiopi V10</a></li>
-        <li><a href="https://gpsr.jalonel.com/pack.html">Pack documentation GPSR</a></li>
-        <li><a href="https://ao-formation.jalonel.com/alertes/">Alertes appels d’offres formation</a></li>
-        <li><a href="https://accessibilite.jalonel.com/audit/">Audit d’accessibilité</a></li>
-      </ul>
-    </nav>
     <div>
       <p class="foot-brand"><strong>${BRAND}</strong> — <a href="https://jalonel.com/">Une marque Jalonel</a></p>
       <p class="small muted">Produit indépendant : ni édité ni validé par l'État, France compétences ou un organisme certificateur. Qualiopi est une marque de l'État. Information, pas un conseil juridique ; aucune garantie de certification.</p>
@@ -196,7 +186,7 @@ const heroCta = OPEN
         <a class="btn btn-primary btn-lg" href="commander.html">Obtenir le kit complet – ${PRICE_TAG}</a>
         <a class="link-arrow" href="${SAMPLE_URL}" download data-mesure="free_download">ou téléchargez d'abord 3 modèles gratuits</a>
       </div>
-      <p class="cta-meta">Achat unique, sans abonnement · fichiers et facture par e-mail dès le paiement · réservé aux professionnels</p>`
+      <p class="cta-meta">${PRICE_TAG} ${PRICE.std ? `TTC (${PRICE.ht} HT)` : 'net, TVA non applicable (art. 293 B du CGI)'} · achat unique, sans abonnement · fichiers et facture par e-mail dès le paiement · réservé aux professionnels</p>`
   : `<div class="cta">
         ${downloadBtn('Télécharger 3 modèles gratuits')}
       </div>
@@ -235,7 +225,7 @@ const indexBody = `
     <div class="hero-copy">
       <p class="countdown" id="countdown"><span class="countdown-d" id="jours" hidden></span><span>Nouveau référentiel en vigueur le <strong>1er novembre 2026</strong></span></p>
       <h1>Kit pour le nouveau référentiel Qualiopi 2026&nbsp;: les 33&nbsp;indicateurs, ${NB_MODELES}&nbsp;modèles, ${PRICE_TAG}</h1>
-      <p class="lead">Pour les organismes de formation, CFA et centres de bilans audités après le 1er novembre 2026, sans consultant ni responsable qualité. La check-list des preuves indicateur par indicateur, un plan d'action en 21 jours, ${NB_MODELES} modèles Word et LibreOffice et ${SHEETS.length} tableurs à remplir avec vos informations.</p>
+      <p class="lead">Pour les organismes de formation, CFA et centres de bilans audités après le 1er novembre 2026, sans consultant ni responsable qualité. La check-list des preuves indicateur par indicateur, un plan d'action en 21 jours, ${NB_MODELES} modèles Word et LibreOffice et ${SHEETS.length} tableurs à remplir avec vos informations. Le but : savoir, pour chacun des 33 indicateurs, quelle preuve montrer à l'auditeur, et avoir le document à jour.</p>
       ${heroCta}
     </div>
     <div class="hero-visual">
@@ -331,14 +321,6 @@ const indexBody = `
         <p>Avant d'acheter, l'échantillon gratuit contient le tableau des changements et ${templatesFree.length} modèles complets (indicateurs 12, 27 et 32). Sans inscription, sans e-mail.</p>
         <a class="btn btn-ghost" href="${SAMPLE_URL}" download data-mesure="free_download">Télécharger l'échantillon gratuit<span class="btn-sub">ZIP · DOCX, ODT, PDF</span></a>
     </div>
-  </div>
-</section>
-
-<section class="wrap section" id="acquimetre" aria-labelledby="acq-h">
-  <div class="card">
-    <h3 id="acq-h">Indicateurs 8 et 11 : les questions de vos formations, rédigées pour vous</h3>
-    <p>Les modèles T04, T06 et T29 donnent la trame ; les questions dépendent de vos cours. Avec Acquimètre, vous déposez vos supports et recevez sous 5 jours ouvrés, pour 1 à 10 formations, le test de positionnement, l'évaluation de fin de formation et celle à J+30, avec corrigés et sources. 249 € net, 199 € pour les acheteurs du kit (code dans l'e-mail de livraison).</p>
-    <p><a href="https://outils.vread.fr/acquimetre/?utm_source=kit-qualiopi&amp;utm_medium=site&amp;utm_campaign=carte-accueil">Voir l'offre et l'exemple complet</a></p>
   </div>
 </section>
 
@@ -567,12 +549,36 @@ ${cgvProBody({
 })}
 </section>`;
 
+// Page Commander : récapitulatif (aperçu réel, contenu, échantillon), vendeur, garantie de l'article 10 près du bouton,
+// trois questions d'achat. Textes de garantie et de licence repris des CGV (articles 7, 8 et 10), sans ajout.
+const recapShot = PREVIEWS.find((p) => p.id === "D02") || PREVIEWS[0];
 const commanderPage = `
 <section class="wrap section" id="commande">
   <p class="eyebrow"><a href="./">${BRAND}</a> › Commander</p>
   <h1>Commander le ${BRAND}</h1>
   <p class="lead">${NB_SYNTHESES} synthèses (DOCX, ODT, PDF), ${NB_MODELES} modèles éditables (DOCX, ODT) et ${SHEETS.length} tableurs (XLSX, ODS) pour le référentiel Qualiopi applicable au 1er novembre 2026. ${PRICE.sentence}.</p>
-  ${orderFormHtml({ config: SALES, productName: BRAND, cgvUrl: 'cgv-pro.html', payLabel: PAY_LABEL })}
+  <div class="card order-recap" data-section="recap">
+    <a class="order-recap-shot" href="img/${recapShot.file}">${img(recapShot, { lazy: false })}</a>
+    <div>
+      <p><strong>Ce que vous recevez par e-mail, dès le paiement</strong></p>
+      <ul class="checks">
+        <li>La check-list des preuves des 33 indicateurs (page ci-contre) et le plan d'action en 21 jours</li>
+        <li>${NB_MODELES} modèles Word et LibreOffice, ${SHEETS.length} tableurs avec formules</li>
+        <li>La mise à jour sans frais si le guide de lecture officiel paraît dans les 12 mois</li>
+        <li>La facture acquittée au nom et au SIREN de votre organisme</li>
+      </ul>
+      <p class="small muted">Pas encore sûr ? <a href="${SAMPLE_URL}" download data-mesure="free_download">Téléchargez l'échantillon gratuit</a> : tableau des changements et ${templatesFree.length} modèles complets, sans e-mail.</p>
+    </div>
+  </div>
+  ${orderFormHtml({ config: SALES, productName: BRAND, cgvUrl: 'cgv-pro.html', payLabel: PAY_LABEL,
+    afterTermsHtml: `  <p class="small order-guarantee">Fichier illisible, incomplet ou non conforme à la description ? Signalez-le sous 30 jours : nous le remplaçons ou, à défaut, vous remboursons (<a href="cgv-pro.html">article 10 des CGV</a>). Vente entre professionnels : pas de droit de rétractation (article 7).</p>\n` })}
+  <p class="small muted order-seller">Vendeur : READ FRANCE SAS (marque Jalonel), 11 rue Rouvet, 75019 Paris, SIREN 988 741 773 · <a href="mentions-legales.html">mentions légales</a> · contact ${mail}</p>
+</section>
+<section class="wrap section" id="questions-commande" aria-labelledby="qc-h">
+  <h2 id="qc-h">Trois questions avant de payer</h2>
+  <details><summary>Combien de personnes peuvent utiliser le kit ?</summary><p>Tout votre organisme : vous pouvez copier les fichiers, modifier les modèles et les utiliser dans tous vos établissements. La revente et la diffusion à d'autres entreprises sont exclues (article 8 des CGV).</p></details>
+  <details><summary>Et quand le guide de lecture officiel paraîtra ?</summary><p>La mise à jour du kit établie après sa publication vous est envoyée sans frais, à l'adresse e-mail de commande, si elle paraît dans les 12 mois suivant votre achat (article 10 des CGV).</p></details>
+  <details><summary>Mon service achats veut un devis ou une facture.</summary><p>${QUOTES ? 'Le bloc « Besoin d’un devis ou paiement par virement ? » ci-dessus envoie un devis PDF valable 30 jours, avec IBAN et référence de virement. ' : ''}La facture acquittée part par e-mail avec les fichiers, au nom et au SIREN indiqués (articles 5 et 12 des CGV).</p></details>
 </section>`;
 
 const orderPage = `

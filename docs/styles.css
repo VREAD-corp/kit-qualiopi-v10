@@ -285,7 +285,14 @@ label.check input { margin-top: .3em; width: 20px; height: 20px; flex: none; }
 .status.ok { color: #137333; }
 .status.err { color: #b3261e; }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .status.ok { color: #81c995; } :root:not([data-theme="light"]) .status.err { color: #f28b82; } }
-.rf-network { margin: .75rem 0; font-size: .9rem; }
-.rf-network-title { margin: 0 0 .3rem; font-weight: 600; }
-.rf-network ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: .3rem 1.1rem; }
-.rf-network a { display: inline-block; padding: .2rem 0; }
+
+/* Commander : récapitulatif, garantie près du bouton, vendeur */
+.order-recap { display: flex; gap: 1rem; align-items: flex-start; margin: 1rem 0; }
+.order-recap-shot { flex: 0 0 96px; }
+.order-recap-shot img { width: 96px; height: auto; border: 1px solid #d6dbe4; border-radius: 4px; display: block; }
+.order-recap .checks { margin: .4rem 0; }
+.order-recap p { margin: .2rem 0; }
+.order-guarantee { margin: .6rem 0; padding: .5rem .75rem; border-left: 3px solid #1d4ed8; background: #f3f6fd; }
+.order-seller { margin-top: 1rem; }
+#questions-commande details { margin: .4rem 0; }
+#questions-commande summary { cursor: pointer; font-weight: 600; padding: .5rem 0; min-height: 44px; }
