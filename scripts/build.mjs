@@ -562,7 +562,7 @@ const commanderPage = `
     <div>
       <p><strong>Ce que vous recevez par e-mail, dès le paiement</strong></p>
       <ul class="checks">
-        <li>La check-list des preuves des 33 indicateurs (page ci-contre) et le plan d'action en 21 jours</li>
+        <li>La check-list des preuves des 33 indicateurs (page ci-contre) : pour chacun, ce que vous montrerez à l'auditeur ; et le plan d'action en 21 jours</li>
         <li>${NB_MODELES} modèles Word et LibreOffice, ${SHEETS.length} tableurs avec formules</li>
         <li>La mise à jour sans frais si le guide de lecture officiel paraît dans les 12 mois</li>
         <li>La facture acquittée au nom et au SIREN de votre organisme</li>
@@ -572,7 +572,7 @@ const commanderPage = `
   </div>
   ${orderFormHtml({ config: SALES, productName: BRAND, cgvUrl: 'cgv-pro.html', payLabel: PAY_LABEL,
     afterTermsHtml: `  <p class="small order-guarantee">Fichier illisible, incomplet ou non conforme à la description ? Signalez-le sous 30 jours : nous le remplaçons ou, à défaut, vous remboursons (<a href="cgv-pro.html">article 10 des CGV</a>). Vente entre professionnels : pas de droit de rétractation (article 7).</p>\n` })}
-  <p class="small muted order-seller">Vendeur : READ FRANCE SAS (marque Jalonel), 11 rue Rouvet, 75019 Paris, SIREN 988 741 773 · <a href="mentions-legales.html">mentions légales</a> · contact ${mail}</p>
+  <p class="small muted order-seller">Kit rédigé à partir du décret n° 2026-728 et de son annexe (<a href="./#sources">sources officielles</a>, <a href="./#qui">qui sommes-nous</a>). Vendeur : READ FRANCE SAS (marque Jalonel), 11 rue Rouvet, 75019 Paris, SIREN 988 741 773 · <a href="mentions-legales.html">mentions légales</a> · contact ${mail}</p>
 </section>
 <section class="wrap section" id="questions-commande" aria-labelledby="qc-h">
   <h2 id="qc-h">Trois questions avant de payer</h2>
