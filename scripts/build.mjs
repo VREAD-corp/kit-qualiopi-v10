@@ -24,6 +24,8 @@ const SAMPLE_URL = `telechargements/${SAMPLE_FILE}`;
 const LASTMOD = '2026-10-13';
 const PUBLISHED = '2026-10-11';
 const BRAND = 'Kit Qualiopi V10';
+// Mention d'indépendance (marque Qualiopi) : pied de page, accueil, page Commander, CGV.
+const MENTION_MARQUE = "Kit indépendant d'aide à la préparation de l'audit. Qualiopi est une marque du ministère du Travail ; ce kit n'est ni édité ni validé par l'État ou un certificateur.";
 // « Commander » button ({prix} = the price, e.g. « Payer 129 € et recevoir le kit Qualiopi V10 »).
 const PAY_LABEL = 'Payer {prix} et recevoir le kit Qualiopi V10';
 
@@ -64,7 +66,7 @@ ${body}
   <div class="wrap foot-in">
     <div>
       <p class="foot-brand"><strong>${BRAND}</strong> — <a href="https://jalonel.com/">Une marque Jalonel</a></p>
-      <p class="small muted">Produit indépendant : ni édité ni validé par l'État, France compétences ou un organisme certificateur. Qualiopi est une marque de l'État. Information, pas un conseil juridique ; aucune garantie de certification.</p>
+      <p class="small muted">${MENTION_MARQUE} Il n'utilise pas le logo Qualiopi. Information, pas un conseil juridique ; aucune garantie de certification.</p>
     </div>
     <nav aria-label="Liens légaux" class="foot-nav">
       <a href="mentions-legales.html">Mentions légales</a>
@@ -226,6 +228,7 @@ const indexBody = `
       <h1>Kit pour le nouveau référentiel Qualiopi 2026&nbsp;: les 33&nbsp;indicateurs, ${NB_MODELES}&nbsp;modèles, ${PRICE_TAG}</h1>
       <p class="lead">Pour les organismes de formation, CFA et centres de bilans audités après le 1er novembre 2026, sans consultant ni responsable qualité. La check-list des preuves indicateur par indicateur, un plan d'action en 21 jours, ${NB_MODELES} modèles Word et LibreOffice et ${SHEETS.length} tableurs à remplir avec vos informations. Le but : savoir, pour chacun des 33 indicateurs, quelle preuve montrer à l'auditeur, et avoir le document à jour.</p>
       ${heroCta}
+      <p class="small muted hero-indep">${MENTION_MARQUE}</p>
     </div>
     <div class="hero-visual">
       <div class="stack">
@@ -402,7 +405,7 @@ const productLd = {
   description: `Kit documentaire pour le nouveau référentiel national qualité Qualiopi applicable au 1er novembre 2026 (décret n° 2026-728, 33 indicateurs) : check-list des preuves, tableau des changements V9 → V10, ${NB_MODELES} modèles DOCX et ODT, ${SHEETS.length} tableurs XLSX et ODS. Vendu aux professionnels.${PRICE.std ? '' : ' Prix net, TVA non applicable (art. 293 B du CGI).'}`,
   image: `${SITE}og.png`,
   url: SITE,
-  brand: { '@type': 'Brand', name: BRAND },
+  brand: { '@type': 'Brand', name: 'Jalonel' },
   sku: SALES.product,
   offers: {
     '@type': 'Offer',
@@ -492,7 +495,7 @@ const mentionsBody = `
   <p>GitHub, Inc. (GitHub Pages), 88 Colin P. Kelly Jr. Street, San Francisco, CA 94107, États-Unis — <a href="https://github.com">github.com</a>.</p>
   <h2>Propriété intellectuelle</h2>
   <p>Les textes, tableaux et modèles de ce site et du kit sont des créations originales de READ FRANCE SAS. Les textes officiels cités (décret, code du travail) sont accessibles sur Légifrance ; les reformulations proposées ne s'y substituent pas.</p>
-  <p>« Qualiopi » est une marque de l'État (ministère chargé de la formation professionnelle). Ce site et ce kit sont indépendants : ils ne sont ni édités, ni validés, ni approuvés par l'État, France compétences, le COFRAC ou un organisme certificateur, et n'utilisent pas le logo Qualiopi.</p>
+  <p>« Qualiopi » est une marque du ministère du Travail (ministère chargé de la formation professionnelle). Ce site et ce kit sont indépendants : ils ne sont ni édités, ni validés, ni approuvés par l'État, France compétences, le COFRAC ou un organisme certificateur, et n'utilisent pas le logo Qualiopi.</p>
   <h2>Avertissement</h2>
   <p>Les informations publiées ont une vocation pratique et informative. Elles ne constituent pas un conseil juridique et ne garantissent pas l'obtention ou le maintien d'une certification.</p>
 </section>`;
@@ -542,7 +545,7 @@ ${cgvProBody({
   updates: `Une mise à jour du kit établie après la publication du guide de lecture officiel du référentiel 2026 est envoyée sans frais à l'adresse électronique de commande si elle paraît dans les 12 mois suivant la commande.`,
   disclaimer: [
     `Le kit est un <strong>outil d'information et d'organisation</strong>. Il ne constitue ni un conseil juridique, ni une prestation d'accompagnement, de conseil ou d'audit, et <strong>ne garantit pas l'obtention, le maintien ou le renouvellement de la certification Qualiopi</strong> : seul l'organisme certificateur décide, après audit.`,
-    `Le kit est indépendant : il n'est ni édité, ni validé, ni approuvé par l'État, France compétences, le COFRAC ou un organisme certificateur. « Qualiopi » est une marque de l'État ; le kit n'en utilise pas le logo. Les libellés des indicateurs sont des reformulations : le texte publié au Journal officiel et le guide de lecture officiel font foi.`,
+    `${MENTION_MARQUE} Il n'est pas non plus approuvé par France compétences ou le COFRAC. Le kit n'utilise pas le logo Qualiopi et ne vaut ni certification, ni attestation, ni label. Les libellés des indicateurs sont des reformulations : le texte publié au Journal officiel et le guide de lecture officiel font foi.`,
     `Le contenu est à jour à sa date de version. Le guide de lecture officiel et les arrêtés d'application attendus peuvent préciser ou modifier les attentes ; il appartient à l'Acheteur de vérifier les textes applicables et de les confirmer avec son organisme certificateur.`,
   ],
 })}
@@ -571,7 +574,7 @@ const commanderPage = `
   </div>
   ${orderFormHtml({ config: SALES, productName: BRAND, cgvUrl: 'cgv-pro.html', payLabel: PAY_LABEL,
     afterTermsHtml: `  <p class="small order-guarantee">Fichier illisible, incomplet ou non conforme à la description ? Signalez-le sous 30 jours : nous le remplaçons ou, à défaut, vous remboursons (<a href="cgv-pro.html">article 10 des CGV</a>). Vente entre professionnels : pas de droit de rétractation (article 7).</p>\n` })}
-  <p class="small muted order-seller">Kit rédigé à partir du décret n° 2026-728 et de son annexe (<a href="./#sources">sources officielles</a>, <a href="./#qui">qui sommes-nous</a>). Vendeur : READ FRANCE SAS (marque Jalonel), 11 rue Rouvet, 75019 Paris, SIREN 988 741 773 · <a href="mentions-legales.html">mentions légales</a> · contact ${mail}</p>
+  <p class="small muted order-seller">${MENTION_MARQUE} Kit rédigé à partir du décret n° 2026-728 et de son annexe (<a href="./#sources">sources officielles</a>, <a href="./#qui">qui sommes-nous</a>). Vendeur : READ FRANCE SAS (marque Jalonel), 11 rue Rouvet, 75019 Paris, SIREN 988 741 773 · <a href="mentions-legales.html">mentions légales</a> · contact ${mail}</p>
 </section>
 <section class="wrap section" id="questions-commande" aria-labelledby="qc-h">
   <h2 id="qc-h">Trois questions avant de payer</h2>

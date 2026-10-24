@@ -60,7 +60,7 @@ test('index.html : Product + Offer 129.00 EUR, InStock, vendeur = Organization',
   assert.equal(product.sku, 'kit-qualiopi-v10');
   assert.equal(product.url, SITE);
   assert.equal(product.image, `${SITE}og.png`);
-  assert.deepEqual(product.brand, { '@type': 'Brand', name: 'Kit Qualiopi V10' });
+  assert.deepEqual(product.brand, { '@type': 'Brand', name: 'Jalonel' });
   assert.ok(product.description.length > 50);
   const o = product.offers;
   assert.equal(o['@type'], 'Offer');
